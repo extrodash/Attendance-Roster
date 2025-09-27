@@ -1,0 +1,7672 @@
+{
+  "people": [
+    {
+      "id": "p_ashley_pyne",
+      "displayName": "Ashley Pyne",
+      "active": true,
+      "tags": [],
+      "serviceDays": [
+        "Mon",
+        "Wed",
+        "Fri"
+      ]
+    },
+    {
+      "id": "p_luke_totten",
+      "displayName": "Luke Totten",
+      "active": true,
+      "tags": [],
+      "serviceDays": [
+        "Mon",
+        "Wed",
+        "Fri"
+      ]
+    },
+    {
+      "id": "p_kayden_bangerter",
+      "displayName": "Kayden Bangerter",
+      "active": true,
+      "tags": [],
+      "serviceDays": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Fri"
+      ]
+    },
+    {
+      "id": "p_william_james",
+      "displayName": "William James",
+      "active": true,
+      "tags": [],
+      "serviceDays": [
+        "Mon",
+        "Tue",
+        "Thu",
+        "Fri"
+      ]
+    },
+    {
+      "id": "p_sean_spackman",
+      "displayName": "Sean Spackman",
+      "active": true,
+      "tags": [],
+      "serviceDays": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu"
+      ]
+    },
+    {
+      "id": "p_madisyn_horrocks",
+      "displayName": "Madisyn Horrocks",
+      "active": true,
+      "tags": [],
+      "serviceDays": []
+    },
+    {
+      "id": "p_abigail_steiner",
+      "displayName": "Abigail Steiner",
+      "active": true,
+      "tags": [],
+      "serviceDays": [
+        "Mon",
+        "Wed",
+        "Fri"
+      ]
+    },
+    {
+      "id": "p_garrett_hunter",
+      "displayName": "Garrett Hunter",
+      "active": true,
+      "tags": [],
+      "serviceDays": [
+        "Tue",
+        "Wed",
+        "Thu"
+      ]
+    },
+    {
+      "id": "p_jeremiah_olsen",
+      "displayName": "Jeremiah Olsen",
+      "active": true,
+      "tags": [],
+      "serviceDays": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri"
+      ]
+    },
+    {
+      "id": "p_kyle_washer",
+      "displayName": "Kyle Washer",
+      "active": true,
+      "tags": [],
+      "serviceDays": [
+        "Tue",
+        "Wed",
+        "Thu"
+      ]
+    }
+  ],
+  "eventTypes": [
+    {
+      "id": "work",
+      "label": "Office",
+      "weight": 1.0
+    },
+    {
+      "id": "meeting",
+      "label": "Morning Meeting",
+      "weight": 0.25
+    },
+    {
+      "id": "gospel",
+      "label": "Afternoon Meeting",
+      "weight": 0.2
+    }
+  ],
+  "sessions": [
+    {
+      "id": "2025-08-25_meeting",
+      "date": "2025-08-25",
+      "dow": 1,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-08-25_work",
+      "date": "2025-08-25",
+      "dow": 1,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-08-25_gospel",
+      "date": "2025-08-25",
+      "dow": 1,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-08-26_meeting",
+      "date": "2025-08-26",
+      "dow": 2,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-08-26_work",
+      "date": "2025-08-26",
+      "dow": 2,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-08-26_gospel",
+      "date": "2025-08-26",
+      "dow": 2,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-08-29_meeting",
+      "date": "2025-08-29",
+      "dow": 5,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-08-29_work",
+      "date": "2025-08-29",
+      "dow": 5,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-08-29_gospel",
+      "date": "2025-08-29",
+      "dow": 5,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-09-01_meeting",
+      "date": "2025-09-01",
+      "dow": 1,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-09-01_work",
+      "date": "2025-09-01",
+      "dow": 1,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-09-01_gospel",
+      "date": "2025-09-01",
+      "dow": 1,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-09-03_meeting",
+      "date": "2025-09-03",
+      "dow": 3,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-09-03_work",
+      "date": "2025-09-03",
+      "dow": 3,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-09-03_gospel",
+      "date": "2025-09-03",
+      "dow": 3,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-09-05_meeting",
+      "date": "2025-09-05",
+      "dow": 5,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-09-05_work",
+      "date": "2025-09-05",
+      "dow": 5,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-09-05_gospel",
+      "date": "2025-09-05",
+      "dow": 5,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-09-08_meeting",
+      "date": "2025-09-08",
+      "dow": 1,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-09-08_work",
+      "date": "2025-09-08",
+      "dow": 1,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-09-08_gospel",
+      "date": "2025-09-08",
+      "dow": 1,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-09-10_meeting",
+      "date": "2025-09-10",
+      "dow": 3,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-09-10_work",
+      "date": "2025-09-10",
+      "dow": 3,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-09-10_gospel",
+      "date": "2025-09-10",
+      "dow": 3,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-11-19_meeting",
+      "date": "2025-11-19",
+      "dow": 3,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-11-19_work",
+      "date": "2025-11-19",
+      "dow": 3,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-11-19_gospel",
+      "date": "2025-11-19",
+      "dow": 3,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-07-09_meeting",
+      "date": "2025-07-09",
+      "dow": 3,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-07-09_work",
+      "date": "2025-07-09",
+      "dow": 3,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-07-09_gospel",
+      "date": "2025-07-09",
+      "dow": 3,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-07-10_meeting",
+      "date": "2025-07-10",
+      "dow": 4,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-07-10_work",
+      "date": "2025-07-10",
+      "dow": 4,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-07-10_gospel",
+      "date": "2025-07-10",
+      "dow": 4,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-07-14_meeting",
+      "date": "2025-07-14",
+      "dow": 1,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-07-14_work",
+      "date": "2025-07-14",
+      "dow": 1,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-07-14_gospel",
+      "date": "2025-07-14",
+      "dow": 1,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-07-16_meeting",
+      "date": "2025-07-16",
+      "dow": 3,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-07-16_work",
+      "date": "2025-07-16",
+      "dow": 3,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-07-16_gospel",
+      "date": "2025-07-16",
+      "dow": 3,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-07-17_meeting",
+      "date": "2025-07-17",
+      "dow": 4,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-07-17_work",
+      "date": "2025-07-17",
+      "dow": 4,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-07-17_gospel",
+      "date": "2025-07-17",
+      "dow": 4,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-07-21_meeting",
+      "date": "2025-07-21",
+      "dow": 1,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-07-21_work",
+      "date": "2025-07-21",
+      "dow": 1,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-07-21_gospel",
+      "date": "2025-07-21",
+      "dow": 1,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-07-23_meeting",
+      "date": "2025-07-23",
+      "dow": 3,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-07-23_work",
+      "date": "2025-07-23",
+      "dow": 3,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-07-23_gospel",
+      "date": "2025-07-23",
+      "dow": 3,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-07-24_meeting",
+      "date": "2025-07-24",
+      "dow": 4,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-07-24_work",
+      "date": "2025-07-24",
+      "dow": 4,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-07-24_gospel",
+      "date": "2025-07-24",
+      "dow": 4,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-07-28_meeting",
+      "date": "2025-07-28",
+      "dow": 1,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-07-28_work",
+      "date": "2025-07-28",
+      "dow": 1,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-07-28_gospel",
+      "date": "2025-07-28",
+      "dow": 1,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-07-30_meeting",
+      "date": "2025-07-30",
+      "dow": 3,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-07-30_work",
+      "date": "2025-07-30",
+      "dow": 3,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-07-30_gospel",
+      "date": "2025-07-30",
+      "dow": 3,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-07-31_meeting",
+      "date": "2025-07-31",
+      "dow": 4,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-07-31_work",
+      "date": "2025-07-31",
+      "dow": 4,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-07-31_gospel",
+      "date": "2025-07-31",
+      "dow": 4,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-08-04_meeting",
+      "date": "2025-08-04",
+      "dow": 1,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-08-04_work",
+      "date": "2025-08-04",
+      "dow": 1,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-08-04_gospel",
+      "date": "2025-08-04",
+      "dow": 1,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-08-06_meeting",
+      "date": "2025-08-06",
+      "dow": 3,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-08-06_work",
+      "date": "2025-08-06",
+      "dow": 3,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-08-06_gospel",
+      "date": "2025-08-06",
+      "dow": 3,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-08-07_meeting",
+      "date": "2025-08-07",
+      "dow": 4,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-08-07_work",
+      "date": "2025-08-07",
+      "dow": 4,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-08-07_gospel",
+      "date": "2025-08-07",
+      "dow": 4,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-08-11_meeting",
+      "date": "2025-08-11",
+      "dow": 1,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-08-11_work",
+      "date": "2025-08-11",
+      "dow": 1,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-08-11_gospel",
+      "date": "2025-08-11",
+      "dow": 1,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-08-13_meeting",
+      "date": "2025-08-13",
+      "dow": 3,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-08-13_work",
+      "date": "2025-08-13",
+      "dow": 3,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-08-13_gospel",
+      "date": "2025-08-13",
+      "dow": 3,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-08-14_meeting",
+      "date": "2025-08-14",
+      "dow": 4,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-08-14_work",
+      "date": "2025-08-14",
+      "dow": 4,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-08-14_gospel",
+      "date": "2025-08-14",
+      "dow": 4,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-08-18_meeting",
+      "date": "2025-08-18",
+      "dow": 1,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-08-18_work",
+      "date": "2025-08-18",
+      "dow": 1,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-08-18_gospel",
+      "date": "2025-08-18",
+      "dow": 1,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-08-21_meeting",
+      "date": "2025-08-21",
+      "dow": 4,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-08-21_work",
+      "date": "2025-08-21",
+      "dow": 4,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-08-21_gospel",
+      "date": "2025-08-21",
+      "dow": 4,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-08-27_meeting",
+      "date": "2025-08-27",
+      "dow": 3,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-08-27_work",
+      "date": "2025-08-27",
+      "dow": 3,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-08-27_gospel",
+      "date": "2025-08-27",
+      "dow": 3,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-08-28_meeting",
+      "date": "2025-08-28",
+      "dow": 4,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-08-28_work",
+      "date": "2025-08-28",
+      "dow": 4,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-08-28_gospel",
+      "date": "2025-08-28",
+      "dow": 4,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-09-04_meeting",
+      "date": "2025-09-04",
+      "dow": 4,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-09-04_work",
+      "date": "2025-09-04",
+      "dow": 4,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-09-04_gospel",
+      "date": "2025-09-04",
+      "dow": 4,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-05-23_meeting",
+      "date": "2025-05-23",
+      "dow": 5,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-05-23_work",
+      "date": "2025-05-23",
+      "dow": 5,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-05-23_gospel",
+      "date": "2025-05-23",
+      "dow": 5,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-05-27_meeting",
+      "date": "2025-05-27",
+      "dow": 2,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-05-27_work",
+      "date": "2025-05-27",
+      "dow": 2,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-05-27_gospel",
+      "date": "2025-05-27",
+      "dow": 2,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-05-28_meeting",
+      "date": "2025-05-28",
+      "dow": 3,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-05-28_work",
+      "date": "2025-05-28",
+      "dow": 3,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-05-28_gospel",
+      "date": "2025-05-28",
+      "dow": 3,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-05-30_meeting",
+      "date": "2025-05-30",
+      "dow": 5,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-05-30_work",
+      "date": "2025-05-30",
+      "dow": 5,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-05-30_gospel",
+      "date": "2025-05-30",
+      "dow": 5,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-06-02_meeting",
+      "date": "2025-06-02",
+      "dow": 1,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-06-02_work",
+      "date": "2025-06-02",
+      "dow": 1,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-06-02_gospel",
+      "date": "2025-06-02",
+      "dow": 1,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-06-03_meeting",
+      "date": "2025-06-03",
+      "dow": 2,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-06-03_work",
+      "date": "2025-06-03",
+      "dow": 2,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-06-03_gospel",
+      "date": "2025-06-03",
+      "dow": 2,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-06-04_meeting",
+      "date": "2025-06-04",
+      "dow": 3,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-06-04_work",
+      "date": "2025-06-04",
+      "dow": 3,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-06-04_gospel",
+      "date": "2025-06-04",
+      "dow": 3,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-06-06_meeting",
+      "date": "2025-06-06",
+      "dow": 5,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-06-06_work",
+      "date": "2025-06-06",
+      "dow": 5,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-06-06_gospel",
+      "date": "2025-06-06",
+      "dow": 5,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-06-09_meeting",
+      "date": "2025-06-09",
+      "dow": 1,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-06-09_work",
+      "date": "2025-06-09",
+      "dow": 1,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-06-09_gospel",
+      "date": "2025-06-09",
+      "dow": 1,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-06-10_meeting",
+      "date": "2025-06-10",
+      "dow": 2,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-06-10_work",
+      "date": "2025-06-10",
+      "dow": 2,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-06-10_gospel",
+      "date": "2025-06-10",
+      "dow": 2,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-06-11_meeting",
+      "date": "2025-06-11",
+      "dow": 3,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-06-11_work",
+      "date": "2025-06-11",
+      "dow": 3,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-06-11_gospel",
+      "date": "2025-06-11",
+      "dow": 3,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-06-13_meeting",
+      "date": "2025-06-13",
+      "dow": 5,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-06-13_work",
+      "date": "2025-06-13",
+      "dow": 5,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-06-13_gospel",
+      "date": "2025-06-13",
+      "dow": 5,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-06-16_meeting",
+      "date": "2025-06-16",
+      "dow": 1,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-06-16_work",
+      "date": "2025-06-16",
+      "dow": 1,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-06-16_gospel",
+      "date": "2025-06-16",
+      "dow": 1,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-06-17_meeting",
+      "date": "2025-06-17",
+      "dow": 2,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-06-17_work",
+      "date": "2025-06-17",
+      "dow": 2,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-06-17_gospel",
+      "date": "2025-06-17",
+      "dow": 2,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-06-18_meeting",
+      "date": "2025-06-18",
+      "dow": 3,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-06-18_work",
+      "date": "2025-06-18",
+      "dow": 3,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-06-18_gospel",
+      "date": "2025-06-18",
+      "dow": 3,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-06-20_meeting",
+      "date": "2025-06-20",
+      "dow": 5,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-06-20_work",
+      "date": "2025-06-20",
+      "dow": 5,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-06-20_gospel",
+      "date": "2025-06-20",
+      "dow": 5,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-06-23_meeting",
+      "date": "2025-06-23",
+      "dow": 1,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-06-23_work",
+      "date": "2025-06-23",
+      "dow": 1,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-06-23_gospel",
+      "date": "2025-06-23",
+      "dow": 1,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-06-24_meeting",
+      "date": "2025-06-24",
+      "dow": 2,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-06-24_work",
+      "date": "2025-06-24",
+      "dow": 2,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-06-24_gospel",
+      "date": "2025-06-24",
+      "dow": 2,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-07-07_meeting",
+      "date": "2025-07-07",
+      "dow": 1,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-07-07_work",
+      "date": "2025-07-07",
+      "dow": 1,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-07-07_gospel",
+      "date": "2025-07-07",
+      "dow": 1,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-07-08_meeting",
+      "date": "2025-07-08",
+      "dow": 2,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-07-08_work",
+      "date": "2025-07-08",
+      "dow": 2,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-07-08_gospel",
+      "date": "2025-07-08",
+      "dow": 2,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-07-11_meeting",
+      "date": "2025-07-11",
+      "dow": 5,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-07-11_work",
+      "date": "2025-07-11",
+      "dow": 5,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-07-11_gospel",
+      "date": "2025-07-11",
+      "dow": 5,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-07-15_meeting",
+      "date": "2025-07-15",
+      "dow": 2,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-07-15_work",
+      "date": "2025-07-15",
+      "dow": 2,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-07-15_gospel",
+      "date": "2025-07-15",
+      "dow": 2,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-07-18_meeting",
+      "date": "2025-07-18",
+      "dow": 5,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-07-18_work",
+      "date": "2025-07-18",
+      "dow": 5,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-07-18_gospel",
+      "date": "2025-07-18",
+      "dow": 5,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-07-22_meeting",
+      "date": "2025-07-22",
+      "dow": 2,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-07-22_work",
+      "date": "2025-07-22",
+      "dow": 2,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-07-22_gospel",
+      "date": "2025-07-22",
+      "dow": 2,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-07-25_meeting",
+      "date": "2025-07-25",
+      "dow": 5,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-07-25_work",
+      "date": "2025-07-25",
+      "dow": 5,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-07-25_gospel",
+      "date": "2025-07-25",
+      "dow": 5,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-07-29_meeting",
+      "date": "2025-07-29",
+      "dow": 2,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-07-29_work",
+      "date": "2025-07-29",
+      "dow": 2,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-07-29_gospel",
+      "date": "2025-07-29",
+      "dow": 2,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-08-01_meeting",
+      "date": "2025-08-01",
+      "dow": 5,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-08-01_work",
+      "date": "2025-08-01",
+      "dow": 5,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-08-01_gospel",
+      "date": "2025-08-01",
+      "dow": 5,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-08-05_meeting",
+      "date": "2025-08-05",
+      "dow": 2,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-08-05_work",
+      "date": "2025-08-05",
+      "dow": 2,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-08-05_gospel",
+      "date": "2025-08-05",
+      "dow": 2,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-08-08_meeting",
+      "date": "2025-08-08",
+      "dow": 5,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-08-08_work",
+      "date": "2025-08-08",
+      "dow": 5,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-08-08_gospel",
+      "date": "2025-08-08",
+      "dow": 5,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-08-12_meeting",
+      "date": "2025-08-12",
+      "dow": 2,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-08-12_work",
+      "date": "2025-08-12",
+      "dow": 2,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-08-12_gospel",
+      "date": "2025-08-12",
+      "dow": 2,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-08-15_meeting",
+      "date": "2025-08-15",
+      "dow": 5,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-08-15_work",
+      "date": "2025-08-15",
+      "dow": 5,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-08-15_gospel",
+      "date": "2025-08-15",
+      "dow": 5,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-08-19_meeting",
+      "date": "2025-08-19",
+      "dow": 2,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-08-19_work",
+      "date": "2025-08-19",
+      "dow": 2,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-08-19_gospel",
+      "date": "2025-08-19",
+      "dow": 2,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-08-22_meeting",
+      "date": "2025-08-22",
+      "dow": 5,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-08-22_work",
+      "date": "2025-08-22",
+      "dow": 5,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-08-22_gospel",
+      "date": "2025-08-22",
+      "dow": 5,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-09-02_meeting",
+      "date": "2025-09-02",
+      "dow": 2,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-09-02_work",
+      "date": "2025-09-02",
+      "dow": 2,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-09-02_gospel",
+      "date": "2025-09-02",
+      "dow": 2,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-09-09_meeting",
+      "date": "2025-09-09",
+      "dow": 2,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-09-09_work",
+      "date": "2025-09-09",
+      "dow": 2,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-09-09_gospel",
+      "date": "2025-09-09",
+      "dow": 2,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-09-11_meeting",
+      "date": "2025-09-11",
+      "dow": 4,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-09-11_work",
+      "date": "2025-09-11",
+      "dow": 4,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-09-11_gospel",
+      "date": "2025-09-11",
+      "dow": 4,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-05-22_meeting",
+      "date": "2025-05-22",
+      "dow": 4,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-05-22_work",
+      "date": "2025-05-22",
+      "dow": 4,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-05-22_gospel",
+      "date": "2025-05-22",
+      "dow": 4,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-05-29_meeting",
+      "date": "2025-05-29",
+      "dow": 4,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-05-29_work",
+      "date": "2025-05-29",
+      "dow": 4,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-05-29_gospel",
+      "date": "2025-05-29",
+      "dow": 4,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-06-05_meeting",
+      "date": "2025-06-05",
+      "dow": 4,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-06-05_work",
+      "date": "2025-06-05",
+      "dow": 4,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-06-05_gospel",
+      "date": "2025-06-05",
+      "dow": 4,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-06-12_meeting",
+      "date": "2025-06-12",
+      "dow": 4,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-06-12_work",
+      "date": "2025-06-12",
+      "dow": 4,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-06-12_gospel",
+      "date": "2025-06-12",
+      "dow": 4,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-06-19_meeting",
+      "date": "2025-06-19",
+      "dow": 4,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-06-19_work",
+      "date": "2025-06-19",
+      "dow": 4,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-06-19_gospel",
+      "date": "2025-06-19",
+      "dow": 4,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-05-19_meeting",
+      "date": "2025-05-19",
+      "dow": 1,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-05-19_work",
+      "date": "2025-05-19",
+      "dow": 1,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-05-19_gospel",
+      "date": "2025-05-19",
+      "dow": 1,
+      "eventTypeId": "gospel"
+    },
+    {
+      "id": "2025-10-06_meeting",
+      "date": "2025-10-06",
+      "dow": 1,
+      "eventTypeId": "meeting"
+    },
+    {
+      "id": "2025-10-06_work",
+      "date": "2025-10-06",
+      "dow": 1,
+      "eventTypeId": "work"
+    },
+    {
+      "id": "2025-10-06_gospel",
+      "date": "2025-10-06",
+      "dow": 1,
+      "eventTypeId": "gospel"
+    }
+  ],
+  "records": [
+    {
+      "id": "r_1",
+      "sessionId": "2025-08-25_meeting",
+      "personId": "p_ashley_pyne",
+      "status": "present"
+    },
+    {
+      "id": "r_2",
+      "sessionId": "2025-08-25_work",
+      "personId": "p_ashley_pyne",
+      "status": "present"
+    },
+    {
+      "id": "r_3",
+      "sessionId": "2025-08-25_gospel",
+      "personId": "p_ashley_pyne",
+      "status": "present"
+    },
+    {
+      "id": "r_4",
+      "sessionId": "2025-08-26_meeting",
+      "personId": "p_ashley_pyne",
+      "status": "present"
+    },
+    {
+      "id": "r_5",
+      "sessionId": "2025-08-26_work",
+      "personId": "p_ashley_pyne",
+      "status": "present"
+    },
+    {
+      "id": "r_6",
+      "sessionId": "2025-08-26_gospel",
+      "personId": "p_ashley_pyne",
+      "status": "present"
+    },
+    {
+      "id": "r_7",
+      "sessionId": "2025-08-29_meeting",
+      "personId": "p_ashley_pyne",
+      "status": "present"
+    },
+    {
+      "id": "r_8",
+      "sessionId": "2025-08-29_work",
+      "personId": "p_ashley_pyne",
+      "status": "present"
+    },
+    {
+      "id": "r_9",
+      "sessionId": "2025-08-29_gospel",
+      "personId": "p_ashley_pyne",
+      "status": "present"
+    },
+    {
+      "id": "r_10",
+      "sessionId": "2025-09-01_meeting",
+      "personId": "p_ashley_pyne",
+      "status": "excused"
+    },
+    {
+      "id": "r_11",
+      "sessionId": "2025-09-01_work",
+      "personId": "p_ashley_pyne",
+      "status": "excused"
+    },
+    {
+      "id": "r_12",
+      "sessionId": "2025-09-01_gospel",
+      "personId": "p_ashley_pyne",
+      "status": "excused"
+    },
+    {
+      "id": "r_13",
+      "sessionId": "2025-09-03_meeting",
+      "personId": "p_ashley_pyne",
+      "status": "present"
+    },
+    {
+      "id": "r_14",
+      "sessionId": "2025-09-03_work",
+      "personId": "p_ashley_pyne",
+      "status": "present"
+    },
+    {
+      "id": "r_15",
+      "sessionId": "2025-09-03_gospel",
+      "personId": "p_ashley_pyne",
+      "status": "present"
+    },
+    {
+      "id": "r_16",
+      "sessionId": "2025-09-05_meeting",
+      "personId": "p_ashley_pyne",
+      "status": "present"
+    },
+    {
+      "id": "r_17",
+      "sessionId": "2025-09-05_work",
+      "personId": "p_ashley_pyne",
+      "status": "present"
+    },
+    {
+      "id": "r_18",
+      "sessionId": "2025-09-05_gospel",
+      "personId": "p_ashley_pyne",
+      "status": "present"
+    },
+    {
+      "id": "r_19",
+      "sessionId": "2025-09-08_meeting",
+      "personId": "p_ashley_pyne",
+      "status": "present"
+    },
+    {
+      "id": "r_20",
+      "sessionId": "2025-09-08_work",
+      "personId": "p_ashley_pyne",
+      "status": "present"
+    },
+    {
+      "id": "r_21",
+      "sessionId": "2025-09-08_gospel",
+      "personId": "p_ashley_pyne",
+      "status": "present"
+    },
+    {
+      "id": "r_22",
+      "sessionId": "2025-09-10_meeting",
+      "personId": "p_ashley_pyne",
+      "status": "present"
+    },
+    {
+      "id": "r_23",
+      "sessionId": "2025-09-10_work",
+      "personId": "p_ashley_pyne",
+      "status": "present"
+    },
+    {
+      "id": "r_24",
+      "sessionId": "2025-09-10_gospel",
+      "personId": "p_ashley_pyne",
+      "status": "present"
+    },
+    {
+      "id": "r_25",
+      "sessionId": "2025-11-19_meeting",
+      "personId": "p_ashley_pyne",
+      "status": "excused"
+    },
+    {
+      "id": "r_26",
+      "sessionId": "2025-11-19_work",
+      "personId": "p_ashley_pyne",
+      "status": "excused"
+    },
+    {
+      "id": "r_27",
+      "sessionId": "2025-11-19_gospel",
+      "personId": "p_ashley_pyne",
+      "status": "very_early_leave"
+    },
+    {
+      "id": "r_28",
+      "sessionId": "2025-07-09_meeting",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_29",
+      "sessionId": "2025-07-09_work",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_30",
+      "sessionId": "2025-07-09_gospel",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_31",
+      "sessionId": "2025-07-10_meeting",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_32",
+      "sessionId": "2025-07-10_work",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_33",
+      "sessionId": "2025-07-10_gospel",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_34",
+      "sessionId": "2025-07-14_meeting",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_35",
+      "sessionId": "2025-07-14_work",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_36",
+      "sessionId": "2025-07-14_gospel",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_37",
+      "sessionId": "2025-07-16_meeting",
+      "personId": "p_luke_totten",
+      "status": "excused"
+    },
+    {
+      "id": "r_38",
+      "sessionId": "2025-07-16_work",
+      "personId": "p_luke_totten",
+      "status": "tardy"
+    },
+    {
+      "id": "r_39",
+      "sessionId": "2025-07-16_gospel",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_40",
+      "sessionId": "2025-07-17_meeting",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_41",
+      "sessionId": "2025-07-17_work",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_42",
+      "sessionId": "2025-07-17_gospel",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_43",
+      "sessionId": "2025-07-21_meeting",
+      "personId": "p_luke_totten",
+      "status": "excused"
+    },
+    {
+      "id": "r_44",
+      "sessionId": "2025-07-21_work",
+      "personId": "p_luke_totten",
+      "status": "excused"
+    },
+    {
+      "id": "r_45",
+      "sessionId": "2025-07-21_gospel",
+      "personId": "p_luke_totten",
+      "status": "excused"
+    },
+    {
+      "id": "r_46",
+      "sessionId": "2025-07-23_meeting",
+      "personId": "p_luke_totten",
+      "status": "excused"
+    },
+    {
+      "id": "r_47",
+      "sessionId": "2025-07-23_work",
+      "personId": "p_luke_totten",
+      "status": "excused"
+    },
+    {
+      "id": "r_48",
+      "sessionId": "2025-07-23_gospel",
+      "personId": "p_luke_totten",
+      "status": "excused"
+    },
+    {
+      "id": "r_49",
+      "sessionId": "2025-07-24_meeting",
+      "personId": "p_luke_totten",
+      "status": "excused"
+    },
+    {
+      "id": "r_50",
+      "sessionId": "2025-07-24_work",
+      "personId": "p_luke_totten",
+      "status": "excused"
+    },
+    {
+      "id": "r_51",
+      "sessionId": "2025-07-24_gospel",
+      "personId": "p_luke_totten",
+      "status": "excused"
+    },
+    {
+      "id": "r_52",
+      "sessionId": "2025-07-28_meeting",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_53",
+      "sessionId": "2025-07-28_work",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_54",
+      "sessionId": "2025-07-28_gospel",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_55",
+      "sessionId": "2025-07-30_meeting",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_56",
+      "sessionId": "2025-07-30_work",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_57",
+      "sessionId": "2025-07-30_gospel",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_58",
+      "sessionId": "2025-07-31_meeting",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_59",
+      "sessionId": "2025-07-31_work",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_60",
+      "sessionId": "2025-07-31_gospel",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_61",
+      "sessionId": "2025-08-04_meeting",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_62",
+      "sessionId": "2025-08-04_work",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_63",
+      "sessionId": "2025-08-04_gospel",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_64",
+      "sessionId": "2025-08-06_meeting",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_65",
+      "sessionId": "2025-08-06_work",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_66",
+      "sessionId": "2025-08-06_gospel",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_67",
+      "sessionId": "2025-08-07_meeting",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_68",
+      "sessionId": "2025-08-07_work",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_69",
+      "sessionId": "2025-08-07_gospel",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_70",
+      "sessionId": "2025-08-11_meeting",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_71",
+      "sessionId": "2025-08-11_work",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_72",
+      "sessionId": "2025-08-11_gospel",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_73",
+      "sessionId": "2025-08-13_meeting",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_74",
+      "sessionId": "2025-08-13_work",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_75",
+      "sessionId": "2025-08-13_gospel",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_76",
+      "sessionId": "2025-08-14_meeting",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_77",
+      "sessionId": "2025-08-14_work",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_78",
+      "sessionId": "2025-08-14_gospel",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_79",
+      "sessionId": "2025-08-18_meeting",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_80",
+      "sessionId": "2025-08-18_work",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_81",
+      "sessionId": "2025-08-18_gospel",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_82",
+      "sessionId": "2025-08-21_meeting",
+      "personId": "p_luke_totten",
+      "status": "excused"
+    },
+    {
+      "id": "r_83",
+      "sessionId": "2025-08-21_work",
+      "personId": "p_luke_totten",
+      "status": "excused"
+    },
+    {
+      "id": "r_84",
+      "sessionId": "2025-08-21_gospel",
+      "personId": "p_luke_totten",
+      "status": "excused"
+    },
+    {
+      "id": "r_85",
+      "sessionId": "2025-08-25_meeting",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_86",
+      "sessionId": "2025-08-25_work",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_87",
+      "sessionId": "2025-08-25_gospel",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_88",
+      "sessionId": "2025-08-27_meeting",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_89",
+      "sessionId": "2025-08-27_work",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_90",
+      "sessionId": "2025-08-27_gospel",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_91",
+      "sessionId": "2025-08-28_meeting",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_92",
+      "sessionId": "2025-08-28_work",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_93",
+      "sessionId": "2025-08-28_gospel",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_94",
+      "sessionId": "2025-09-01_meeting",
+      "personId": "p_luke_totten",
+      "status": "excused"
+    },
+    {
+      "id": "r_95",
+      "sessionId": "2025-09-01_work",
+      "personId": "p_luke_totten",
+      "status": "excused"
+    },
+    {
+      "id": "r_96",
+      "sessionId": "2025-09-01_gospel",
+      "personId": "p_luke_totten",
+      "status": "excused"
+    },
+    {
+      "id": "r_97",
+      "sessionId": "2025-09-03_meeting",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_98",
+      "sessionId": "2025-09-03_work",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_99",
+      "sessionId": "2025-09-03_gospel",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_100",
+      "sessionId": "2025-09-04_meeting",
+      "personId": "p_luke_totten",
+      "status": "absent"
+    },
+    {
+      "id": "r_101",
+      "sessionId": "2025-09-04_work",
+      "personId": "p_luke_totten",
+      "status": "absent"
+    },
+    {
+      "id": "r_102",
+      "sessionId": "2025-09-04_gospel",
+      "personId": "p_luke_totten",
+      "status": "absent"
+    },
+    {
+      "id": "r_103",
+      "sessionId": "2025-09-08_meeting",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_104",
+      "sessionId": "2025-09-08_work",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_105",
+      "sessionId": "2025-09-08_gospel",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_106",
+      "sessionId": "2025-09-10_meeting",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_107",
+      "sessionId": "2025-09-10_work",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_108",
+      "sessionId": "2025-09-10_gospel",
+      "personId": "p_luke_totten",
+      "status": "present"
+    },
+    {
+      "id": "r_109",
+      "sessionId": "2025-05-23_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_110",
+      "sessionId": "2025-05-23_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_111",
+      "sessionId": "2025-05-23_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_112",
+      "sessionId": "2025-05-27_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "excused"
+    },
+    {
+      "id": "r_113",
+      "sessionId": "2025-05-27_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_114",
+      "sessionId": "2025-05-27_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "excused"
+    },
+    {
+      "id": "r_115",
+      "sessionId": "2025-05-28_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_116",
+      "sessionId": "2025-05-28_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_117",
+      "sessionId": "2025-05-28_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_118",
+      "sessionId": "2025-05-30_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_119",
+      "sessionId": "2025-05-30_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_120",
+      "sessionId": "2025-05-30_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_121",
+      "sessionId": "2025-06-02_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_122",
+      "sessionId": "2025-06-02_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_123",
+      "sessionId": "2025-06-02_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_124",
+      "sessionId": "2025-06-03_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_125",
+      "sessionId": "2025-06-03_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_126",
+      "sessionId": "2025-06-03_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_127",
+      "sessionId": "2025-06-04_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_128",
+      "sessionId": "2025-06-04_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_129",
+      "sessionId": "2025-06-04_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_130",
+      "sessionId": "2025-06-06_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_131",
+      "sessionId": "2025-06-06_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_132",
+      "sessionId": "2025-06-06_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_133",
+      "sessionId": "2025-06-09_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_134",
+      "sessionId": "2025-06-09_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_135",
+      "sessionId": "2025-06-09_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_136",
+      "sessionId": "2025-06-10_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_137",
+      "sessionId": "2025-06-10_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_138",
+      "sessionId": "2025-06-10_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_139",
+      "sessionId": "2025-06-11_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_140",
+      "sessionId": "2025-06-11_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_141",
+      "sessionId": "2025-06-11_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_142",
+      "sessionId": "2025-06-13_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_143",
+      "sessionId": "2025-06-13_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_144",
+      "sessionId": "2025-06-13_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "excused"
+    },
+    {
+      "id": "r_145",
+      "sessionId": "2025-06-16_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_146",
+      "sessionId": "2025-06-16_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_147",
+      "sessionId": "2025-06-16_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_148",
+      "sessionId": "2025-06-17_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_149",
+      "sessionId": "2025-06-17_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_150",
+      "sessionId": "2025-06-17_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_151",
+      "sessionId": "2025-06-18_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_152",
+      "sessionId": "2025-06-18_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_153",
+      "sessionId": "2025-06-18_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_154",
+      "sessionId": "2025-06-20_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_155",
+      "sessionId": "2025-06-20_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_156",
+      "sessionId": "2025-06-20_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_157",
+      "sessionId": "2025-06-23_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_158",
+      "sessionId": "2025-06-23_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_159",
+      "sessionId": "2025-06-23_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_160",
+      "sessionId": "2025-06-24_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_161",
+      "sessionId": "2025-06-24_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_162",
+      "sessionId": "2025-06-24_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_163",
+      "sessionId": "2025-07-07_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_164",
+      "sessionId": "2025-07-07_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_165",
+      "sessionId": "2025-07-07_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_166",
+      "sessionId": "2025-07-08_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_167",
+      "sessionId": "2025-07-08_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_168",
+      "sessionId": "2025-07-08_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_169",
+      "sessionId": "2025-07-09_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_170",
+      "sessionId": "2025-07-09_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_171",
+      "sessionId": "2025-07-09_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_172",
+      "sessionId": "2025-07-11_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_173",
+      "sessionId": "2025-07-11_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_174",
+      "sessionId": "2025-07-11_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_175",
+      "sessionId": "2025-07-14_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_176",
+      "sessionId": "2025-07-14_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_177",
+      "sessionId": "2025-07-14_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_178",
+      "sessionId": "2025-07-15_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_179",
+      "sessionId": "2025-07-15_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_180",
+      "sessionId": "2025-07-15_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_181",
+      "sessionId": "2025-07-16_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_182",
+      "sessionId": "2025-07-16_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_183",
+      "sessionId": "2025-07-16_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_184",
+      "sessionId": "2025-07-18_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_185",
+      "sessionId": "2025-07-18_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_186",
+      "sessionId": "2025-07-18_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_187",
+      "sessionId": "2025-07-21_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_188",
+      "sessionId": "2025-07-21_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_189",
+      "sessionId": "2025-07-21_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_190",
+      "sessionId": "2025-07-22_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_191",
+      "sessionId": "2025-07-22_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_192",
+      "sessionId": "2025-07-22_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_193",
+      "sessionId": "2025-07-23_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_194",
+      "sessionId": "2025-07-23_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_195",
+      "sessionId": "2025-07-23_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_196",
+      "sessionId": "2025-07-25_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_197",
+      "sessionId": "2025-07-25_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_198",
+      "sessionId": "2025-07-25_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_199",
+      "sessionId": "2025-07-28_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_200",
+      "sessionId": "2025-07-28_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_201",
+      "sessionId": "2025-07-28_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_202",
+      "sessionId": "2025-07-29_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_203",
+      "sessionId": "2025-07-29_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_204",
+      "sessionId": "2025-07-29_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_205",
+      "sessionId": "2025-07-30_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_206",
+      "sessionId": "2025-07-30_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_207",
+      "sessionId": "2025-07-30_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_208",
+      "sessionId": "2025-08-01_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_209",
+      "sessionId": "2025-08-01_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_210",
+      "sessionId": "2025-08-01_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_211",
+      "sessionId": "2025-08-04_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_212",
+      "sessionId": "2025-08-04_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_213",
+      "sessionId": "2025-08-04_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_214",
+      "sessionId": "2025-08-05_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_215",
+      "sessionId": "2025-08-05_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_216",
+      "sessionId": "2025-08-05_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_217",
+      "sessionId": "2025-08-06_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_218",
+      "sessionId": "2025-08-06_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_219",
+      "sessionId": "2025-08-06_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_220",
+      "sessionId": "2025-08-08_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_221",
+      "sessionId": "2025-08-08_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_222",
+      "sessionId": "2025-08-08_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_223",
+      "sessionId": "2025-08-11_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_224",
+      "sessionId": "2025-08-11_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_225",
+      "sessionId": "2025-08-11_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_226",
+      "sessionId": "2025-08-12_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "absent"
+    },
+    {
+      "id": "r_227",
+      "sessionId": "2025-08-12_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_228",
+      "sessionId": "2025-08-12_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "absent"
+    },
+    {
+      "id": "r_229",
+      "sessionId": "2025-08-13_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_230",
+      "sessionId": "2025-08-13_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_231",
+      "sessionId": "2025-08-13_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_232",
+      "sessionId": "2025-08-15_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_233",
+      "sessionId": "2025-08-15_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_234",
+      "sessionId": "2025-08-15_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_235",
+      "sessionId": "2025-08-18_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_236",
+      "sessionId": "2025-08-18_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_237",
+      "sessionId": "2025-08-18_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_238",
+      "sessionId": "2025-08-19_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "excused"
+    },
+    {
+      "id": "r_239",
+      "sessionId": "2025-08-19_work",
+      "personId": "p_kayden_bangerter",
+      "status": "excused"
+    },
+    {
+      "id": "r_240",
+      "sessionId": "2025-08-19_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "excused"
+    },
+    {
+      "id": "r_241",
+      "sessionId": "2025-08-22_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_242",
+      "sessionId": "2025-08-22_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_243",
+      "sessionId": "2025-08-22_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_244",
+      "sessionId": "2025-08-25_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_245",
+      "sessionId": "2025-08-25_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_246",
+      "sessionId": "2025-08-25_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_247",
+      "sessionId": "2025-08-26_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "excused"
+    },
+    {
+      "id": "r_248",
+      "sessionId": "2025-08-26_work",
+      "personId": "p_kayden_bangerter",
+      "status": "excused"
+    },
+    {
+      "id": "r_249",
+      "sessionId": "2025-08-26_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "excused"
+    },
+    {
+      "id": "r_250",
+      "sessionId": "2025-08-27_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_251",
+      "sessionId": "2025-08-27_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_252",
+      "sessionId": "2025-08-27_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_253",
+      "sessionId": "2025-08-29_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "excused"
+    },
+    {
+      "id": "r_254",
+      "sessionId": "2025-08-29_work",
+      "personId": "p_kayden_bangerter",
+      "status": "excused"
+    },
+    {
+      "id": "r_255",
+      "sessionId": "2025-08-29_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "excused"
+    },
+    {
+      "id": "r_256",
+      "sessionId": "2025-09-01_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "excused"
+    },
+    {
+      "id": "r_257",
+      "sessionId": "2025-09-01_work",
+      "personId": "p_kayden_bangerter",
+      "status": "excused"
+    },
+    {
+      "id": "r_258",
+      "sessionId": "2025-09-01_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "excused"
+    },
+    {
+      "id": "r_259",
+      "sessionId": "2025-09-02_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "excused"
+    },
+    {
+      "id": "r_260",
+      "sessionId": "2025-09-02_work",
+      "personId": "p_kayden_bangerter",
+      "status": "excused"
+    },
+    {
+      "id": "r_261",
+      "sessionId": "2025-09-02_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "excused"
+    },
+    {
+      "id": "r_262",
+      "sessionId": "2025-09-03_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_263",
+      "sessionId": "2025-09-03_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_264",
+      "sessionId": "2025-09-03_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_265",
+      "sessionId": "2025-09-05_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_266",
+      "sessionId": "2025-09-05_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_267",
+      "sessionId": "2025-09-05_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_268",
+      "sessionId": "2025-09-08_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_269",
+      "sessionId": "2025-09-08_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_270",
+      "sessionId": "2025-09-08_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_271",
+      "sessionId": "2025-09-09_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_272",
+      "sessionId": "2025-09-09_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_273",
+      "sessionId": "2025-09-09_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_274",
+      "sessionId": "2025-09-10_meeting",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_275",
+      "sessionId": "2025-09-10_work",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_276",
+      "sessionId": "2025-09-10_gospel",
+      "personId": "p_kayden_bangerter",
+      "status": "present"
+    },
+    {
+      "id": "r_277",
+      "sessionId": "2025-07-07_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_278",
+      "sessionId": "2025-07-07_work",
+      "personId": "p_william_james",
+      "status": "early_leave"
+    },
+    {
+      "id": "r_279",
+      "sessionId": "2025-07-07_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_280",
+      "sessionId": "2025-07-08_meeting",
+      "personId": "p_william_james",
+      "status": "tardy"
+    },
+    {
+      "id": "r_281",
+      "sessionId": "2025-07-08_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_282",
+      "sessionId": "2025-07-08_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_283",
+      "sessionId": "2025-07-14_meeting",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_284",
+      "sessionId": "2025-07-14_work",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_285",
+      "sessionId": "2025-07-14_gospel",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_286",
+      "sessionId": "2025-07-15_meeting",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_287",
+      "sessionId": "2025-07-15_work",
+      "personId": "p_william_james",
+      "status": "tardy"
+    },
+    {
+      "id": "r_288",
+      "sessionId": "2025-07-15_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_289",
+      "sessionId": "2025-07-17_meeting",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_290",
+      "sessionId": "2025-07-17_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_291",
+      "sessionId": "2025-07-17_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_292",
+      "sessionId": "2025-07-18_meeting",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_293",
+      "sessionId": "2025-07-18_work",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_294",
+      "sessionId": "2025-07-18_gospel",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_295",
+      "sessionId": "2025-07-21_meeting",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_296",
+      "sessionId": "2025-07-21_work",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_297",
+      "sessionId": "2025-07-21_gospel",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_298",
+      "sessionId": "2025-07-22_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_299",
+      "sessionId": "2025-07-22_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_300",
+      "sessionId": "2025-07-22_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_301",
+      "sessionId": "2025-07-24_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_302",
+      "sessionId": "2025-07-24_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_303",
+      "sessionId": "2025-07-24_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_304",
+      "sessionId": "2025-07-25_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_305",
+      "sessionId": "2025-07-25_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_306",
+      "sessionId": "2025-07-25_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_307",
+      "sessionId": "2025-07-28_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_308",
+      "sessionId": "2025-07-28_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_309",
+      "sessionId": "2025-07-28_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_310",
+      "sessionId": "2025-07-29_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_311",
+      "sessionId": "2025-07-29_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_312",
+      "sessionId": "2025-07-29_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_313",
+      "sessionId": "2025-07-31_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_314",
+      "sessionId": "2025-07-31_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_315",
+      "sessionId": "2025-07-31_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_316",
+      "sessionId": "2025-08-01_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_317",
+      "sessionId": "2025-08-01_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_318",
+      "sessionId": "2025-08-01_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_319",
+      "sessionId": "2025-08-04_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_320",
+      "sessionId": "2025-08-04_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_321",
+      "sessionId": "2025-08-04_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_322",
+      "sessionId": "2025-08-05_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_323",
+      "sessionId": "2025-08-05_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_324",
+      "sessionId": "2025-08-05_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_325",
+      "sessionId": "2025-08-07_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_326",
+      "sessionId": "2025-08-07_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_327",
+      "sessionId": "2025-08-07_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_328",
+      "sessionId": "2025-08-08_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_329",
+      "sessionId": "2025-08-08_work",
+      "personId": "p_william_james",
+      "status": "early_leave"
+    },
+    {
+      "id": "r_330",
+      "sessionId": "2025-08-08_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_331",
+      "sessionId": "2025-08-11_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_332",
+      "sessionId": "2025-08-11_work",
+      "personId": "p_william_james",
+      "status": "early_leave"
+    },
+    {
+      "id": "r_333",
+      "sessionId": "2025-08-11_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_334",
+      "sessionId": "2025-08-12_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_335",
+      "sessionId": "2025-08-12_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_336",
+      "sessionId": "2025-08-12_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_337",
+      "sessionId": "2025-08-14_meeting",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_338",
+      "sessionId": "2025-08-14_work",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_339",
+      "sessionId": "2025-08-14_gospel",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_340",
+      "sessionId": "2025-08-15_meeting",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_341",
+      "sessionId": "2025-08-15_work",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_342",
+      "sessionId": "2025-08-15_gospel",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_343",
+      "sessionId": "2025-08-18_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_344",
+      "sessionId": "2025-08-18_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_345",
+      "sessionId": "2025-08-18_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_346",
+      "sessionId": "2025-08-19_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_347",
+      "sessionId": "2025-08-19_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_348",
+      "sessionId": "2025-08-19_gospel",
+      "personId": "p_william_james",
+      "status": "early_leave"
+    },
+    {
+      "id": "r_349",
+      "sessionId": "2025-08-21_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_350",
+      "sessionId": "2025-08-21_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_351",
+      "sessionId": "2025-08-21_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_352",
+      "sessionId": "2025-08-22_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_353",
+      "sessionId": "2025-08-22_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_354",
+      "sessionId": "2025-08-22_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_355",
+      "sessionId": "2025-08-25_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_356",
+      "sessionId": "2025-08-25_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_357",
+      "sessionId": "2025-08-25_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_358",
+      "sessionId": "2025-08-26_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_359",
+      "sessionId": "2025-08-26_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_360",
+      "sessionId": "2025-08-26_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_361",
+      "sessionId": "2025-08-28_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_362",
+      "sessionId": "2025-08-28_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_363",
+      "sessionId": "2025-08-28_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_364",
+      "sessionId": "2025-08-29_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_365",
+      "sessionId": "2025-08-29_work",
+      "personId": "p_william_james",
+      "status": "early_leave"
+    },
+    {
+      "id": "r_366",
+      "sessionId": "2025-08-29_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_367",
+      "sessionId": "2025-09-01_meeting",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_368",
+      "sessionId": "2025-09-01_work",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_369",
+      "sessionId": "2025-09-01_gospel",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_370",
+      "sessionId": "2025-09-02_meeting",
+      "personId": "p_william_james",
+      "status": "tardy"
+    },
+    {
+      "id": "r_371",
+      "sessionId": "2025-09-02_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_372",
+      "sessionId": "2025-09-02_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_373",
+      "sessionId": "2025-09-04_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_374",
+      "sessionId": "2025-09-04_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_375",
+      "sessionId": "2025-09-04_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_376",
+      "sessionId": "2025-09-05_meeting",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_377",
+      "sessionId": "2025-09-05_work",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_378",
+      "sessionId": "2025-09-05_gospel",
+      "personId": "p_william_james",
+      "status": "present"
+    },
+    {
+      "id": "r_379",
+      "sessionId": "2025-09-08_meeting",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_380",
+      "sessionId": "2025-09-08_work",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_381",
+      "sessionId": "2025-09-08_gospel",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_382",
+      "sessionId": "2025-09-09_meeting",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_383",
+      "sessionId": "2025-09-09_work",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_384",
+      "sessionId": "2025-09-09_gospel",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_385",
+      "sessionId": "2025-09-11_meeting",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_386",
+      "sessionId": "2025-09-11_work",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_387",
+      "sessionId": "2025-09-11_gospel",
+      "personId": "p_william_james",
+      "status": "excused"
+    },
+    {
+      "id": "r_388",
+      "sessionId": "2025-05-22_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_389",
+      "sessionId": "2025-05-22_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_390",
+      "sessionId": "2025-05-22_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_391",
+      "sessionId": "2025-05-27_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_392",
+      "sessionId": "2025-05-27_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_393",
+      "sessionId": "2025-05-27_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_394",
+      "sessionId": "2025-05-28_meeting",
+      "personId": "p_sean_spackman",
+      "status": "tardy"
+    },
+    {
+      "id": "r_395",
+      "sessionId": "2025-05-28_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_396",
+      "sessionId": "2025-05-28_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_397",
+      "sessionId": "2025-05-29_meeting",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_398",
+      "sessionId": "2025-05-29_work",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_399",
+      "sessionId": "2025-05-29_gospel",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_400",
+      "sessionId": "2025-06-02_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_401",
+      "sessionId": "2025-06-02_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_402",
+      "sessionId": "2025-06-02_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_403",
+      "sessionId": "2025-06-03_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_404",
+      "sessionId": "2025-06-03_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_405",
+      "sessionId": "2025-06-03_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_406",
+      "sessionId": "2025-06-04_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_407",
+      "sessionId": "2025-06-04_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_408",
+      "sessionId": "2025-06-04_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_409",
+      "sessionId": "2025-06-05_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_410",
+      "sessionId": "2025-06-05_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_411",
+      "sessionId": "2025-06-05_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_412",
+      "sessionId": "2025-06-09_meeting",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_413",
+      "sessionId": "2025-06-09_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_414",
+      "sessionId": "2025-06-09_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_415",
+      "sessionId": "2025-06-10_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_416",
+      "sessionId": "2025-06-10_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_417",
+      "sessionId": "2025-06-10_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_418",
+      "sessionId": "2025-06-11_meeting",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_419",
+      "sessionId": "2025-06-11_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_420",
+      "sessionId": "2025-06-11_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_421",
+      "sessionId": "2025-06-12_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_422",
+      "sessionId": "2025-06-12_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_423",
+      "sessionId": "2025-06-12_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_424",
+      "sessionId": "2025-06-16_meeting",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_425",
+      "sessionId": "2025-06-16_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_426",
+      "sessionId": "2025-06-16_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_427",
+      "sessionId": "2025-06-17_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_428",
+      "sessionId": "2025-06-17_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_429",
+      "sessionId": "2025-06-17_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_430",
+      "sessionId": "2025-06-18_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_431",
+      "sessionId": "2025-06-18_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_432",
+      "sessionId": "2025-06-18_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_433",
+      "sessionId": "2025-06-19_meeting",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_434",
+      "sessionId": "2025-06-19_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_435",
+      "sessionId": "2025-06-19_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_436",
+      "sessionId": "2025-06-23_meeting",
+      "personId": "p_sean_spackman",
+      "status": "tardy"
+    },
+    {
+      "id": "r_437",
+      "sessionId": "2025-06-23_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_438",
+      "sessionId": "2025-06-23_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_439",
+      "sessionId": "2025-06-24_meeting",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_440",
+      "sessionId": "2025-06-24_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_441",
+      "sessionId": "2025-06-24_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_442",
+      "sessionId": "2025-07-07_meeting",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_443",
+      "sessionId": "2025-07-07_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_444",
+      "sessionId": "2025-07-07_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_445",
+      "sessionId": "2025-07-08_meeting",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_446",
+      "sessionId": "2025-07-08_work",
+      "personId": "p_sean_spackman",
+      "status": "tardy"
+    },
+    {
+      "id": "r_447",
+      "sessionId": "2025-07-08_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_448",
+      "sessionId": "2025-07-09_meeting",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_449",
+      "sessionId": "2025-07-09_work",
+      "personId": "p_sean_spackman",
+      "status": "tardy"
+    },
+    {
+      "id": "r_450",
+      "sessionId": "2025-07-09_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_451",
+      "sessionId": "2025-07-10_meeting",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_452",
+      "sessionId": "2025-07-10_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_453",
+      "sessionId": "2025-07-10_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_454",
+      "sessionId": "2025-07-14_meeting",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_455",
+      "sessionId": "2025-07-14_work",
+      "personId": "p_sean_spackman",
+      "status": "tardy"
+    },
+    {
+      "id": "r_456",
+      "sessionId": "2025-07-14_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_457",
+      "sessionId": "2025-07-15_meeting",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_458",
+      "sessionId": "2025-07-15_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_459",
+      "sessionId": "2025-07-15_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_460",
+      "sessionId": "2025-07-16_meeting",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_461",
+      "sessionId": "2025-07-16_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_462",
+      "sessionId": "2025-07-16_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_463",
+      "sessionId": "2025-07-17_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_464",
+      "sessionId": "2025-07-17_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_465",
+      "sessionId": "2025-07-17_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_466",
+      "sessionId": "2025-07-21_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_467",
+      "sessionId": "2025-07-21_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_468",
+      "sessionId": "2025-07-21_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_469",
+      "sessionId": "2025-07-22_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_470",
+      "sessionId": "2025-07-22_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_471",
+      "sessionId": "2025-07-22_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_472",
+      "sessionId": "2025-07-23_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_473",
+      "sessionId": "2025-07-23_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_474",
+      "sessionId": "2025-07-23_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_475",
+      "sessionId": "2025-07-24_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_476",
+      "sessionId": "2025-07-24_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_477",
+      "sessionId": "2025-07-24_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_478",
+      "sessionId": "2025-07-28_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_479",
+      "sessionId": "2025-07-28_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_480",
+      "sessionId": "2025-07-28_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_481",
+      "sessionId": "2025-07-29_meeting",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_482",
+      "sessionId": "2025-07-29_work",
+      "personId": "p_sean_spackman",
+      "status": "tardy"
+    },
+    {
+      "id": "r_483",
+      "sessionId": "2025-07-29_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_484",
+      "sessionId": "2025-07-30_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_485",
+      "sessionId": "2025-07-30_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_486",
+      "sessionId": "2025-07-30_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_487",
+      "sessionId": "2025-07-31_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_488",
+      "sessionId": "2025-07-31_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_489",
+      "sessionId": "2025-07-31_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_490",
+      "sessionId": "2025-08-04_meeting",
+      "personId": "p_sean_spackman",
+      "status": "tardy"
+    },
+    {
+      "id": "r_491",
+      "sessionId": "2025-08-04_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_492",
+      "sessionId": "2025-08-04_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_493",
+      "sessionId": "2025-08-05_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_494",
+      "sessionId": "2025-08-05_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_495",
+      "sessionId": "2025-08-05_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_496",
+      "sessionId": "2025-08-06_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_497",
+      "sessionId": "2025-08-06_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_498",
+      "sessionId": "2025-08-06_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_499",
+      "sessionId": "2025-08-07_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_500",
+      "sessionId": "2025-08-07_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_501",
+      "sessionId": "2025-08-07_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_502",
+      "sessionId": "2025-08-11_meeting",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_503",
+      "sessionId": "2025-08-11_work",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_504",
+      "sessionId": "2025-08-11_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_505",
+      "sessionId": "2025-08-12_meeting",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_506",
+      "sessionId": "2025-08-12_work",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_507",
+      "sessionId": "2025-08-12_gospel",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_508",
+      "sessionId": "2025-08-13_meeting",
+      "personId": "p_sean_spackman",
+      "status": "tardy"
+    },
+    {
+      "id": "r_509",
+      "sessionId": "2025-08-13_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_510",
+      "sessionId": "2025-08-13_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_511",
+      "sessionId": "2025-08-14_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_512",
+      "sessionId": "2025-08-14_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_513",
+      "sessionId": "2025-08-14_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_514",
+      "sessionId": "2025-08-18_meeting",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_515",
+      "sessionId": "2025-08-18_work",
+      "personId": "p_sean_spackman",
+      "status": "tardy"
+    },
+    {
+      "id": "r_516",
+      "sessionId": "2025-08-18_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_517",
+      "sessionId": "2025-08-19_meeting",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_518",
+      "sessionId": "2025-08-19_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_519",
+      "sessionId": "2025-08-19_gospel",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_520",
+      "sessionId": "2025-08-21_meeting",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_521",
+      "sessionId": "2025-08-21_work",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_522",
+      "sessionId": "2025-08-21_gospel",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_523",
+      "sessionId": "2025-08-25_meeting",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_524",
+      "sessionId": "2025-08-25_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_525",
+      "sessionId": "2025-08-25_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_526",
+      "sessionId": "2025-08-26_meeting",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_527",
+      "sessionId": "2025-08-26_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_528",
+      "sessionId": "2025-08-26_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_529",
+      "sessionId": "2025-08-28_meeting",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_530",
+      "sessionId": "2025-08-28_work",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_531",
+      "sessionId": "2025-08-28_gospel",
+      "personId": "p_sean_spackman",
+      "status": "absent"
+    },
+    {
+      "id": "r_532",
+      "sessionId": "2025-08-29_meeting",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_533",
+      "sessionId": "2025-08-29_work",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_534",
+      "sessionId": "2025-08-29_gospel",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_535",
+      "sessionId": "2025-09-01_meeting",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_536",
+      "sessionId": "2025-09-01_work",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_537",
+      "sessionId": "2025-09-01_gospel",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_538",
+      "sessionId": "2025-09-02_meeting",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_539",
+      "sessionId": "2025-09-02_work",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_540",
+      "sessionId": "2025-09-02_gospel",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_541",
+      "sessionId": "2025-09-03_meeting",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_542",
+      "sessionId": "2025-09-03_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_543",
+      "sessionId": "2025-09-03_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_544",
+      "sessionId": "2025-09-04_meeting",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_545",
+      "sessionId": "2025-09-04_work",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_546",
+      "sessionId": "2025-09-04_gospel",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_547",
+      "sessionId": "2025-09-05_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_548",
+      "sessionId": "2025-09-05_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_549",
+      "sessionId": "2025-09-05_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_550",
+      "sessionId": "2025-09-08_meeting",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_551",
+      "sessionId": "2025-09-08_work",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_552",
+      "sessionId": "2025-09-08_gospel",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_553",
+      "sessionId": "2025-09-09_meeting",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_554",
+      "sessionId": "2025-09-09_work",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_555",
+      "sessionId": "2025-09-09_gospel",
+      "personId": "p_sean_spackman",
+      "status": "excused"
+    },
+    {
+      "id": "r_556",
+      "sessionId": "2025-09-10_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_557",
+      "sessionId": "2025-09-10_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_558",
+      "sessionId": "2025-09-10_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_559",
+      "sessionId": "2025-09-11_meeting",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_560",
+      "sessionId": "2025-09-11_work",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_561",
+      "sessionId": "2025-09-11_gospel",
+      "personId": "p_sean_spackman",
+      "status": "present"
+    },
+    {
+      "id": "r_562",
+      "sessionId": "2025-05-19_meeting",
+      "personId": "p_madisyn_horrocks",
+      "status": "present"
+    },
+    {
+      "id": "r_563",
+      "sessionId": "2025-05-19_work",
+      "personId": "p_madisyn_horrocks",
+      "status": "present"
+    },
+    {
+      "id": "r_564",
+      "sessionId": "2025-05-19_gospel",
+      "personId": "p_madisyn_horrocks",
+      "status": "present"
+    },
+    {
+      "id": "r_565",
+      "sessionId": "2025-10-06_meeting",
+      "personId": "p_madisyn_horrocks",
+      "status": "non_service"
+    },
+    {
+      "id": "r_566",
+      "sessionId": "2025-10-06_work",
+      "personId": "p_madisyn_horrocks",
+      "status": "non_service"
+    },
+    {
+      "id": "r_567",
+      "sessionId": "2025-10-06_gospel",
+      "personId": "p_madisyn_horrocks",
+      "status": "very_early_leave"
+    },
+    {
+      "id": "r_568",
+      "sessionId": "2025-08-04_meeting",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_569",
+      "sessionId": "2025-08-04_work",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_570",
+      "sessionId": "2025-08-04_gospel",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_571",
+      "sessionId": "2025-08-06_meeting",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_572",
+      "sessionId": "2025-08-06_work",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_573",
+      "sessionId": "2025-08-06_gospel",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_574",
+      "sessionId": "2025-08-08_meeting",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_575",
+      "sessionId": "2025-08-08_work",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_576",
+      "sessionId": "2025-08-08_gospel",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_577",
+      "sessionId": "2025-08-11_meeting",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_578",
+      "sessionId": "2025-08-11_work",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_579",
+      "sessionId": "2025-08-11_gospel",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_580",
+      "sessionId": "2025-08-13_meeting",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_581",
+      "sessionId": "2025-08-13_work",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_582",
+      "sessionId": "2025-08-13_gospel",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_583",
+      "sessionId": "2025-08-15_meeting",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_584",
+      "sessionId": "2025-08-15_work",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_585",
+      "sessionId": "2025-08-15_gospel",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_586",
+      "sessionId": "2025-08-18_meeting",
+      "personId": "p_abigail_steiner",
+      "status": "excused"
+    },
+    {
+      "id": "r_587",
+      "sessionId": "2025-08-18_work",
+      "personId": "p_abigail_steiner",
+      "status": "excused"
+    },
+    {
+      "id": "r_588",
+      "sessionId": "2025-08-18_gospel",
+      "personId": "p_abigail_steiner",
+      "status": "excused"
+    },
+    {
+      "id": "r_589",
+      "sessionId": "2025-08-22_meeting",
+      "personId": "p_abigail_steiner",
+      "status": "tardy"
+    },
+    {
+      "id": "r_590",
+      "sessionId": "2025-08-22_work",
+      "personId": "p_abigail_steiner",
+      "status": "excused"
+    },
+    {
+      "id": "r_591",
+      "sessionId": "2025-08-22_gospel",
+      "personId": "p_abigail_steiner",
+      "status": "excused"
+    },
+    {
+      "id": "r_592",
+      "sessionId": "2025-08-25_meeting",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_593",
+      "sessionId": "2025-08-25_work",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_594",
+      "sessionId": "2025-08-25_gospel",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_595",
+      "sessionId": "2025-08-27_meeting",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_596",
+      "sessionId": "2025-08-27_work",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_597",
+      "sessionId": "2025-08-27_gospel",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_598",
+      "sessionId": "2025-08-29_meeting",
+      "personId": "p_abigail_steiner",
+      "status": "excused"
+    },
+    {
+      "id": "r_599",
+      "sessionId": "2025-08-29_work",
+      "personId": "p_abigail_steiner",
+      "status": "excused"
+    },
+    {
+      "id": "r_600",
+      "sessionId": "2025-08-29_gospel",
+      "personId": "p_abigail_steiner",
+      "status": "excused"
+    },
+    {
+      "id": "r_601",
+      "sessionId": "2025-09-01_meeting",
+      "personId": "p_abigail_steiner",
+      "status": "excused"
+    },
+    {
+      "id": "r_602",
+      "sessionId": "2025-09-01_work",
+      "personId": "p_abigail_steiner",
+      "status": "excused"
+    },
+    {
+      "id": "r_603",
+      "sessionId": "2025-09-01_gospel",
+      "personId": "p_abigail_steiner",
+      "status": "excused"
+    },
+    {
+      "id": "r_604",
+      "sessionId": "2025-09-03_meeting",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_605",
+      "sessionId": "2025-09-03_work",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_606",
+      "sessionId": "2025-09-03_gospel",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_607",
+      "sessionId": "2025-09-05_meeting",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_608",
+      "sessionId": "2025-09-05_work",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_609",
+      "sessionId": "2025-09-05_gospel",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_610",
+      "sessionId": "2025-09-08_meeting",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_611",
+      "sessionId": "2025-09-08_work",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_612",
+      "sessionId": "2025-09-08_gospel",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_613",
+      "sessionId": "2025-09-10_meeting",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_614",
+      "sessionId": "2025-09-10_work",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_615",
+      "sessionId": "2025-09-10_gospel",
+      "personId": "p_abigail_steiner",
+      "status": "present"
+    },
+    {
+      "id": "r_616",
+      "sessionId": "2025-05-22_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_617",
+      "sessionId": "2025-05-22_work",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_618",
+      "sessionId": "2025-05-22_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_619",
+      "sessionId": "2025-05-27_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "excused"
+    },
+    {
+      "id": "r_620",
+      "sessionId": "2025-05-27_work",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_621",
+      "sessionId": "2025-05-27_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "excused"
+    },
+    {
+      "id": "r_622",
+      "sessionId": "2025-05-28_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "excused"
+    },
+    {
+      "id": "r_623",
+      "sessionId": "2025-05-28_work",
+      "personId": "p_garrett_hunter",
+      "status": "excused"
+    },
+    {
+      "id": "r_624",
+      "sessionId": "2025-05-28_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "excused"
+    },
+    {
+      "id": "r_625",
+      "sessionId": "2025-05-29_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "excused"
+    },
+    {
+      "id": "r_626",
+      "sessionId": "2025-05-29_work",
+      "personId": "p_garrett_hunter",
+      "status": "excused"
+    },
+    {
+      "id": "r_627",
+      "sessionId": "2025-05-29_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "excused"
+    },
+    {
+      "id": "r_628",
+      "sessionId": "2025-06-03_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "excused"
+    },
+    {
+      "id": "r_629",
+      "sessionId": "2025-06-03_work",
+      "personId": "p_garrett_hunter",
+      "status": "tardy"
+    },
+    {
+      "id": "r_630",
+      "sessionId": "2025-06-03_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_631",
+      "sessionId": "2025-06-04_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_632",
+      "sessionId": "2025-06-04_work",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_633",
+      "sessionId": "2025-06-04_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_634",
+      "sessionId": "2025-06-05_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_635",
+      "sessionId": "2025-06-05_work",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_636",
+      "sessionId": "2025-06-05_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_637",
+      "sessionId": "2025-06-10_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "excused"
+    },
+    {
+      "id": "r_638",
+      "sessionId": "2025-06-10_work",
+      "personId": "p_garrett_hunter",
+      "status": "excused"
+    },
+    {
+      "id": "r_639",
+      "sessionId": "2025-06-10_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "excused"
+    },
+    {
+      "id": "r_640",
+      "sessionId": "2025-06-11_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "excused"
+    },
+    {
+      "id": "r_641",
+      "sessionId": "2025-06-11_work",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_642",
+      "sessionId": "2025-06-11_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_643",
+      "sessionId": "2025-06-12_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_644",
+      "sessionId": "2025-06-12_work",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_645",
+      "sessionId": "2025-06-12_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_646",
+      "sessionId": "2025-07-08_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_647",
+      "sessionId": "2025-07-08_work",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_648",
+      "sessionId": "2025-07-08_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_649",
+      "sessionId": "2025-07-09_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_650",
+      "sessionId": "2025-07-09_work",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_651",
+      "sessionId": "2025-07-09_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_652",
+      "sessionId": "2025-07-10_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_653",
+      "sessionId": "2025-07-10_work",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_654",
+      "sessionId": "2025-07-10_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_655",
+      "sessionId": "2025-07-15_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "excused"
+    },
+    {
+      "id": "r_656",
+      "sessionId": "2025-07-15_work",
+      "personId": "p_garrett_hunter",
+      "status": "tardy"
+    },
+    {
+      "id": "r_657",
+      "sessionId": "2025-07-15_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_658",
+      "sessionId": "2025-07-16_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_659",
+      "sessionId": "2025-07-16_work",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_660",
+      "sessionId": "2025-07-16_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_661",
+      "sessionId": "2025-07-17_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_662",
+      "sessionId": "2025-07-17_work",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_663",
+      "sessionId": "2025-07-17_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_664",
+      "sessionId": "2025-07-22_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "tardy"
+    },
+    {
+      "id": "r_665",
+      "sessionId": "2025-07-22_work",
+      "personId": "p_garrett_hunter",
+      "status": "tardy"
+    },
+    {
+      "id": "r_666",
+      "sessionId": "2025-07-22_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_667",
+      "sessionId": "2025-07-23_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "tardy"
+    },
+    {
+      "id": "r_668",
+      "sessionId": "2025-07-23_work",
+      "personId": "p_garrett_hunter",
+      "status": "tardy"
+    },
+    {
+      "id": "r_669",
+      "sessionId": "2025-07-23_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_670",
+      "sessionId": "2025-07-24_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_671",
+      "sessionId": "2025-07-24_work",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_672",
+      "sessionId": "2025-07-24_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_673",
+      "sessionId": "2025-07-29_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "tardy"
+    },
+    {
+      "id": "r_674",
+      "sessionId": "2025-07-29_work",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_675",
+      "sessionId": "2025-07-29_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_676",
+      "sessionId": "2025-07-30_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "tardy"
+    },
+    {
+      "id": "r_677",
+      "sessionId": "2025-07-30_work",
+      "personId": "p_garrett_hunter",
+      "status": "tardy"
+    },
+    {
+      "id": "r_678",
+      "sessionId": "2025-07-30_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_679",
+      "sessionId": "2025-07-31_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "tardy"
+    },
+    {
+      "id": "r_680",
+      "sessionId": "2025-07-31_work",
+      "personId": "p_garrett_hunter",
+      "status": "tardy"
+    },
+    {
+      "id": "r_681",
+      "sessionId": "2025-07-31_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_682",
+      "sessionId": "2025-08-05_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "tardy"
+    },
+    {
+      "id": "r_683",
+      "sessionId": "2025-08-05_work",
+      "personId": "p_garrett_hunter",
+      "status": "tardy"
+    },
+    {
+      "id": "r_684",
+      "sessionId": "2025-08-05_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_685",
+      "sessionId": "2025-08-06_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "tardy"
+    },
+    {
+      "id": "r_686",
+      "sessionId": "2025-08-06_work",
+      "personId": "p_garrett_hunter",
+      "status": "tardy"
+    },
+    {
+      "id": "r_687",
+      "sessionId": "2025-08-06_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_688",
+      "sessionId": "2025-08-07_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "tardy"
+    },
+    {
+      "id": "r_689",
+      "sessionId": "2025-08-07_work",
+      "personId": "p_garrett_hunter",
+      "status": "tardy"
+    },
+    {
+      "id": "r_690",
+      "sessionId": "2025-08-07_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_691",
+      "sessionId": "2025-08-12_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "absent"
+    },
+    {
+      "id": "r_692",
+      "sessionId": "2025-08-12_work",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_693",
+      "sessionId": "2025-08-12_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_694",
+      "sessionId": "2025-08-13_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "tardy"
+    },
+    {
+      "id": "r_695",
+      "sessionId": "2025-08-13_work",
+      "personId": "p_garrett_hunter",
+      "status": "tardy"
+    },
+    {
+      "id": "r_696",
+      "sessionId": "2025-08-13_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_697",
+      "sessionId": "2025-08-14_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "tardy"
+    },
+    {
+      "id": "r_698",
+      "sessionId": "2025-08-14_work",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_699",
+      "sessionId": "2025-08-14_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_700",
+      "sessionId": "2025-08-19_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "excused"
+    },
+    {
+      "id": "r_701",
+      "sessionId": "2025-08-19_work",
+      "personId": "p_garrett_hunter",
+      "status": "excused"
+    },
+    {
+      "id": "r_702",
+      "sessionId": "2025-08-19_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "excused"
+    },
+    {
+      "id": "r_703",
+      "sessionId": "2025-08-21_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "absent"
+    },
+    {
+      "id": "r_704",
+      "sessionId": "2025-08-21_work",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_705",
+      "sessionId": "2025-08-21_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_706",
+      "sessionId": "2025-08-26_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "absent"
+    },
+    {
+      "id": "r_707",
+      "sessionId": "2025-08-26_work",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_708",
+      "sessionId": "2025-08-26_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_709",
+      "sessionId": "2025-08-28_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "absent"
+    },
+    {
+      "id": "r_710",
+      "sessionId": "2025-08-28_work",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_711",
+      "sessionId": "2025-08-28_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_712",
+      "sessionId": "2025-09-02_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "absent"
+    },
+    {
+      "id": "r_713",
+      "sessionId": "2025-09-02_work",
+      "personId": "p_garrett_hunter",
+      "status": "absent"
+    },
+    {
+      "id": "r_714",
+      "sessionId": "2025-09-02_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "absent"
+    },
+    {
+      "id": "r_715",
+      "sessionId": "2025-09-03_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "tardy"
+    },
+    {
+      "id": "r_716",
+      "sessionId": "2025-09-03_work",
+      "personId": "p_garrett_hunter",
+      "status": "very_early_leave"
+    },
+    {
+      "id": "r_717",
+      "sessionId": "2025-09-03_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_718",
+      "sessionId": "2025-09-04_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "tardy"
+    },
+    {
+      "id": "r_719",
+      "sessionId": "2025-09-04_work",
+      "personId": "p_garrett_hunter",
+      "status": "very_early_leave"
+    },
+    {
+      "id": "r_720",
+      "sessionId": "2025-09-04_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_721",
+      "sessionId": "2025-09-09_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "absent"
+    },
+    {
+      "id": "r_722",
+      "sessionId": "2025-09-09_work",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_723",
+      "sessionId": "2025-09-09_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_724",
+      "sessionId": "2025-09-10_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "absent"
+    },
+    {
+      "id": "r_725",
+      "sessionId": "2025-09-10_work",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_726",
+      "sessionId": "2025-09-10_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_727",
+      "sessionId": "2025-09-11_meeting",
+      "personId": "p_garrett_hunter",
+      "status": "absent"
+    },
+    {
+      "id": "r_728",
+      "sessionId": "2025-09-11_work",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_729",
+      "sessionId": "2025-09-11_gospel",
+      "personId": "p_garrett_hunter",
+      "status": "present"
+    },
+    {
+      "id": "r_730",
+      "sessionId": "2025-05-22_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_731",
+      "sessionId": "2025-05-22_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_732",
+      "sessionId": "2025-05-22_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_733",
+      "sessionId": "2025-05-23_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_734",
+      "sessionId": "2025-05-23_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_735",
+      "sessionId": "2025-05-23_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_736",
+      "sessionId": "2025-05-27_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_737",
+      "sessionId": "2025-05-27_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_738",
+      "sessionId": "2025-05-27_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_739",
+      "sessionId": "2025-05-28_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_740",
+      "sessionId": "2025-05-28_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_741",
+      "sessionId": "2025-05-28_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_742",
+      "sessionId": "2025-05-29_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_743",
+      "sessionId": "2025-05-29_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_744",
+      "sessionId": "2025-05-29_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_745",
+      "sessionId": "2025-05-30_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_746",
+      "sessionId": "2025-05-30_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_747",
+      "sessionId": "2025-05-30_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_748",
+      "sessionId": "2025-06-02_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_749",
+      "sessionId": "2025-06-02_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_750",
+      "sessionId": "2025-06-02_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_751",
+      "sessionId": "2025-06-03_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_752",
+      "sessionId": "2025-06-03_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_753",
+      "sessionId": "2025-06-03_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_754",
+      "sessionId": "2025-06-04_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_755",
+      "sessionId": "2025-06-04_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_756",
+      "sessionId": "2025-06-04_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_757",
+      "sessionId": "2025-06-05_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_758",
+      "sessionId": "2025-06-05_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_759",
+      "sessionId": "2025-06-05_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_760",
+      "sessionId": "2025-06-06_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_761",
+      "sessionId": "2025-06-06_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_762",
+      "sessionId": "2025-06-06_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_763",
+      "sessionId": "2025-06-09_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_764",
+      "sessionId": "2025-06-09_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_765",
+      "sessionId": "2025-06-09_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_766",
+      "sessionId": "2025-06-10_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_767",
+      "sessionId": "2025-06-10_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_768",
+      "sessionId": "2025-06-10_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_769",
+      "sessionId": "2025-06-11_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_770",
+      "sessionId": "2025-06-11_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_771",
+      "sessionId": "2025-06-11_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_772",
+      "sessionId": "2025-06-12_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_773",
+      "sessionId": "2025-06-12_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_774",
+      "sessionId": "2025-06-12_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_775",
+      "sessionId": "2025-06-13_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_776",
+      "sessionId": "2025-06-13_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_777",
+      "sessionId": "2025-06-13_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_778",
+      "sessionId": "2025-06-16_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_779",
+      "sessionId": "2025-06-16_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_780",
+      "sessionId": "2025-06-16_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_781",
+      "sessionId": "2025-06-17_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_782",
+      "sessionId": "2025-06-17_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_783",
+      "sessionId": "2025-06-17_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_784",
+      "sessionId": "2025-06-18_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_785",
+      "sessionId": "2025-06-18_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_786",
+      "sessionId": "2025-06-18_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_787",
+      "sessionId": "2025-06-19_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_788",
+      "sessionId": "2025-06-19_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_789",
+      "sessionId": "2025-06-19_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_790",
+      "sessionId": "2025-06-20_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_791",
+      "sessionId": "2025-06-20_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_792",
+      "sessionId": "2025-06-20_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_793",
+      "sessionId": "2025-06-23_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_794",
+      "sessionId": "2025-06-23_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_795",
+      "sessionId": "2025-06-23_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_796",
+      "sessionId": "2025-06-24_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_797",
+      "sessionId": "2025-06-24_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_798",
+      "sessionId": "2025-06-24_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_799",
+      "sessionId": "2025-07-07_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_800",
+      "sessionId": "2025-07-07_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_801",
+      "sessionId": "2025-07-07_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_802",
+      "sessionId": "2025-07-08_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_803",
+      "sessionId": "2025-07-08_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_804",
+      "sessionId": "2025-07-08_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "absent"
+    },
+    {
+      "id": "r_805",
+      "sessionId": "2025-07-09_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_806",
+      "sessionId": "2025-07-09_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_807",
+      "sessionId": "2025-07-09_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_808",
+      "sessionId": "2025-07-10_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_809",
+      "sessionId": "2025-07-10_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_810",
+      "sessionId": "2025-07-10_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_811",
+      "sessionId": "2025-07-11_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_812",
+      "sessionId": "2025-07-11_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_813",
+      "sessionId": "2025-07-11_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_814",
+      "sessionId": "2025-07-14_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_815",
+      "sessionId": "2025-07-14_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "tardy"
+    },
+    {
+      "id": "r_816",
+      "sessionId": "2025-07-14_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_817",
+      "sessionId": "2025-07-15_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_818",
+      "sessionId": "2025-07-15_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_819",
+      "sessionId": "2025-07-15_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "absent"
+    },
+    {
+      "id": "r_820",
+      "sessionId": "2025-07-16_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_821",
+      "sessionId": "2025-07-16_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_822",
+      "sessionId": "2025-07-16_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_823",
+      "sessionId": "2025-07-17_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_824",
+      "sessionId": "2025-07-17_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_825",
+      "sessionId": "2025-07-17_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_826",
+      "sessionId": "2025-07-18_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_827",
+      "sessionId": "2025-07-18_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_828",
+      "sessionId": "2025-07-18_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "absent"
+    },
+    {
+      "id": "r_829",
+      "sessionId": "2025-07-21_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_830",
+      "sessionId": "2025-07-21_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_831",
+      "sessionId": "2025-07-21_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_832",
+      "sessionId": "2025-07-22_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_833",
+      "sessionId": "2025-07-22_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_834",
+      "sessionId": "2025-07-22_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_835",
+      "sessionId": "2025-07-23_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_836",
+      "sessionId": "2025-07-23_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_837",
+      "sessionId": "2025-07-23_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_838",
+      "sessionId": "2025-07-24_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_839",
+      "sessionId": "2025-07-24_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_840",
+      "sessionId": "2025-07-24_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_841",
+      "sessionId": "2025-07-25_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_842",
+      "sessionId": "2025-07-25_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_843",
+      "sessionId": "2025-07-25_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_844",
+      "sessionId": "2025-07-28_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_845",
+      "sessionId": "2025-07-28_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_846",
+      "sessionId": "2025-07-28_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_847",
+      "sessionId": "2025-07-29_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_848",
+      "sessionId": "2025-07-29_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_849",
+      "sessionId": "2025-07-29_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_850",
+      "sessionId": "2025-07-30_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_851",
+      "sessionId": "2025-07-30_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_852",
+      "sessionId": "2025-07-30_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_853",
+      "sessionId": "2025-07-31_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_854",
+      "sessionId": "2025-07-31_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_855",
+      "sessionId": "2025-07-31_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_856",
+      "sessionId": "2025-08-01_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_857",
+      "sessionId": "2025-08-01_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_858",
+      "sessionId": "2025-08-01_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_859",
+      "sessionId": "2025-08-04_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_860",
+      "sessionId": "2025-08-04_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_861",
+      "sessionId": "2025-08-04_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_862",
+      "sessionId": "2025-08-05_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_863",
+      "sessionId": "2025-08-05_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_864",
+      "sessionId": "2025-08-05_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_865",
+      "sessionId": "2025-08-06_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_866",
+      "sessionId": "2025-08-06_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_867",
+      "sessionId": "2025-08-06_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_868",
+      "sessionId": "2025-08-07_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_869",
+      "sessionId": "2025-08-07_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "tardy"
+    },
+    {
+      "id": "r_870",
+      "sessionId": "2025-08-07_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_871",
+      "sessionId": "2025-08-08_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_872",
+      "sessionId": "2025-08-08_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_873",
+      "sessionId": "2025-08-08_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_874",
+      "sessionId": "2025-08-11_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_875",
+      "sessionId": "2025-08-11_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_876",
+      "sessionId": "2025-08-11_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_877",
+      "sessionId": "2025-08-12_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_878",
+      "sessionId": "2025-08-12_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_879",
+      "sessionId": "2025-08-12_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_880",
+      "sessionId": "2025-08-13_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_881",
+      "sessionId": "2025-08-13_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_882",
+      "sessionId": "2025-08-13_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_883",
+      "sessionId": "2025-08-14_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_884",
+      "sessionId": "2025-08-14_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_885",
+      "sessionId": "2025-08-14_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_886",
+      "sessionId": "2025-08-15_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_887",
+      "sessionId": "2025-08-15_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "tardy"
+    },
+    {
+      "id": "r_888",
+      "sessionId": "2025-08-15_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_889",
+      "sessionId": "2025-08-18_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_890",
+      "sessionId": "2025-08-18_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_891",
+      "sessionId": "2025-08-18_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_892",
+      "sessionId": "2025-08-19_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_893",
+      "sessionId": "2025-08-19_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_894",
+      "sessionId": "2025-08-19_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_895",
+      "sessionId": "2025-08-21_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_896",
+      "sessionId": "2025-08-21_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_897",
+      "sessionId": "2025-08-21_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_898",
+      "sessionId": "2025-08-22_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_899",
+      "sessionId": "2025-08-22_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_900",
+      "sessionId": "2025-08-22_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_901",
+      "sessionId": "2025-08-25_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_902",
+      "sessionId": "2025-08-25_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_903",
+      "sessionId": "2025-08-25_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_904",
+      "sessionId": "2025-08-26_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_905",
+      "sessionId": "2025-08-26_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_906",
+      "sessionId": "2025-08-26_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_907",
+      "sessionId": "2025-08-27_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_908",
+      "sessionId": "2025-08-27_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_909",
+      "sessionId": "2025-08-27_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_910",
+      "sessionId": "2025-08-28_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_911",
+      "sessionId": "2025-08-28_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_912",
+      "sessionId": "2025-08-28_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_913",
+      "sessionId": "2025-08-29_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_914",
+      "sessionId": "2025-08-29_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_915",
+      "sessionId": "2025-08-29_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_916",
+      "sessionId": "2025-09-01_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_917",
+      "sessionId": "2025-09-01_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_918",
+      "sessionId": "2025-09-01_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "excused"
+    },
+    {
+      "id": "r_919",
+      "sessionId": "2025-09-02_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_920",
+      "sessionId": "2025-09-02_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_921",
+      "sessionId": "2025-09-02_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_922",
+      "sessionId": "2025-09-03_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_923",
+      "sessionId": "2025-09-03_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_924",
+      "sessionId": "2025-09-03_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_925",
+      "sessionId": "2025-09-04_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_926",
+      "sessionId": "2025-09-04_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_927",
+      "sessionId": "2025-09-04_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_928",
+      "sessionId": "2025-09-05_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_929",
+      "sessionId": "2025-09-05_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_930",
+      "sessionId": "2025-09-05_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_931",
+      "sessionId": "2025-09-08_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_932",
+      "sessionId": "2025-09-08_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_933",
+      "sessionId": "2025-09-08_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_934",
+      "sessionId": "2025-09-09_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_935",
+      "sessionId": "2025-09-09_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_936",
+      "sessionId": "2025-09-09_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_937",
+      "sessionId": "2025-09-10_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_938",
+      "sessionId": "2025-09-10_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_939",
+      "sessionId": "2025-09-10_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_940",
+      "sessionId": "2025-09-11_meeting",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_941",
+      "sessionId": "2025-09-11_work",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_942",
+      "sessionId": "2025-09-11_gospel",
+      "personId": "p_jeremiah_olsen",
+      "status": "present"
+    },
+    {
+      "id": "r_943",
+      "sessionId": "2025-06-18_meeting",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_944",
+      "sessionId": "2025-06-18_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_945",
+      "sessionId": "2025-06-18_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_946",
+      "sessionId": "2025-06-24_meeting",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_947",
+      "sessionId": "2025-06-24_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_948",
+      "sessionId": "2025-06-24_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_949",
+      "sessionId": "2025-07-08_meeting",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_950",
+      "sessionId": "2025-07-08_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_951",
+      "sessionId": "2025-07-08_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_952",
+      "sessionId": "2025-07-09_meeting",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_953",
+      "sessionId": "2025-07-09_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_954",
+      "sessionId": "2025-07-09_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_955",
+      "sessionId": "2025-07-10_meeting",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_956",
+      "sessionId": "2025-07-10_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_957",
+      "sessionId": "2025-07-10_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_958",
+      "sessionId": "2025-07-15_meeting",
+      "personId": "p_kyle_washer",
+      "status": "excused"
+    },
+    {
+      "id": "r_959",
+      "sessionId": "2025-07-15_work",
+      "personId": "p_kyle_washer",
+      "status": "tardy"
+    },
+    {
+      "id": "r_960",
+      "sessionId": "2025-07-15_gospel",
+      "personId": "p_kyle_washer",
+      "status": "excused"
+    },
+    {
+      "id": "r_961",
+      "sessionId": "2025-07-16_meeting",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_962",
+      "sessionId": "2025-07-16_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_963",
+      "sessionId": "2025-07-16_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_964",
+      "sessionId": "2025-07-17_meeting",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_965",
+      "sessionId": "2025-07-17_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_966",
+      "sessionId": "2025-07-17_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_967",
+      "sessionId": "2025-07-22_meeting",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_968",
+      "sessionId": "2025-07-22_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_969",
+      "sessionId": "2025-07-22_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_970",
+      "sessionId": "2025-07-23_meeting",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_971",
+      "sessionId": "2025-07-23_work",
+      "personId": "p_kyle_washer",
+      "status": "tardy"
+    },
+    {
+      "id": "r_972",
+      "sessionId": "2025-07-23_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_973",
+      "sessionId": "2025-07-24_meeting",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_974",
+      "sessionId": "2025-07-24_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_975",
+      "sessionId": "2025-07-24_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_976",
+      "sessionId": "2025-07-29_meeting",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_977",
+      "sessionId": "2025-07-29_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_978",
+      "sessionId": "2025-07-29_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_979",
+      "sessionId": "2025-07-30_meeting",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_980",
+      "sessionId": "2025-07-30_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_981",
+      "sessionId": "2025-07-30_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_982",
+      "sessionId": "2025-07-31_meeting",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_983",
+      "sessionId": "2025-07-31_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_984",
+      "sessionId": "2025-07-31_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_985",
+      "sessionId": "2025-08-05_meeting",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_986",
+      "sessionId": "2025-08-05_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_987",
+      "sessionId": "2025-08-05_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_988",
+      "sessionId": "2025-08-06_meeting",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_989",
+      "sessionId": "2025-08-06_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_990",
+      "sessionId": "2025-08-06_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_991",
+      "sessionId": "2025-08-07_meeting",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_992",
+      "sessionId": "2025-08-07_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_993",
+      "sessionId": "2025-08-07_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_994",
+      "sessionId": "2025-08-12_meeting",
+      "personId": "p_kyle_washer",
+      "status": "absent"
+    },
+    {
+      "id": "r_995",
+      "sessionId": "2025-08-12_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_996",
+      "sessionId": "2025-08-12_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_997",
+      "sessionId": "2025-08-13_meeting",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_998",
+      "sessionId": "2025-08-13_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_999",
+      "sessionId": "2025-08-13_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_1000",
+      "sessionId": "2025-08-14_meeting",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_1001",
+      "sessionId": "2025-08-14_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_1002",
+      "sessionId": "2025-08-14_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_1003",
+      "sessionId": "2025-08-19_meeting",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_1004",
+      "sessionId": "2025-08-19_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_1005",
+      "sessionId": "2025-08-19_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_1006",
+      "sessionId": "2025-08-21_meeting",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_1007",
+      "sessionId": "2025-08-21_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_1008",
+      "sessionId": "2025-08-21_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_1009",
+      "sessionId": "2025-08-26_meeting",
+      "personId": "p_kyle_washer",
+      "status": "absent"
+    },
+    {
+      "id": "r_1010",
+      "sessionId": "2025-08-26_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_1011",
+      "sessionId": "2025-08-26_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_1012",
+      "sessionId": "2025-08-28_meeting",
+      "personId": "p_kyle_washer",
+      "status": "absent"
+    },
+    {
+      "id": "r_1013",
+      "sessionId": "2025-08-28_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_1014",
+      "sessionId": "2025-08-28_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_1015",
+      "sessionId": "2025-09-02_meeting",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_1016",
+      "sessionId": "2025-09-02_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_1017",
+      "sessionId": "2025-09-02_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_1018",
+      "sessionId": "2025-09-03_meeting",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_1019",
+      "sessionId": "2025-09-03_work",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_1020",
+      "sessionId": "2025-09-03_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_1021",
+      "sessionId": "2025-09-04_meeting",
+      "personId": "p_kyle_washer",
+      "status": "absent"
+    },
+    {
+      "id": "r_1022",
+      "sessionId": "2025-09-04_work",
+      "personId": "p_kyle_washer",
+      "status": "absent"
+    },
+    {
+      "id": "r_1023",
+      "sessionId": "2025-09-04_gospel",
+      "personId": "p_kyle_washer",
+      "status": "absent"
+    },
+    {
+      "id": "r_1024",
+      "sessionId": "2025-09-09_meeting",
+      "personId": "p_kyle_washer",
+      "status": "absent"
+    },
+    {
+      "id": "r_1025",
+      "sessionId": "2025-09-09_work",
+      "personId": "p_kyle_washer",
+      "status": "excused"
+    },
+    {
+      "id": "r_1026",
+      "sessionId": "2025-09-09_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_1027",
+      "sessionId": "2025-09-10_meeting",
+      "personId": "p_kyle_washer",
+      "status": "absent"
+    },
+    {
+      "id": "r_1028",
+      "sessionId": "2025-09-10_work",
+      "personId": "p_kyle_washer",
+      "status": "excused"
+    },
+    {
+      "id": "r_1029",
+      "sessionId": "2025-09-10_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    },
+    {
+      "id": "r_1030",
+      "sessionId": "2025-09-11_meeting",
+      "personId": "p_kyle_washer",
+      "status": "absent"
+    },
+    {
+      "id": "r_1031",
+      "sessionId": "2025-09-11_work",
+      "personId": "p_kyle_washer",
+      "status": "excused"
+    },
+    {
+      "id": "r_1032",
+      "sessionId": "2025-09-11_gospel",
+      "personId": "p_kyle_washer",
+      "status": "present"
+    }
+  ],
+  "settings": [
+    {
+      "id": "app",
+      "teamName": "Attendance",
+      "tardyThresholdMins": 5,
+      "legendThresholds": {
+        "low": 0.75,
+        "mid": 0.89,
+        "high": 0.9
+      }
+    }
+  ]
+}
