@@ -1,4 +1,15 @@
-import { initRouter, showView } from './router.js';
+import { initRouter } from './router.js';
+import { graphSyncConfig } from './config.js';
+import {
+  isGraphConfigured,
+  initGraphAuth,
+  signInWithMicrosoft,
+  signOutMicrosoft,
+  downloadJsonFromGraph,
+  uploadJsonToGraph,
+  getStoredEtag,
+  currentAccount
+} from './graph.js';
 
 // Will be assigned after globals load
 let DB = null;
@@ -21,6 +32,9 @@ const state = {
   editingPersonId: null,
   pendingTardyPersonId: null,
 };
+
+let graphSyncEnabled = false;
+let graphSyncBusy = false;
 
 // Desired check-in flow order (Office first)
 const FLOW_ORDER = ['work', 'meeting', 'gospel'];
@@ -173,8 +187,122 @@ const personDOWTeamEl = document.getElementById('person-dow-team');
 const personDaysEl = document.getElementById('person-days');
 const personBackTrendsBtn = document.getElementById('person-back-trends');
 
+// Graph sync controls
+const graphControlsEl = document.getElementById('graph-sync-controls');
+const graphStatusEl = document.getElementById('graph-sync-status');
+const graphSignInBtn = document.getElementById('graph-signin');
+const graphSignOutBtn = document.getElementById('graph-signout');
+const graphDownloadBtn = document.getElementById('graph-sync-download');
+const graphUploadBtn = document.getElementById('graph-sync-upload');
+
 function showToast(msg, ms = 1200) {
   if (!toastEl) return; toastEl.innerHTML = msg; toastEl.hidden = false; if (ms > 0) window.setTimeout(() => (toastEl.hidden = true), ms);
+}
+
+function setGraphStatus(text) {
+  if (!graphStatusEl) return;
+  graphStatusEl.textContent = text || '';
+}
+
+function applyGraphAccount(account) {
+  const signedIn = Boolean(account);
+  if (!graphSignInBtn || !graphSignOutBtn || !graphDownloadBtn || !graphUploadBtn) return;
+  graphSignInBtn.hidden = signedIn;
+  graphSignOutBtn.hidden = !signedIn;
+  graphDownloadBtn.disabled = !signedIn || graphSyncBusy;
+  graphUploadBtn.disabled = !signedIn || graphSyncBusy;
+  if (!signedIn) setGraphStatus('Not signed in. Use Microsoft sign-in to sync.');
+  else {
+    const name = account?.name || account?.username || 'Microsoft account';
+    const label = graphSyncConfig.displayName ? `${graphSyncConfig.displayName}` : 'cloud sync';
+    setGraphStatus(`Signed in as ${name}. ${graphSyncBusy ? 'Working…' : `Ready to sync ${label}.`}`);
+  }
+}
+
+function setGraphBusy(isBusy, message) {
+  graphSyncBusy = isBusy;
+  const signedIn = graphSignInBtn ? graphSignInBtn.hidden : false;
+  if (graphDownloadBtn) graphDownloadBtn.disabled = !signedIn || isBusy;
+  if (graphUploadBtn) graphUploadBtn.disabled = !signedIn || isBusy;
+  if (message) setGraphStatus(message);
+}
+
+async function syncFromGraph(showToastOnSuccess = true) {
+  if (!graphSyncEnabled) return;
+  try {
+    setGraphBusy(true, 'Loading latest data from OneDrive…');
+    const { json } = await downloadJsonFromGraph(graphSyncConfig);
+    const data = JSON.parse(json);
+    await DB.importAllFromJson(data);
+    await loadSettingsAndTypes();
+    await loadPeople();
+    await ensureSession();
+    await renderPeopleList();
+    renderTrackingStats();
+    renderRoster();
+    if (showToastOnSuccess) showToast('Cloud data loaded', 1800);
+    setGraphStatus('Cloud data loaded successfully.');
+  } catch (err) {
+    if (err?.code === 404) {
+      setGraphStatus('No cloud file found yet. Save to cloud to create it.');
+      showToast('No cloud backup found yet', 1600);
+    } else {
+      console.error('Graph download failed', err);
+      setGraphStatus(`Cloud download failed: ${err.message || err}`);
+      showToast('Cloud download failed', 1600);
+    }
+  } finally {
+    setGraphBusy(false);
+    applyGraphAccount(currentAccount());
+  }
+}
+
+async function syncToGraph() {
+  if (!graphSyncEnabled) return;
+  try {
+    setGraphBusy(true, 'Uploading data to OneDrive…');
+    const data = await DB.exportAllAsJson();
+    // Pretty-print for easier diffing if someone opens the file manually.
+    await uploadJsonToGraph(graphSyncConfig, JSON.stringify(data, null, 2), { etag: getStoredEtag(graphSyncConfig) });
+    setGraphStatus('Cloud backup updated.');
+    showToast('Cloud backup saved', 1800);
+  } catch (err) {
+    if (err?.code === 412) {
+      setGraphStatus('Cloud copy changed elsewhere. Load latest before saving again.');
+      showToast('Cloud copy changed; refresh first', 2000);
+    } else {
+      console.error('Graph upload failed', err);
+      setGraphStatus(`Cloud upload failed: ${err.message || err}`);
+      showToast('Cloud upload failed', 1600);
+    }
+  } finally {
+    setGraphBusy(false);
+    applyGraphAccount(currentAccount());
+  }
+}
+
+async function setupGraphSync() {
+  if (!graphControlsEl) return;
+  if (!isGraphConfigured(graphSyncConfig)) {
+    graphControlsEl.hidden = true;
+    return;
+  }
+  graphSyncEnabled = true;
+  graphControlsEl.hidden = false;
+  setGraphStatus('Checking Microsoft sign-in…');
+  try {
+    const { account } = await initGraphAuth(graphSyncConfig);
+    applyGraphAccount(account);
+    if (account) {
+      await syncFromGraph(false);
+    } else {
+      setGraphStatus('Not signed in. Use Microsoft sign-in to sync.');
+    }
+  } catch (err) {
+    console.error('Graph setup failed', err);
+    setGraphStatus(`Microsoft sync unavailable: ${err.message || err}`);
+    graphSyncEnabled = false;
+  }
 }
 
 // Tracking coverage for Check-In (ratio of tracked vs blank weekdays from first session to today)
@@ -1521,6 +1649,42 @@ trendsApplyThresholdsBtn?.addEventListener('click', async () => {
   await DB.dexie.settings.put(s); showToast('Thresholds applied to settings');
 });
 
+graphSignInBtn?.addEventListener('click', async () => {
+  if (!graphSyncEnabled || graphSyncBusy) return;
+  try {
+    setGraphBusy(true, 'Signing in with Microsoft…');
+    const account = await signInWithMicrosoft(graphSyncConfig);
+    applyGraphAccount(account);
+    await syncFromGraph();
+  } catch (err) {
+    console.error('Graph sign-in failed', err);
+    setGraphStatus(`Sign-in failed: ${err.message || err}`);
+    showToast('Sign-in failed', 1600);
+  } finally {
+    setGraphBusy(false);
+    applyGraphAccount(currentAccount());
+  }
+});
+
+graphSignOutBtn?.addEventListener('click', async () => {
+  if (!graphSyncEnabled || graphSyncBusy) return;
+  try {
+    setGraphBusy(true, 'Signing out…');
+    await signOutMicrosoft(graphSyncConfig);
+    applyGraphAccount(null);
+    setGraphStatus('Signed out. Local data stays on this device.');
+    showToast('Signed out', 1400);
+  } catch (err) {
+    console.error('Graph sign-out failed', err);
+    setGraphStatus(`Sign-out failed: ${err.message || err}`);
+  } finally {
+    setGraphBusy(false);
+  }
+});
+
+graphDownloadBtn?.addEventListener('click', () => { if (graphSyncEnabled && !graphSyncBusy) syncFromGraph(); });
+graphUploadBtn?.addEventListener('click', () => { if (graphSyncEnabled && !graphSyncBusy) syncToGraph(); });
+
 // Trends card actions (pin, details, profile, open-take)
 trendsPeopleEl?.addEventListener('click', async (e) => {
   const btn = e.target.closest('button'); if (!btn) return; const card = btn.closest('.trend-card'); if (!card) return; const pid = card.getAttribute('data-pid');
@@ -1655,6 +1819,8 @@ async function init() {
   await renderPeopleList();
   renderTrackingStats();
   renderRoster();
+
+  await setupGraphSync();
 
   initRouter('take');
 }
