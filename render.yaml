@@ -2,6 +2,6 @@ services:
   - type: web
     name: attendance-roster
     env: static
-    buildCommand: ""
-    staticPublishPath: .
+    buildCommand: ./scripts/render-build.sh
+    staticPublishPath: public
     pullRequestPreviewsEnabled: false
