@@ -1,0 +1,7 @@
+services:
+  - type: static_site
+    name: attendance-roster
+    env: static
+    buildCommand: ""
+    staticPublishPath: .
+    pullRequestPreviewsEnabled: false
