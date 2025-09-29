@@ -1,5 +1,5 @@
 services:
-  - type: static_site
+  - type: web
     name: attendance-roster
     env: static
     buildCommand: ""
