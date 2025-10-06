@@ -18,7 +18,6 @@
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/timezone.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
-    <script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js" defer></script>
 
     <!-- App entrypoint (ES modules) -->
     <script type="module" src="src/main.js"></script>
@@ -409,7 +408,7 @@
             <p class="view-description">Scan month cadence and jump straight to a day in check-in.</p>
           </div>
           <div class="view-actions">
-            <button id="cal-today" type="button" class="primary-action">Run Report</button>
+            <button id="cal-today" type="button" class="primary-action">Today</button>
           </div>
         </header>
         <div class="view-shell">
@@ -787,16 +786,6 @@
                 <div class="backup-restore">
                   <input id="upload-json-input" type="file" accept="application/json" hidden />
                   <button id="import-v1-btn" type="button" class="secondary-action">Import from v1</button>
-                </div>
-                <div id="graph-sync-controls" class="graph-sync" hidden>
-                  <p class="graph-sync__intro">Optional cloud sync keeps your roster JSON in OneDrive. Sign in with Microsoft to pull or push the shared file.</p>
-                  <div class="graph-sync__actions">
-                    <button id="graph-signin" type="button" class="secondary-action">Sign in with Microsoft</button>
-                    <button id="graph-sync-download" type="button" class="secondary-action" disabled>Load latest from cloud</button>
-                    <button id="graph-sync-upload" type="button" class="secondary-action" disabled>Save current to cloud</button>
-                    <button id="graph-signout" type="button" class="secondary-action" hidden>Sign out</button>
-                  </div>
-                  <p id="graph-sync-status" class="graph-sync__status" aria-live="polite"></p>
                 </div>
               </section>
               <section class="settings-section danger-zone">

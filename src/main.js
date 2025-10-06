@@ -1,15 +1,4 @@
-import { initRouter } from './router.js';
-import { graphSyncConfig } from './config.js';
-import {
-  isGraphConfigured,
-  initGraphAuth,
-  signInWithMicrosoft,
-  signOutMicrosoft,
-  downloadJsonFromGraph,
-  uploadJsonToGraph,
-  getStoredEtag,
-  currentAccount
-} from './graph.js';
+import { initRouter, showView } from './router.js';
 
 // Will be assigned after globals load
 let DB = null;
@@ -33,14 +22,60 @@ const state = {
   pendingTardyPersonId: null,
 };
 
-let graphSyncEnabled = false;
-let graphSyncBusy = false;
-
 // Desired check-in flow order (Office first)
 const FLOW_ORDER = ['work', 'meeting', 'gospel'];
 const DEFAULT_LEGEND_THRESHOLDS = { low: 0.75, mid: 0.89, high: 0.90 };
 const REQUIRED_EVENT_ID = 'work';
 const OPTIONAL_EVENT_IDS = new Set(['meeting', 'gospel']);
+const DAY_SEQUENCE = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+function shortDayLabel(day) {
+  if (!day) return '';
+  const normalized = String(day).trim().toLowerCase();
+  const map = {
+    sunday: 'Sun', sun: 'Sun',
+    monday: 'Mon', mon: 'Mon',
+    tuesday: 'Tue', tue: 'Tue', tues: 'Tue',
+    wednesday: 'Wed', wed: 'Wed',
+    thursday: 'Thu', thu: 'Thu', thurs: 'Thu',
+    friday: 'Fri', fri: 'Fri',
+    saturday: 'Sat', sat: 'Sat',
+  };
+  if (map[normalized]) return map[normalized];
+  return normalized.slice(0, 3).charAt(0).toUpperCase() + normalized.slice(1, 3);
+}
+
+function formatServiceDayBadge(days = []) {
+  if (!Array.isArray(days) || days.length === 0) return null;
+  const unique = [];
+  const seen = new Set();
+  for (const day of days) {
+    const short = shortDayLabel(day);
+    if (short && !seen.has(short)) {
+      seen.add(short);
+      unique.push(short);
+    }
+  }
+  if (!unique.length) return null;
+  const sorted = [...unique].sort((a, b) => DAY_SEQUENCE.indexOf(a) - DAY_SEQUENCE.indexOf(b));
+  const indices = sorted.map(label => DAY_SEQUENCE.indexOf(label));
+  const sequential = sorted.length > 1 && indices.every((idx, i, arr) => idx !== -1 && (i === 0 || arr[i] - arr[i - 1] === 1));
+  if (sorted.length === 1) {
+    return { mode: 'single', text: sorted[0], tooltip: sorted[0] };
+  }
+  if (sequential) {
+    return {
+      mode: 'range',
+      text: `${sorted[0]}–${sorted[sorted.length - 1]}`,
+      tooltip: sorted.join(', ')
+    };
+  }
+  return {
+    mode: 'list',
+    parts: sorted,
+    tooltip: sorted.join(', ')
+  };
+}
 
 function sortEventTypesByFlow(eventTypes) {
   const idx = (id) => {
@@ -187,122 +222,8 @@ const personDOWTeamEl = document.getElementById('person-dow-team');
 const personDaysEl = document.getElementById('person-days');
 const personBackTrendsBtn = document.getElementById('person-back-trends');
 
-// Graph sync controls
-const graphControlsEl = document.getElementById('graph-sync-controls');
-const graphStatusEl = document.getElementById('graph-sync-status');
-const graphSignInBtn = document.getElementById('graph-signin');
-const graphSignOutBtn = document.getElementById('graph-signout');
-const graphDownloadBtn = document.getElementById('graph-sync-download');
-const graphUploadBtn = document.getElementById('graph-sync-upload');
-
 function showToast(msg, ms = 1200) {
   if (!toastEl) return; toastEl.innerHTML = msg; toastEl.hidden = false; if (ms > 0) window.setTimeout(() => (toastEl.hidden = true), ms);
-}
-
-function setGraphStatus(text) {
-  if (!graphStatusEl) return;
-  graphStatusEl.textContent = text || '';
-}
-
-function applyGraphAccount(account) {
-  const signedIn = Boolean(account);
-  if (!graphSignInBtn || !graphSignOutBtn || !graphDownloadBtn || !graphUploadBtn) return;
-  graphSignInBtn.hidden = signedIn;
-  graphSignOutBtn.hidden = !signedIn;
-  graphDownloadBtn.disabled = !signedIn || graphSyncBusy;
-  graphUploadBtn.disabled = !signedIn || graphSyncBusy;
-  if (!signedIn) setGraphStatus('Not signed in. Use Microsoft sign-in to sync.');
-  else {
-    const name = account?.name || account?.username || 'Microsoft account';
-    const label = graphSyncConfig.displayName ? `${graphSyncConfig.displayName}` : 'cloud sync';
-    setGraphStatus(`Signed in as ${name}. ${graphSyncBusy ? 'Working…' : `Ready to sync ${label}.`}`);
-  }
-}
-
-function setGraphBusy(isBusy, message) {
-  graphSyncBusy = isBusy;
-  const signedIn = graphSignInBtn ? graphSignInBtn.hidden : false;
-  if (graphDownloadBtn) graphDownloadBtn.disabled = !signedIn || isBusy;
-  if (graphUploadBtn) graphUploadBtn.disabled = !signedIn || isBusy;
-  if (message) setGraphStatus(message);
-}
-
-async function syncFromGraph(showToastOnSuccess = true) {
-  if (!graphSyncEnabled) return;
-  try {
-    setGraphBusy(true, 'Loading latest data from OneDrive…');
-    const { json } = await downloadJsonFromGraph(graphSyncConfig);
-    const data = JSON.parse(json);
-    await DB.importAllFromJson(data);
-    await loadSettingsAndTypes();
-    await loadPeople();
-    await ensureSession();
-    await renderPeopleList();
-    renderTrackingStats();
-    renderRoster();
-    if (showToastOnSuccess) showToast('Cloud data loaded', 1800);
-    setGraphStatus('Cloud data loaded successfully.');
-  } catch (err) {
-    if (err?.code === 404) {
-      setGraphStatus('No cloud file found yet. Save to cloud to create it.');
-      showToast('No cloud backup found yet', 1600);
-    } else {
-      console.error('Graph download failed', err);
-      setGraphStatus(`Cloud download failed: ${err.message || err}`);
-      showToast('Cloud download failed', 1600);
-    }
-  } finally {
-    setGraphBusy(false);
-    applyGraphAccount(currentAccount());
-  }
-}
-
-async function syncToGraph() {
-  if (!graphSyncEnabled) return;
-  try {
-    setGraphBusy(true, 'Uploading data to OneDrive…');
-    const data = await DB.exportAllAsJson();
-    // Pretty-print for easier diffing if someone opens the file manually.
-    await uploadJsonToGraph(graphSyncConfig, JSON.stringify(data, null, 2), { etag: getStoredEtag(graphSyncConfig) });
-    setGraphStatus('Cloud backup updated.');
-    showToast('Cloud backup saved', 1800);
-  } catch (err) {
-    if (err?.code === 412) {
-      setGraphStatus('Cloud copy changed elsewhere. Load latest before saving again.');
-      showToast('Cloud copy changed; refresh first', 2000);
-    } else {
-      console.error('Graph upload failed', err);
-      setGraphStatus(`Cloud upload failed: ${err.message || err}`);
-      showToast('Cloud upload failed', 1600);
-    }
-  } finally {
-    setGraphBusy(false);
-    applyGraphAccount(currentAccount());
-  }
-}
-
-async function setupGraphSync() {
-  if (!graphControlsEl) return;
-  if (!isGraphConfigured(graphSyncConfig)) {
-    graphControlsEl.hidden = true;
-    return;
-  }
-  graphSyncEnabled = true;
-  graphControlsEl.hidden = false;
-  setGraphStatus('Checking Microsoft sign-in…');
-  try {
-    const { account } = await initGraphAuth(graphSyncConfig);
-    applyGraphAccount(account);
-    if (account) {
-      await syncFromGraph(false);
-    } else {
-      setGraphStatus('Not signed in. Use Microsoft sign-in to sync.');
-    }
-  } catch (err) {
-    console.error('Graph setup failed', err);
-    setGraphStatus(`Microsoft sync unavailable: ${err.message || err}`);
-    graphSyncEnabled = false;
-  }
 }
 
 // Tracking coverage for Check-In (ratio of tracked vs blank weekdays from first session to today)
@@ -531,24 +452,39 @@ function personRowTemplate(person, record) {
   const tags = (person.tags || []).join(', ');
   const notes = record?.notes;
   const minutesLate = record?.minutesLate && Number.isFinite(record.minutesLate) ? record.minutesLate : null;
-  const serviceDays = (person.serviceDays || []).join(', ');
+  const serviceDays = Array.isArray(person.serviceDays) ? person.serviceDays : [];
+  const dayBadge = formatServiceDayBadge(serviceDays);
+  const badgeTitle = dayBadge ? `Serving ${dayBadge.tooltip}` : '';
+  const fullName = person.fullName || person.displayName;
   const footnotes = [];
   if (minutesLate) footnotes.push(`<span>${minutesLate} min late</span>`);
   if (person.active === false) footnotes.push('<span class="chip tone-danger">Inactive</span>');
-  if (serviceDays) footnotes.push(`<span class="chip tone-info">${serviceDays}</span>`);
+  const footnoteDays = !dayBadge && serviceDays.length
+    ? `<span class="chip tone-info">${serviceDays.map(shortDayLabel).join(' · ')}</span>`
+    : '';
+  if (footnoteDays) footnotes.push(footnoteDays);
+  const badgeMarkup = dayBadge
+    ? dayBadge.mode === 'list'
+      ? `<span class="day-badge day-badge--list" title="${badgeTitle}">${dayBadge.parts.map(part => `<span>${part}</span>`).join('')}</span>`
+      : `<span class="day-badge" title="${badgeTitle}">${dayBadge.text}</span>`
+    : '';
+  const noteStatus = notes ? 'Notes saved' : 'No notes yet';
   return `
     <li class="person-row" data-person-id="${person.id}">
+      ${badgeMarkup}
       <div class="person-header">
         <div class="person-meta">
           <span class="person-avatar" aria-hidden="true">${initials}</span>
-          <div>
+          <div class="person-name-block">
             <button type="button" class="person-name">${person.displayName}</button>
+            <div class="person-full-name">${fullName}</div>
             ${tags ? `<div class="person-tags">${tags}</div>` : ''}
           </div>
         </div>
         <div class="person-actions">
           <button class="notes-btn" data-notes type="button" data-has-notes="${Boolean(notes)}">${notes ? 'View notes' : 'Add notes'}</button>
         </div>
+        <div class="person-note-status">${noteStatus}</div>
       </div>
       <div class="status-group" role="radiogroup" aria-label="Status for ${person.displayName}">
         ${statuses.map(s => `
@@ -956,6 +892,9 @@ async function runAnalytics() {
   const STATUS_WEIGHTS = { present:1.0, online:0.95, excused:0.5, tardy:0.75, early_leave:0.95, very_early_leave:0.7, absent:0.0, non_service:0.0 };
   const eventWeightBySession = new Map(sessions.map(s => [s.id, (state.eventTypes.find(t => t.id===s.eventTypeId)?.weight) ?? 1]));
   const peopleById = new Map(state.people.map(p => [p.id, p]));
+  const rawScore = (r) => STATUS_WEIGHTS[r.status] ?? 0;
+  const sessionWeight = (sessionId) => applyEvent ? (eventWeightBySession.get(sessionId) ?? 1) : 1;
+  const weightedScore = (r) => rawScore(r) * sessionWeight(r.sessionId);
   const includeRecord = (r) => {
     const person = peopleById.get(r.personId);
     if (activeOnly && person && person.active === false) return false;
@@ -964,11 +903,12 @@ async function runAnalytics() {
   };
   // Exclude blanks entirely and non_service from analytics
   const filtered = records.filter(r => r.status && r.status !== 'non_service').filter(includeRecord);
-  const scoreOf = (r) => (STATUS_WEIGHTS[r.status] ?? 0) * (applyEvent ? (eventWeightBySession.get(r.sessionId) ?? 1) : 1);
 
   // Totals
   const counts = filtered.reduce((acc, r) => { acc[r.status] = (acc[r.status]||0)+1; return acc; }, {});
-  const avgScore = filtered.length ? (filtered.reduce((s, r) => s + scoreOf(r), 0) / filtered.length) : 0;
+  const totalWeight = filtered.reduce((sum, r) => sum + sessionWeight(r.sessionId), 0);
+  const scoreSum = filtered.reduce((sum, r) => sum + weightedScore(r), 0);
+  const avgScore = totalWeight ? (scoreSum / totalWeight) : 0;
   totalsPresentEl.textContent = counts.present || 0;
   if (totalsOnlineEl) totalsOnlineEl.textContent = counts.online || 0;
   totalsExcusedEl.textContent = counts.excused || 0;
@@ -982,12 +922,16 @@ async function runAnalytics() {
     const ds = d.format('YYYY-MM-DD');
     if (isoWeekday(ds) >= 1 && isoWeekday(ds) <= 5) dates.push(ds);
   }
-  const byDate = new Map(dates.map(d => [d, { present:0, online:0, excused:0, tardy:0, absent:0, early_leave:0, very_early_leave:0, total:0, rateAcc:0 }]));
+  const byDate = new Map(dates.map(d => [d, { present:0, online:0, excused:0, tardy:0, absent:0, early_leave:0, very_early_leave:0, total:0, weightSum:0, rateAcc:0 }]));
   for (const r of filtered) {
     const s = sessions.find(s => s.id === r.sessionId); if (!s) continue; const d = s.date; const ent = byDate.get(d); if (!ent) continue;
-    ent[r.status] = (ent[r.status]||0) + 1; ent.total += 1; ent.rateAcc += scoreOf(r);
+    const weight = sessionWeight(r.sessionId);
+    ent[r.status] = (ent[r.status]||0) + 1;
+    ent.total += 1;
+    ent.weightSum += weight;
+    ent.rateAcc += rawScore(r) * weight;
   }
-  let rate = dates.map(d => { const ent = byDate.get(d); return ent.total ? (ent.rateAcc/ent.total) : 0; });
+  let rate = dates.map(d => { const ent = byDate.get(d); return ent && ent.weightSum ? (ent.rateAcc/ent.weightSum) : 0; });
   // Optional smoothing (7-day)
   if (analyticsSmoothRate?.checked) {
     const sm = [];
@@ -1017,13 +961,25 @@ async function runAnalytics() {
     const ewb = new Map(psessions.map(s => [s.id, (state.eventTypes.find(t => t.id===s.eventTypeId)?.weight) ?? 1]));
     const prevFiltered = precords.filter(r => r.status && r.status !== 'non_service').filter(includeRecord);
     const byDatePrev = new Map();
-    for (const s of psessions) byDatePrev.set(s.date, { total:0, rateAcc:0 });
-    for (const r of prevFiltered) { const s = psessions.find(s=>s.id===r.sessionId); if (!s) continue; const ent = byDatePrev.get(s.date) || { total:0, rateAcc:0 }; ent.total += 1; ent.rateAcc += (STATUS_WEIGHTS[r.status]||0) * (applyEvent ? (ewb.get(r.sessionId) ?? 1) : 1); byDatePrev.set(s.date, ent); }
+    const prevSessionById = new Map(psessions.map(s => [s.id, s]));
+    for (const s of psessions) byDatePrev.set(s.date, { weightSum:0, rateAcc:0 });
+    for (const r of prevFiltered) {
+      const session = prevSessionById.get(r.sessionId);
+      if (!session) continue;
+      const weight = applyEvent ? (ewb.get(r.sessionId) ?? 1) : 1;
+      const ent = byDatePrev.get(session.date) || { weightSum:0, rateAcc:0 };
+      ent.weightSum += weight;
+      ent.rateAcc += (STATUS_WEIGHTS[r.status] || 0) * weight;
+      byDatePrev.set(session.date, ent);
+    }
     // align to current dates by index
     const prevDatesAll = [...byDatePrev.keys()].sort();
     const prevWeekdays = prevDatesAll.filter(ds => { const wd = isoWeekday(ds); return wd>=1 && wd<=5; });
     const lastN = prevWeekdays.slice(-dates.length);
-    prevRate = lastN.map(d => { const ent = byDatePrev.get(d); return ent && ent.total ? (ent.rateAcc/ent.total) : 0; });
+    prevRate = lastN.map(d => {
+      const ent = byDatePrev.get(d);
+      return ent && ent.weightSum ? (ent.rateAcc / ent.weightSum) : 0;
+    });
   }
 
   // Update chart
@@ -1054,16 +1010,16 @@ async function runAnalytics() {
   // Heatmap by DOW using weighted rate (Mon–Fri only)
   heatmapEl.innerHTML = '';
   const rateSumByDow = {1:0,2:0,3:0,4:0,5:0};
-  const countByDow = {1:0,2:0,3:0,4:0,5:0};
+  const weightByDow = {1:0,2:0,3:0,4:0,5:0};
   for (const r of filtered) {
     const s = sessions.find(s=>s.id===r.sessionId); if (!s) continue; if (s.dow < 1 || s.dow > 5) continue;
-    const w = applyEvent ? (eventWeightBySession.get(r.sessionId) ?? 1) : 1;
-    rateSumByDow[s.dow] += (STATUS_WEIGHTS[r.status] || 0) * w;
-    countByDow[s.dow] += 1;
+    const w = sessionWeight(r.sessionId);
+    rateSumByDow[s.dow] += rawScore(r) * w;
+    weightByDow[s.dow] += w;
   }
   const dayNames = ['Mon','Tue','Wed','Thu','Fri'];
   for (let d=1; d<=5; d++) {
-    const avg = countByDow[d] ? (rateSumByDow[d] / countByDow[d]) : 0;
+    const avg = weightByDow[d] ? (rateSumByDow[d] / weightByDow[d]) : 0;
     const style = calendarHeatStyle(avg);
     const textColor = avg >= 0.6 ? '#000000' : 'var(--text)';
     const cell = document.createElement('div'); cell.className = 'heat'; cell.setAttribute('role','gridcell'); cell.setAttribute('aria-label', `${dayNames[d-1]}: ${(avg*100).toFixed(0)}% rate`); cell.style = style + `;color:${textColor}`; cell.textContent = `${dayNames[d-1]}\n${Math.round(avg*100)}%`;
@@ -1102,14 +1058,15 @@ async function runTrends() {
   const { sessions, records } = await DB.recordsForRange(from, to, eventTypeId);
   const STATUS_WEIGHTS = { present:1.0, online:0.95, excused:0.5, tardy:0.75, early_leave:0.95, very_early_leave:0.7, absent:0.0, non_service:0.0 };
   const eventWeightBySession = new Map(sessions.map(s => [s.id, (state.eventTypes.find(t => t.id===s.eventTypeId)?.weight) ?? 1]));
-  const scoreOf = (r) => (STATUS_WEIGHTS[r.status] ?? 0) * (applyEvent ? (eventWeightBySession.get(r.sessionId) ?? 1) : 1);
+  const rawScore = (r) => STATUS_WEIGHTS[r.status] ?? 0;
+  const sessionWeight = (sessionId) => applyEvent ? (eventWeightBySession.get(sessionId) ?? 1) : 1;
   const byPerson = new Map();
   for (const r of records) {
     if (!r.status || r.status === 'non_service') continue;
     const s = sessions.find(s=>s.id===r.sessionId);
     const d = s?.date || '';
     if (!byPerson.has(r.personId)) byPerson.set(r.personId, []);
-    byPerson.get(r.personId).push({ ...r, _date:d, _score: scoreOf(r) });
+    byPerson.get(r.personId).push({ ...r, _date:d, _score: rawScore(r), _weight: sessionWeight(r.sessionId) });
   }
   const q = (trendsSearchEl?.value || '').toLowerCase(); const tagq = (trendsTag?.value || '').toLowerCase(); const activeOnly = !!trendsActiveOnly?.checked; const pins = new Set(JSON.parse(localStorage.getItem('trends_pins') || '[]'));
   const rows = [];
@@ -1121,7 +1078,8 @@ async function runTrends() {
     if (q && !name.toLowerCase().includes(q)) continue;
     if (tagq && !tags.join(' ').toLowerCase().includes(tagq)) continue;
     const eligible = recs;
-    const avg = eligible.length ? eligible.reduce((s,r)=> s + r._score, 0) / eligible.length : 0;
+    const weightSum = eligible.reduce((s, r) => s + (r._weight ?? 1), 0);
+    const avg = weightSum ? eligible.reduce((s,r)=> s + (r._score * (r._weight ?? 1)), 0) / weightSum : 0;
     const online = recs.filter(r => r.status==='online').length;
     const tardies = recs.filter(r => r.status==='tardy').length;
     const presents = recs.filter(r => r.status==='present').length;
@@ -1129,7 +1087,10 @@ async function runTrends() {
     const absent = recs.filter(r => r.status==='absent').length;
     const sessionsCount = recs.length;
     const last = [...recs].sort((a,b)=> a._date.localeCompare(b._date)).slice(-10);
-    const spark = last.map(r => r._score);
+    const spark = last.map(r => {
+      const weight = r._weight ?? 1;
+      return weight ? r._score : 0;
+    });
     const lastDate = last.length ? last[last.length-1]._date : '';
     const bucket = (()=>{ const t = thresholds(); if (avg >= t.high) return 'high'; if (avg >= t.low) return 'mid'; return 'low'; })();
     rows.push({ pid, name, avg, online, tardies, presents, excused, absent, sessionsCount, spark, lastDate, tags, pinned: pins.has(pid), bucket, exists: !!person });
@@ -1147,7 +1108,7 @@ async function runTrends() {
   }[sortKey] || ((a,b)=> b.avg - a.avg);
   rows.sort(cmp);
   trendsRows = rows; trendsOffset = 0;
-  renderTrendsSummary(records);
+  renderTrendsSummary(records, applyEvent, eventWeightBySession);
   renderTrendsChunk(true);
   // Simple status by DOW heat rows (present vs absent)
   const statuses = [ { key:'present', label:'Present', color:'34,197,94', invert:false }, { key:'absent', label:'Absent', color:'239,68,68', invert:true } ]; const dayNames = ['Mon','Tue','Wed','Thu','Fri']; const denomByDow = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}; const numByStatusDow = { present:{}, absent:{} }; for (let d=1; d<=7; d++) { denomByDow[d]=0; numByStatusDow.present[d]=0; numByStatusDow.absent[d]=0; }
@@ -1163,12 +1124,15 @@ async function runTrends() {
   trendsStatusDowEl.innerHTML = section.join('');
 }
 
-function renderTrendsSummary(records) {
+function renderTrendsSummary(records, applyEvent, eventWeightBySession) {
   if (!trendsSummaryEl) return;
   const eligible = records.filter(r => r.status && r.status !== 'non_service');
   const counts = eligible.reduce((acc, r) => { acc[r.status] = (acc[r.status]||0)+1; return acc; }, {});
   const STATUS_WEIGHTS = { present:1.0, online:0.95, excused:0.5, tardy:0.75, early_leave:0.95, very_early_leave:0.7, absent:0.0, non_service:0.0 };
-  const avgScore = eligible.length ? (eligible.reduce((s, r) => s + (STATUS_WEIGHTS[r.status] || 0), 0) / eligible.length) : 0;
+  const weightForRecord = (sessionId) => applyEvent ? (eventWeightBySession?.get(sessionId) ?? 1) : 1;
+  const avgWeightSum = eligible.reduce((sum, r) => sum + weightForRecord(r.sessionId), 0);
+  const avgScoreSum = eligible.reduce((sum, r) => sum + ((STATUS_WEIGHTS[r.status] || 0) * weightForRecord(r.sessionId)), 0);
+  const avgScore = avgWeightSum ? (avgScoreSum / avgWeightSum) : 0;
   trendsSummaryEl.innerHTML = `<div><strong>Present:</strong> ${counts.present||0}</div><div><strong>Excused:</strong> ${counts.excused||0}</div><div><strong>Tardy:</strong> ${counts.tardy||0}</div><div><strong>Absent:</strong> ${counts.absent||0}</div><div><strong>Avg:</strong> ${Math.round(avgScore*100)}%</div>`;
 }
 
@@ -1282,27 +1246,30 @@ async function renderPersonView() {
   const { sessions, records } = await DB.recordsForRange(from, to, eventTypeId);
   const STATUS_WEIGHTS = { present:1.0, online:0.95, excused:0.5, tardy:0.75, early_leave:0.95, very_early_leave:0.7, absent:0.0, non_service:0.0 };
   const eventWeightBySession = new Map(sessions.map(s => [s.id, (state.eventTypes.find(t => t.id===s.eventTypeId)?.weight) ?? 1]));
-  const scoreOf = (r) => (STATUS_WEIGHTS[r.status] ?? 0) * (applyEvent ? (eventWeightBySession.get(r.sessionId) ?? 1) : 1);
+  const rawScore = (r) => STATUS_WEIGHTS[r.status] ?? 0;
+  const sessionWeight = (sessionId) => applyEvent ? (eventWeightBySession.get(sessionId) ?? 1) : 1;
 
   // Personal records
   const personRecords = records.filter(r => r.personId === pid && r.status && r.status !== 'non_service');
   const counts = personRecords.reduce((acc, r) => { acc[r.status] = (acc[r.status]||0)+1; return acc; }, {});
-  const avg = personRecords.length ? (personRecords.reduce((s, r) => s + scoreOf(r), 0) / personRecords.length) : 0;
+  const weightSum = personRecords.reduce((sum, r) => sum + sessionWeight(r.sessionId), 0);
+  const avg = weightSum ? (personRecords.reduce((sum, r) => sum + rawScore(r) * sessionWeight(r.sessionId), 0) / weightSum) : 0;
   personSummaryEl.innerHTML = `<div><strong>Avg:</strong> ${Math.round(avg*100)}%</div><div><strong>Present:</strong> ${counts.present||0}</div><div><strong>Online:</strong> ${counts.online||0}</div><div><strong>Tardy:</strong> ${counts.tardy||0}</div><div><strong>Absent:</strong> ${counts.absent||0}</div>`;
 
   // Day-of-week (individual)
   if (personDOWIndEl) {
     personDOWIndEl.innerHTML = '';
     const rateSum = {1:0,2:0,3:0,4:0,5:0};
-    const cnt = {1:0,2:0,3:0,4:0,5:0};
+    const weightByDow = {1:0,2:0,3:0,4:0,5:0};
     for (const r of personRecords) {
       const s = sessions.find(s=>s.id===r.sessionId); if (!s) continue; if (s.dow < 1 || s.dow > 5) continue;
-      rateSum[s.dow] += scoreOf(r);
-      cnt[s.dow] += 1;
+      const weight = sessionWeight(r.sessionId);
+      rateSum[s.dow] += rawScore(r) * weight;
+      weightByDow[s.dow] += weight;
     }
     const dayNames = ['Mon','Tue','Wed','Thu','Fri'];
     for (let d=1; d<=5; d++) {
-      const avgD = cnt[d] ? (rateSum[d] / cnt[d]) : 0;
+      const avgD = weightByDow[d] ? (rateSum[d] / weightByDow[d]) : 0;
       const style = calendarCellStyle(avgD);
       const textColor = avgD >= 0.6 ? '#000000' : 'var(--text)';
       const cell = document.createElement('div');
@@ -1316,16 +1283,17 @@ async function renderPersonView() {
   if (personDOWTeamEl) {
     personDOWTeamEl.innerHTML = '';
     const rateSum = {1:0,2:0,3:0,4:0,5:0};
-    const cnt = {1:0,2:0,3:0,4:0,5:0};
+    const weightByDow = {1:0,2:0,3:0,4:0,5:0};
     for (const r of records) {
       if (!r.status || r.status === 'non_service') continue;
       const s = sessions.find(s=>s.id===r.sessionId); if (!s) continue; if (s.dow < 1 || s.dow > 5) continue;
-      rateSum[s.dow] += scoreOf(r);
-      cnt[s.dow] += 1;
+      const weight = sessionWeight(r.sessionId);
+      rateSum[s.dow] += rawScore(r) * weight;
+      weightByDow[s.dow] += weight;
     }
     const dayNames = ['Mon','Tue','Wed','Thu','Fri'];
     for (let d=1; d<=5; d++) {
-      const avgD = cnt[d] ? (rateSum[d] / cnt[d]) : 0;
+      const avgD = weightByDow[d] ? (rateSum[d] / weightByDow[d]) : 0;
       const style = calendarCellStyle(avgD);
       const textColor = avgD >= 0.6 ? '#000000' : 'var(--text)';
       const cell = document.createElement('div');
@@ -1349,7 +1317,7 @@ async function renderPersonView() {
     for (let i=0;i<padCount;i++) items.push(`<div class=\"card analytics-card empty\"></div>`);
     for (const d of weekdayDates) {
       const { r, s } = byDate.get(d);
-      const score = scoreOf(r);
+      const score = rawScore(r);
       const textColor = score >= 0.6 ? '#000000' : 'var(--text)';
       const subColor = score >= 0.6 ? '#001014' : 'var(--muted)';
       const statusLabel = ({ present:'Present', online:'Online', excused:'Excused', tardy:'Tardy', absent:'Absent', early_leave:'Early', very_early_leave:'Very Early' }[r.status]) || r.status;
@@ -1387,7 +1355,8 @@ async function renderCalendar() {
   const { sessions, records } = await DB.recordsForRange(from, to, eventTypeId);
   const STATUS_WEIGHTS = { present:1.0, online:0.95, excused:0.5, tardy:0.75, early_leave:0.95, very_early_leave:0.7, absent:0.0, non_service:0.0 };
   const eventWeightBySession = new Map(sessions.map(s => [s.id, (state.eventTypes.find(t => t.id===s.eventTypeId)?.weight) ?? 1]));
-  const scoreOf = (r) => (STATUS_WEIGHTS[r.status] ?? 0) * (applyEvent ? (eventWeightBySession.get(r.sessionId) ?? 1) : 1);
+  const rawScore = (r) => STATUS_WEIGHTS[r.status] ?? 0;
+  const sessionWeight = (sessionId) => applyEvent ? (eventWeightBySession.get(sessionId) ?? 1) : 1;
 
   const recsByDate = new Map();
   for (const r of records) {
@@ -1413,7 +1382,8 @@ async function renderCalendar() {
   for (const d of weekdayDates) {
     const ds = d.format('YYYY-MM-DD');
     const recs = (recsByDate.get(ds) || []).filter(r => r.status && r.status !== 'non_service');
-    const avg = recs.length ? recs.reduce((s, r) => s + scoreOf(r), 0) / recs.length : 0;
+    const weightSum = recs.reduce((sum, r) => sum + sessionWeight(r.sessionId), 0);
+    const avg = weightSum ? recs.reduce((sum, r) => sum + rawScore(r) * sessionWeight(r.sessionId), 0) / weightSum : 0;
     const counts = { present:0, online:0, excused:0, tardy:0, absent:0, early_leave:0, very_early_leave:0, non_service:0 };
     for (const r of (recsByDate.get(ds) || [])) { if (r.status && r.status !== 'non_service') counts[r.status] = (counts[r.status] || 0) + 1; }
     cells.push({ date: ds, day: d.date(), avg, counts });
@@ -1447,15 +1417,19 @@ async function renderCalendar() {
     }
     const cards = [];
     for (const [wk, datesList] of weekMap) {
-      let total = 0, rateAcc = 0;
+      let weightTotal = 0, rateAcc = 0;
       const agg = { present:0, online:0, excused:0, tardy:0, absent:0 };
       for (const ds of datesList) {
         const recs = (recsByDate.get(ds) || []).filter(r => r.status && r.status !== 'non_service');
         if (recs.length === 0) continue;
-        total += recs.length;
-        for (const r of recs) { rateAcc += scoreOf(r); agg[r.status] = (agg[r.status]||0)+1; }
+        for (const r of recs) {
+          const weight = sessionWeight(r.sessionId);
+          weightTotal += weight;
+          rateAcc += rawScore(r) * weight;
+          agg[r.status] = (agg[r.status]||0)+1;
+        }
       }
-      const avg = total ? (rateAcc/total) : 0;
+      const avg = weightTotal ? (rateAcc/weightTotal) : 0;
       const textColor = avg >= 0.6 ? '#000000' : 'var(--text)';
       cards.push(`<div class=\"card\" style=\"${calendarCellStyle(avg)};color:${textColor}\"><div style=\"display:flex;justify-content:space-between;align-items:center;\"><strong>Week of ${wk}</strong><span class=\"kpi-rate percent-outline\">${Math.round(avg*100)}%</span></div><div style=\"margin-top:6px;color:${textColor === '#000000' ? '#001014' : 'var(--muted)'}\">${agg.present||0}P • ${agg.online||0}O • ${agg.tardy||0}T • ${agg.excused||0}E • ${agg.absent||0}A</div></div>`);
     }
@@ -1649,42 +1623,6 @@ trendsApplyThresholdsBtn?.addEventListener('click', async () => {
   await DB.dexie.settings.put(s); showToast('Thresholds applied to settings');
 });
 
-graphSignInBtn?.addEventListener('click', async () => {
-  if (!graphSyncEnabled || graphSyncBusy) return;
-  try {
-    setGraphBusy(true, 'Signing in with Microsoft…');
-    const account = await signInWithMicrosoft(graphSyncConfig);
-    applyGraphAccount(account);
-    await syncFromGraph();
-  } catch (err) {
-    console.error('Graph sign-in failed', err);
-    setGraphStatus(`Sign-in failed: ${err.message || err}`);
-    showToast('Sign-in failed', 1600);
-  } finally {
-    setGraphBusy(false);
-    applyGraphAccount(currentAccount());
-  }
-});
-
-graphSignOutBtn?.addEventListener('click', async () => {
-  if (!graphSyncEnabled || graphSyncBusy) return;
-  try {
-    setGraphBusy(true, 'Signing out…');
-    await signOutMicrosoft(graphSyncConfig);
-    applyGraphAccount(null);
-    setGraphStatus('Signed out. Local data stays on this device.');
-    showToast('Signed out', 1400);
-  } catch (err) {
-    console.error('Graph sign-out failed', err);
-    setGraphStatus(`Sign-out failed: ${err.message || err}`);
-  } finally {
-    setGraphBusy(false);
-  }
-});
-
-graphDownloadBtn?.addEventListener('click', () => { if (graphSyncEnabled && !graphSyncBusy) syncFromGraph(); });
-graphUploadBtn?.addEventListener('click', () => { if (graphSyncEnabled && !graphSyncBusy) syncToGraph(); });
-
 // Trends card actions (pin, details, profile, open-take)
 trendsPeopleEl?.addEventListener('click', async (e) => {
   const btn = e.target.closest('button'); if (!btn) return; const card = btn.closest('.trend-card'); if (!card) return; const pid = card.getAttribute('data-pid');
@@ -1819,8 +1757,6 @@ async function init() {
   await renderPeopleList();
   renderTrackingStats();
   renderRoster();
-
-  await setupGraphSync();
 
   initRouter('take');
 }

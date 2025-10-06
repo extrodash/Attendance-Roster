@@ -46,18 +46,6 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  max-height: calc(100vh - 80px - 16px);
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-right: var(--space-2);
-  scrollbar-gutter: stable;
-}
-
-@supports not (scrollbar-gutter: stable) {
-  .take-sidebar__scroll,
-  #sidebar-scroll {
-    padding-right: calc(var(--space-2) + 2px);
-  }
 }
 
 .section-card {
