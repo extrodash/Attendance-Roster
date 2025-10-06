@@ -691,9 +691,15 @@ peopleListEl?.addEventListener('click', async (e) => {
 });
 
 notesSave?.addEventListener('click', async () => {
-  if (!state.editingNotesFor) return; const personId = state.editingNotesFor; const rec = state.currentRecords.get(personId) || {};
-  await DB.setRecordStatus(state.currentSessionId, personId, rec?.status || 'present', rec?.minutesLate, notesText.value);
-  state.currentRecords.set(personId, { ...rec, notes: notesText.value, status: rec?.status || 'present' });
+  if (!state.editingNotesFor) return;
+  const personId = state.editingNotesFor;
+  const rec = state.currentRecords.get(personId) || {};
+  const nextStatus = rec?.status || null;
+  await DB.setRecordStatus(state.currentSessionId, personId, nextStatus, rec?.minutesLate, notesText.value);
+  const nextRecord = { ...rec, notes: notesText.value };
+  if (nextStatus) nextRecord.status = nextStatus;
+  else delete nextRecord.status;
+  state.currentRecords.set(personId, nextRecord);
   notesModal.hidden = true;
   state.editingNotesFor = null;
   await renderPeopleList();
@@ -1561,15 +1567,25 @@ analyticsExportCsvBtn?.addEventListener('click', () => {
   // We don't have direct access to series here; re-run minimal compute by reading chart labels and datasets
   const chart = trendChart; if (!chart) return;
   const labels = chart.data.labels || [];
-  const present = chart.data.datasets?.[0]?.data || [];
-  const excused = chart.data.datasets?.[1]?.data || [];
-  const tardy = chart.data.datasets?.[2]?.data || [];
-  const absent = chart.data.datasets?.[3]?.data || [];
-  const rate = chart.data.datasets?.[4]?.data || [];
-  const header = ['Date','Present','Excused','Tardy','Absent','Rate%'];
+  const datasets = chart.data.datasets || [];
+  const present = datasets[0]?.data || [];
+  const online = datasets[1]?.data || [];
+  const excused = datasets[2]?.data || [];
+  const tardy = datasets[3]?.data || [];
+  const absent = datasets[4]?.data || [];
+  const rate = datasets[5]?.data || [];
+  const header = ['Date','Present','Online','Excused','Tardy','Absent','Rate%'];
   const lines = [header.join(',')];
   for (let i=0;i<labels.length;i++) {
-    const row = [labels[i], present[i]||0, excused[i]||0, tardy[i]||0, absent[i]||0, Math.round((rate[i]||0)*100)];
+    const row = [
+      labels[i],
+      present[i] ?? 0,
+      online[i] ?? 0,
+      excused[i] ?? 0,
+      tardy[i] ?? 0,
+      absent[i] ?? 0,
+      Math.round(((rate[i] ?? 0) * 100))
+    ];
     lines.push(row.join(','));
   }
   const blob = new Blob([lines.join('\n')], { type:'text/csv' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `insights_${from}_${to}.csv`; a.click(); setTimeout(()=>URL.revokeObjectURL(url), 0);
