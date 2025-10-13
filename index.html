@@ -132,7 +132,17 @@
                     <h3 class="section-card__title">Navigator</h3>
                   </header>
                   <div class="section-card__body section-card__body--stack">
-                    <div id="take-tracking-stats" class="navigator-stats" hidden></div>
+                    <div id="navigator-board" class="navigator-board" hidden>
+                      <header class="navigator-board__header">
+                        <div>
+                          <span class="navigator-board__title">Office follow-up</span>
+                          <p class="navigator-board__hint">Office is required. Morning and Afternoon meetings remain optional.</p>
+                        </div>
+                        <span id="navigator-count" class="navigator-board__count"></span>
+                      </header>
+                      <div id="take-tracking-stats" class="navigator-stats" hidden></div>
+                      <div id="navigator-groups" class="navigator-groups" role="list"></div>
+                    </div>
                     <div id="take-hidden-info" class="sidebar-notice" hidden>
                       <div class="sidebar-notice__body">
                         <strong id="take-hidden-count">0</strong>
@@ -142,14 +152,6 @@
                         <button id="take-hidden-toggle" type="button">Show all</button>
                         <button id="take-hidden-hide" type="button" class="secondary-action">Hide</button>
                       </div>
-                    </div>
-                    <div id="blank-nav" class="sidebar-notice sidebar-notice--row" hidden>
-                      <div class="sidebar-notice__actions">
-                        <button id="blank-prev" type="button" title="Previous blank">Prev</button>
-                        <button id="blank-jump" type="button" title="Jump to blank">Next blank</button>
-                        <button id="blank-next" type="button" title="Next blank">Next</button>
-                      </div>
-                      <span id="blank-meta" class="sidebar-notice__meta"></span>
                     </div>
                   </div>
                 </div>
@@ -562,7 +564,7 @@
                 </ul>
               </div>
               <div class="help-callout help-callout--info">
-                <strong>Blank-day reminders:</strong> The sidebar&rsquo;s blank navigator only counts weekdays with missing <em>Office</em> records. Clicking <span class="help-inline">Next blank</span> jumps straight to the next uncovered day.
+                <strong>Office follow-up:</strong> The Navigator highlights weekdays where Office is incomplete. Click any entry to jump straight to that day.
               </div>
             </article>
 
@@ -690,7 +692,7 @@
                 <ul>
                   <li><strong>Heatmaps:</strong> Hover over a day to view status counts and jump back to Take with <span class="help-inline">Open in Take</span>.</li>
                   <li><strong>Week summaries:</strong> Weekly cards show weighted averages. Gray cards usually mean Office data is missing.</li>
-                  <li><strong>Blank navigator:</strong> In the Take sidebar, use <span class="help-inline">Prev</span>, <span class="help-inline">Next blank</span>, and <span class="help-inline">Next</span> to cycle through uncovered Office days.</li>
+                  <li><strong>Navigator:</strong> In the Take sidebar, review the Office follow-up list to see which days are incomplete and jump directly to them.</li>
                 </ul>
               </div>
               <div class="help-callout help-callout--tip">
@@ -748,10 +750,6 @@
             <h2 class="view-title">Settings</h2>
             <p class="view-description">Adjust defaults and keep a backup handy. Changes save instantly.</p>
           </div>
-          <div class="view-actions">
-            <button id="download-json" type="button" class="primary-action">Download backup</button>
-            <button id="upload-json-btn" type="button" class="secondary-action">Upload backup</button>
-          </div>
         </header>
         <div class="view-shell">
           <div class="view-panel primary-panel">
@@ -782,8 +780,24 @@
               </section>
               <section class="settings-section">
                 <h3>Backup &amp; restore</h3>
-                <p class="section-note">Use the buttons above for full backups. Import tools stay here.</p>
+                <ol class="backup-flow">
+                  <li class="backup-step">
+                    <div class="backup-copy">
+                      <h4>Step 1 · Save a backup</h4>
+                      <p>Download a JSON copy of your roster before making large edits or clearing data.</p>
+                    </div>
+                    <button id="download-json" type="button" class="secondary-action">Download backup</button>
+                  </li>
+                  <li class="backup-step">
+                    <div class="backup-copy">
+                      <h4>Step 2 · Restore a backup</h4>
+                      <p>Upload a saved backup to replace the current roster and attendance history.</p>
+                    </div>
+                    <button id="upload-json-btn" type="button" class="secondary-action">Upload backup</button>
+                  </li>
+                </ol>
                 <div class="backup-restore">
+                  <p class="section-note">Need to migrate older data? You can also pull from the original Attendance app.</p>
                   <input id="upload-json-input" type="file" accept="application/json" hidden />
                   <button id="import-v1-btn" type="button" class="secondary-action">Import from v1</button>
                 </div>

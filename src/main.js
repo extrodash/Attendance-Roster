@@ -15,8 +15,7 @@ const state = {
   showAll: false,
   editingNotesFor: null,
   selectedPersonId: null,
-  blankDates: [],
-  blankIndex: 0,
+  officeGaps: [],
   personModalMode: null,
   editingPersonId: null,
   pendingTardyPersonId: null,
@@ -114,12 +113,8 @@ const btnSaveAttendance = document.getElementById('save-attendance');
 const btnPrintAttendance = document.getElementById('print-attendance');
 const takeSummaryEl = document.getElementById('take-summary');
 const takeDateHint = document.getElementById('date-helper');
-// Blank navigation controls
-const blankNav = document.getElementById('blank-nav');
-const blankPrevBtn = document.getElementById('blank-prev');
-const blankNextBtn = document.getElementById('blank-next');
-const blankJumpBtn = document.getElementById('blank-jump');
-const blankMeta = document.getElementById('blank-meta');
+// Navigator controls
+const navigatorListEl = document.getElementById('navigator-gaps');
 
 // Insights controls
 const analyticsFrom = document.getElementById('analytics-from');
@@ -229,12 +224,23 @@ function showToast(msg, ms = 1200) {
 // Tracking coverage for Check-In (ratio of tracked vs blank weekdays from first session to today)
 async function renderTrackingStats() {
   if (!takeTrackingStatsEl) return;
+  if (!state.people || state.people.length === 0) {
+    takeTrackingStatsEl.hidden = true;
+    state.officeGaps = [];
+    renderNavigatorGaps();
+    return;
+  }
   try {
     const firstRequired = await DB.dexie.sessions
       .orderBy('date')
       .filter(s => s.eventTypeId === REQUIRED_EVENT_ID)
       .first();
-    if (!firstRequired) { takeTrackingStatsEl.hidden = true; return; }
+    if (!firstRequired) {
+      takeTrackingStatsEl.hidden = true;
+      state.officeGaps = [];
+      renderNavigatorGaps();
+      return;
+    }
     const from = firstRequired.date;
     const to = dayjs().format('YYYY-MM-DD');
     const { sessions, records } = await DB.recordsForRange(from, to);
@@ -245,31 +251,77 @@ async function renderTrackingStats() {
       sessionsByDate.get(s.date).push(s);
     }
     const requiredSessionIds = new Set(requiredSessions.map(s => s.id));
-    const sessionsWithEntries = new Set();
+    const recordsBySession = new Map();
     for (const r of records) {
       if (!requiredSessionIds.has(r.sessionId)) continue;
-      if (!r.status || r.status === 'non_service') continue;
-      sessionsWithEntries.add(r.sessionId);
+      if (!recordsBySession.has(r.sessionId)) recordsBySession.set(r.sessionId, []);
+      recordsBySession.get(r.sessionId).push(r);
     }
-    const trackedDates = new Set();
-    for (const [date, sess] of sessionsByDate) {
-      if (sess.some(s => sessionsWithEntries.has(s.id))) trackedDates.add(date);
-    }
-    let tracked = 0, blank = 0;
-    const blanks = [];
+
+    const officeGaps = [];
+    let complete = 0;
+    let partial = 0;
+    let blank = 0;
+
+    const activePeople = state.people.filter(p => p && p.active !== false);
+
     for (let d = dayjs(from); d.isBefore(dayjs(to)) || d.isSame(dayjs(to), 'day'); d = d.add(1, 'day')) {
+      const iso = ((d.day() + 6) % 7) + 1;
+      if (iso < 1 || iso > 5) continue; // weekdays (Mon-Fri)
       const ds = d.format('YYYY-MM-DD');
-      const wd = ((d.day() + 6) % 7) + 1; // iso weekday 1..7
-      if (wd < 1 || wd > 5) continue; // weekdays only
-      if (trackedDates.has(ds)) tracked += 1; else { blank += 1; blanks.push(ds); }
+      const scheduled = activePeople.filter(p => isPersonServingOn(ds, p));
+      if (!scheduled.length) continue;
+
+      const sessionCandidates = sessionsByDate.get(ds) || [];
+      const session = sessionCandidates[0] || null;
+      if (!session) {
+        blank += 1;
+        continue;
+      }
+
+      const recs = recordsBySession.get(session.id) || [];
+      const recByPerson = new Map(recs.map(r => [r.personId, r]));
+
+      let recordedCount = 0;
+      const missing = [];
+      for (const person of scheduled) {
+        const rec = recByPerson.get(person.id);
+        const status = rec?.status;
+        if (status) {
+          recordedCount += 1;
+          continue;
+        }
+        missing.push(person);
+      }
+
+      if (missing.length === 0) {
+        complete += 1;
+        continue;
+      }
+
+      const gapType = recordedCount === 0 ? 'blank' : 'partial';
+      if (gapType === 'blank') blank += 1; else partial += 1;
+
+      officeGaps.push({
+        date: ds,
+        missing: missing.length,
+        total: scheduled.length,
+        type: gapType,
+        names: missing.slice(0, 3).map(p => p.displayName || 'Unnamed'),
+      });
     }
-    const total = tracked + blank;
-    const pct = total ? Math.round((tracked / total) * 100) : 0;
+
+    const totalDays = complete + partial + blank;
+    const coveragePct = totalDays ? Math.round((complete / totalDays) * 100) : 0;
     takeTrackingStatsEl.setAttribute('aria-label', 'Office coverage since first log');
     takeTrackingStatsEl.innerHTML = `
       <div class="navigator-stat">
-        <span class="navigator-stat__label">office tracked</span>
-        <strong class="navigator-stat__value">${tracked}</strong>
+        <span class="navigator-stat__label">office complete</span>
+        <strong class="navigator-stat__value">${complete}</strong>
+      </div>
+      <div class="navigator-stat">
+        <span class="navigator-stat__label">office pending</span>
+        <strong class="navigator-stat__value">${partial}</strong>
       </div>
       <div class="navigator-stat">
         <span class="navigator-stat__label">office blanks</span>
@@ -277,27 +329,17 @@ async function renderTrackingStats() {
       </div>
       <div class="navigator-stat">
         <span class="navigator-stat__label">office coverage</span>
-        <strong class="navigator-stat__value">${pct}%</strong>
+        <strong class="navigator-stat__value">${coveragePct}%</strong>
       </div>`;
-    takeTrackingStatsEl.hidden = false;
+    takeTrackingStatsEl.hidden = totalDays === 0;
 
-    // Update blank navigation list and meta
-    state.blankDates = blanks;
-    const curr = takeDateEl?.value || state.currentDate || dayjs().format('YYYY-MM-DD');
-    let idx = blanks.findIndex(d => d >= curr);
-    if (idx < 0) idx = 0;
-    state.blankIndex = idx;
-    if (blankNav) {
-      if (blanks.length === 0) {
-        blankNav.hidden = true;
-      } else {
-        blankNav.hidden = false;
-        if (blankMeta) blankMeta.textContent = `(${blanks.length ? (idx+1) : 0}/${blanks.length}) ${blanks[idx] || ''}`;
-      }
-    }
+    state.officeGaps = officeGaps.sort((a, b) => a.date.localeCompare(b.date));
+    renderNavigatorGaps();
   } catch (e) {
     console.warn('renderTrackingStats error', e);
     takeTrackingStatsEl.hidden = true;
+    state.officeGaps = [];
+    renderNavigatorGaps();
   }
 }
 
@@ -515,6 +557,56 @@ async function renderPeopleList() {
   if (peopleListEl) peopleListEl.innerHTML = items.join('');
   renderTakeSummary(filtered);
   updateHiddenInfoBar();
+}
+
+function renderNavigatorGaps() {
+  if (!navigatorListEl) return;
+  const gaps = state.officeGaps || [];
+  const hasStats = !takeTrackingStatsEl?.hidden;
+  if (!gaps.length) {
+    if (!hasStats) {
+      navigatorListEl.hidden = true;
+      navigatorListEl.innerHTML = '';
+      return;
+    }
+    navigatorListEl.hidden = false;
+    navigatorListEl.innerHTML = `
+      <li class="navigator-item navigator-item--empty">
+        <div class="navigator-item__body">
+          <span class="navigator-item__date">All Office sessions are up to date.</span>
+          <span class="navigator-item__names">Great work! Nothing pending.</span>
+        </div>
+      </li>`;
+    return;
+  }
+  navigatorListEl.hidden = false;
+  const maxItems = 12;
+  const display = gaps.slice(0, maxItems);
+  const overflow = gaps.length - display.length;
+  const items = display.map((gap) => {
+    const dateLabel = dayjs(gap.date).format('ddd • MMM D');
+    const pendingLabel = gap.type === 'blank' ? 'No log yet' : `${gap.missing} pending`;
+    const names = gap.names.join(', ');
+    const extra = gap.missing > gap.names.length ? ` +${gap.missing - gap.names.length} more` : '';
+    const detail = names ? `${names}${extra}` : '';
+    const aria = gap.type === 'blank'
+      ? `${dateLabel} has no Office log yet`
+      : `${dateLabel} has ${gap.missing} pending Office statuses`;
+    return `
+      <li class="navigator-item">
+        <button type="button" data-date="${gap.date}" data-type="${gap.type}" aria-label="${aria}">
+          <div class="navigator-item__body">
+            <span class="navigator-item__date">${dateLabel}</span>
+            <span class="navigator-item__badge" data-gap="${gap.type}">${pendingLabel}</span>
+          </div>
+          ${detail ? `<span class="navigator-item__names">${detail}</span>` : ''}
+        </button>
+      </li>`;
+  });
+  navigatorListEl.innerHTML = items.join('');
+  if (overflow > 0) {
+    navigatorListEl.innerHTML += `<li class="navigator-item navigator-item--more"><span class="navigator-item__names">+${overflow} more earlier Office days pending</span></li>`;
+  }
 }
 
 function renderTakeSummary(filteredPeople = []) {
@@ -1490,10 +1582,36 @@ addEventTypeBtn?.addEventListener('click', async () => {
 });
 
 downloadJsonBtn?.addEventListener('click', async () => {
-  const data = await DB.exportAllAsJson(); const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'attendance_backup.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(url), 0);
+  const data = await DB.exportAllAsJson();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'attendance_backup.json';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+  showToast('Backup downloaded. Store the JSON in a safe spot before clearing data.', 2200);
 });
-uploadJsonBtn?.addEventListener('click', () => uploadJsonInput?.click());
-uploadJsonInput?.addEventListener('change', async () => { const file = uploadJsonInput.files?.[0]; if (!file) return; const text = await file.text(); await DB.importAllFromJson(JSON.parse(text)); await loadSettingsAndTypes(); await loadPeople(); await ensureSession(); await renderPeopleList(); renderTrackingStats(); renderRoster(); showToast('Data imported', 1800); });
+uploadJsonBtn?.addEventListener('click', () => {
+  showToast('Select a backup JSON to restore. This will replace the current records.', 2600);
+  uploadJsonInput?.click();
+});
+uploadJsonInput?.addEventListener('change', async () => {
+  const file = uploadJsonInput.files?.[0];
+  if (!file) {
+    showToast('Restore canceled — no file selected.', 1600);
+    return;
+  }
+  const text = await file.text();
+  await DB.importAllFromJson(JSON.parse(text));
+  await loadSettingsAndTypes();
+  await loadPeople();
+  await ensureSession();
+  await renderPeopleList();
+  renderTrackingStats();
+  renderRoster();
+  showToast('Backup restored. Double-check today’s session before continuing.', 2400);
+});
 importV1Btn?.addEventListener('click', async () => { const res = await DB.importFromV1IfPresent(); if (res.imported) { await loadSettingsAndTypes(); await loadPeople(); await ensureSession(); await renderPeopleList(); renderTrackingStats(); renderRoster(); showToast(`Imported v1 (${res.people} people, ${res.records} records)`, 2200); } else { showToast('No v1 data found'); } });
 clearDataBtn?.addEventListener('click', async () => { if (!confirm('Really clear ALL data?')) return; await DB.dexie.delete(); window.location.reload(); });
 
@@ -1529,6 +1647,29 @@ takeSearchEl?.addEventListener('input', debounce(renderPeopleList, 150));
 takeShowAllEl?.addEventListener('change', () => { state.showAll = !!takeShowAllEl.checked; localStorage.setItem('take_show_all', String(state.showAll)); renderPeopleList(); });
 takeHiddenToggleBtn?.addEventListener('click', () => { if (!takeShowAllEl) return; takeShowAllEl.checked = true; state.showAll = true; localStorage.setItem('take_show_all', 'true'); renderPeopleList(); });
 takeHiddenHideBtn?.addEventListener('click', () => { if (!takeShowAllEl) return; takeShowAllEl.checked = false; state.showAll = false; localStorage.setItem('take_show_all', 'false'); renderPeopleList(); });
+
+navigatorListEl?.addEventListener('click', async (e) => {
+  const btn = e.target.closest('button[data-date]');
+  if (!btn) return;
+  const date = btn.getAttribute('data-date');
+  if (!date) return;
+  const type = btn.getAttribute('data-type') || 'pending';
+  if (takeDateEl) takeDateEl.value = date;
+  if (takeEventEl && state.eventTypes.some(t => t.id === REQUIRED_EVENT_ID)) {
+    takeEventEl.value = REQUIRED_EVENT_ID;
+    state.currentEventTypeId = REQUIRED_EVENT_ID;
+    localStorage.setItem('lastEventTypeId', REQUIRED_EVENT_ID);
+  }
+  await ensureSession();
+  await renderPeopleList();
+  renderTrackingStats();
+  const format = dayjs(date).format('MMM D');
+  const message = type === 'blank'
+    ? `Jumped to ${format}. Log everyone for Office.`
+    : `Jumped to ${format}. Finish the remaining Office entries.`;
+  showToast(message, 2200);
+  window.location.hash = '#/take';
+});
 
 function updateHiddenInfoBar() {
   if (!takeHiddenInfoEl || !takeHiddenCountEl) return;
@@ -1784,28 +1925,4 @@ init().catch(err => {
     t.hidden = false;
     t.textContent = 'Failed to load libraries. Please run via http://localhost and reload.';
   }
-});
-
-// Blank navigation handlers
-blankPrevBtn?.addEventListener('click', async () => {
-  const n = state.blankDates.length; if (!n) return;
-  state.blankIndex = (state.blankIndex - 1 + n) % n;
-  const date = state.blankDates[state.blankIndex];
-  if (takeDateEl) takeDateEl.value = date;
-  await ensureSession(); await renderPeopleList(); renderTrackingStats();
-});
-blankNextBtn?.addEventListener('click', async () => {
-  const n = state.blankDates.length; if (!n) return;
-  state.blankIndex = (state.blankIndex + 1) % n;
-  const date = state.blankDates[state.blankIndex];
-  if (takeDateEl) takeDateEl.value = date;
-  await ensureSession(); await renderPeopleList(); renderTrackingStats();
-});
-blankJumpBtn?.addEventListener('click', async () => {
-  const n = state.blankDates.length; if (!n) return;
-  const date = state.blankDates[state.blankIndex];
-  if (takeDateEl) takeDateEl.value = date;
-  await ensureSession(); await renderPeopleList(); renderTrackingStats();
-  // advance index for next click
-  state.blankIndex = (state.blankIndex + 1) % n;
 });

@@ -1298,6 +1298,44 @@ main {
   display: grid;
   gap: var(--space-3);
 }
+.backup-flow {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+.backup-step {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  background: rgba(13, 27, 26, 0.4);
+}
+.backup-copy {
+  flex: 1 1 240px;
+  display: grid;
+  gap: var(--space-2);
+}
+.backup-copy h4 {
+  font-size: var(--fs-lg);
+  margin: 0;
+}
+.backup-copy p {
+  color: var(--color-muted);
+  font-size: var(--fs-sm);
+}
+.backup-step button {
+  flex: 0 0 auto;
+}
+.backup-restore {
+  display: grid;
+  gap: var(--space-2);
+}
 .settings-section h3 { font-size: var(--fs-lg); }
 .thresholds.compact { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .danger-zone { border-color: rgba(248, 113, 113, 0.5); background: rgba(248, 113, 113, 0.12); }
