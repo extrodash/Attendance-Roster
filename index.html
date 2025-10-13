@@ -51,9 +51,11 @@
             <p class="view-description">Log attendance and capture notes without leaving the roster.</p>
           </div>
           <div class="view-actions">
-            <button id="save-attendance" type="button" class="primary-action">Save attendance</button>
+            <button id="save-attendance" type="button" class="primary-action" title="Keep changes on this browser">Save to browser</button>
+            <button id="save-download-attendance" type="button" class="secondary-action secondary-action--accent" title="Download a JSON backup with your latest changes">Save &amp; download backup</button>
             <button id="print-attendance" type="button" class="secondary-action">Print</button>
           </div>
+          <p class="view-actions-hint" id="take-save-hint">Changes stay on this device. Use the backup download to carry your updates to another browser or keep a copy.</p>
         </header>
         <div class="view-shell take-layout">
           <aside id="sidebar" class="take-sidebar" aria-label="Session basics and navigation">

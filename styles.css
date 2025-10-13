@@ -254,6 +254,20 @@ main {
 .view-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; align-items: center; justify-content: flex-start; }
 .view-actions .primary-action { flex: 1 0 auto; min-width: 200px; }
 .view-actions .secondary-action { flex: 0 0 auto; }
+.secondary-action--accent {
+  border-color: var(--action-accent);
+  color: var(--action-accent);
+}
+.secondary-action--accent:hover:not(:disabled) {
+  border-color: var(--action-accent-strong);
+  color: var(--action-accent-strong);
+}
+.view-actions-hint {
+  margin-top: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--color-muted);
+  max-width: 520px;
+}
 
 .view[data-tone="teal"] {
   --action-accent: var(--accent-teal);

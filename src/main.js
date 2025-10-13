@@ -110,6 +110,7 @@ const takeHiddenHideBtn = document.getElementById('take-hidden-hide');
 const btnAllPresent = document.getElementById('mark-all-present');
 const btnClearAll = document.getElementById('clear-all');
 const btnSaveAttendance = document.getElementById('save-attendance');
+const btnSaveDownloadAttendance = document.getElementById('save-download-attendance');
 const btnPrintAttendance = document.getElementById('print-attendance');
 const takeSummaryEl = document.getElementById('take-summary');
 const takeDateHint = document.getElementById('date-helper');
@@ -869,7 +870,13 @@ btnClearAll?.addEventListener('click', async () => {
   buildEventStepper();
   showToast('Cleared');
 });
-btnSaveAttendance?.addEventListener('click', () => showToast('Saved'));
+btnSaveAttendance?.addEventListener('click', () => showToast('Saved to this browser. Your latest check-in is stored here.', 2200));
+btnSaveDownloadAttendance?.addEventListener('click', () => {
+  downloadBackup({
+    toastMessage: 'Backup downloaded with your latest check-in. Keep the JSON handy if you need to import elsewhere.',
+    toastDuration: 2600
+  });
+});
 btnPrintAttendance?.addEventListener('click', () => window.print());
 
 // Roster
@@ -1581,16 +1588,20 @@ addEventTypeBtn?.addEventListener('click', async () => {
   const label = prompt('Event label'); if (!label) return; const weight = Number(prompt('Weight (0..1)', '1') || '1'); const id = label.toLowerCase().replace(/\s+/g,'_'); await DB.saveEventType({ id, label, weight: Number.isFinite(weight) ? weight : 1 }); await loadSettingsAndTypes(); renderEventTypesTable(); hydrateEventTypeSelects(); buildEventStepper();
 });
 
-downloadJsonBtn?.addEventListener('click', async () => {
+async function downloadBackup({ filename = 'attendance_backup.json', toastMessage = 'Backup downloaded. Store the JSON in a safe spot before clearing data.', toastDuration = 2200, toast = true } = {}) {
   const data = await DB.exportAllAsJson();
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'attendance_backup.json';
+  a.download = filename;
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 0);
-  showToast('Backup downloaded. Store the JSON in a safe spot before clearing data.', 2200);
+  if (toast) showToast(toastMessage, toastDuration);
+}
+
+downloadJsonBtn?.addEventListener('click', () => {
+  downloadBackup();
 });
 uploadJsonBtn?.addEventListener('click', () => {
   showToast('Select a backup JSON to restore. This will replace the current records.', 2600);
