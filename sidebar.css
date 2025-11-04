@@ -198,6 +198,30 @@
   background: var(--action-accent);
 }
 
+@media (max-width: 960px) {
+  #sidebar {
+    width: 100%;
+    flex-shrink: 1;
+    position: static;
+    z-index: auto;
+  }
+
+  .take-sidebar {
+    padding: var(--space-3);
+    gap: var(--space-3);
+  }
+
+  .take-sidebar__sticky {
+    position: static;
+    top: auto;
+    padding: 0;
+  }
+
+  .section-card {
+    margin-bottom: var(--space-3);
+  }
+}
+
 .step-btn--primary .step-dot {
   width: 10px;
   height: 10px;

@@ -86,10 +86,26 @@ async function upsertSession(date, eventTypeId, notes = '') {
   const id = `${date}_${eventTypeId}`; const session = { id, date, dow: isoDow(date), eventTypeId, notes }; await dexie.sessions.put(session); return id;
 }
 async function recordsForSession(sessionId) { return dexie.records.where('sessionId').equals(sessionId).toArray(); }
-async function setRecordStatus(sessionId, personId, status, minutesLate = undefined, notes = undefined) {
+async function setRecordStatus(sessionId, personId, status, minutesLate = undefined, notes = undefined, leaveStatus = undefined) {
   const existing = await dexie.records.where({ sessionId, personId }).first();
-  if (existing) { existing.status = status; existing.minutesLate = minutesLate; existing.notes = notes; await dexie.records.put(existing); return existing.id; }
-  const id = uid('r_'); await dexie.records.add({ id, sessionId, personId, status, minutesLate, notes }); return id;
+  if (existing) {
+    existing.status = status;
+    if (minutesLate !== undefined) existing.minutesLate = minutesLate; else delete existing.minutesLate;
+    if (notes !== undefined) existing.notes = notes; else delete existing.notes;
+    if (leaveStatus !== undefined) {
+      if (leaveStatus) existing.leaveStatus = leaveStatus;
+      else delete existing.leaveStatus;
+    }
+    await dexie.records.put(existing);
+    return existing.id;
+  }
+  const id = uid('r_');
+  const record = { id, sessionId, personId, status };
+  if (minutesLate !== undefined) record.minutesLate = minutesLate;
+  if (notes !== undefined) record.notes = notes;
+  if (leaveStatus !== undefined && leaveStatus) record.leaveStatus = leaveStatus;
+  await dexie.records.add(record);
+  return id;
 }
 async function clearRecordsForSession(sessionId) { await dexie.records.where('sessionId').equals(sessionId).delete(); }
 
@@ -109,6 +125,9 @@ function aggregateCounts(records) {
   for (const r of records) {
     if (!r || !r.status) continue; // exclude blanks entirely
     counts[r.status] = (counts[r.status] || 0) + 1;
+    if (r.leaveStatus && r.leaveStatus !== r.status) {
+      counts[r.leaveStatus] = (counts[r.leaveStatus] || 0) + 1;
+    }
   }
   return counts;
 }

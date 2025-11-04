@@ -27,6 +27,75 @@ const DEFAULT_LEGEND_THRESHOLDS = { low: 0.75, mid: 0.89, high: 0.90 };
 const REQUIRED_EVENT_ID = 'work';
 const OPTIONAL_EVENT_IDS = new Set(['meeting', 'gospel']);
 const DAY_SEQUENCE = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const EARLY_STATUSES = new Set(['early_leave', 'very_early_leave']);
+const STATUS_WEIGHTS = {
+  present: 1.0,
+  online: 0.95,
+  excused: 0.5,
+  tardy: 0.75,
+  early_leave: 0.95,
+  very_early_leave: 0.7,
+  absent: 0.0,
+  non_service: 0.0
+};
+
+function recordStatusKeys(record) {
+  if (!record) return [];
+  const keys = [];
+  const base = record.status;
+  if (base) keys.push(base);
+  const leave = record.leaveStatus;
+  if (leave && leave !== base) keys.push(leave);
+  return keys;
+}
+
+function recordWeight(record) {
+  const keys = recordStatusKeys(record);
+  if (!keys.length) return 0;
+  let weight = STATUS_WEIGHTS[keys[0]] ?? 0;
+  for (let i = 1; i < keys.length; i += 1) {
+    const key = keys[i];
+    const w = STATUS_WEIGHTS[key];
+    if (typeof w === 'number') {
+      weight = Math.min(weight, w);
+    }
+  }
+  return weight;
+}
+
+function accumulateRecordCounts(counts, record) {
+  const keys = recordStatusKeys(record);
+  if (!keys.length) return false;
+  let counted = false;
+  for (const key of keys) {
+    if (!key) continue;
+    counts[key] = (counts[key] || 0) + 1;
+    counted = true;
+  }
+  return counted;
+}
+
+function isStatusActive(record, statusId) {
+  if (!record || !statusId) return false;
+  if (EARLY_STATUSES.has(statusId)) {
+    return record.status === statusId || record.leaveStatus === statusId;
+  }
+  return record.status === statusId;
+}
+
+function statusLabelText(status) {
+  switch (status) {
+    case 'present': return 'Present';
+    case 'online': return 'Online';
+    case 'excused': return 'Excused';
+    case 'tardy': return 'Tardy';
+    case 'absent': return 'Absent';
+    case 'early_leave': return 'Left Early';
+    case 'very_early_leave': return 'Left Very Early';
+    case 'non_service': return 'Not Serving';
+    default: return status || '';
+  }
+}
 
 function shortDayLabel(day) {
   if (!day) return '';
@@ -485,7 +554,6 @@ function personRowTemplate(person, record) {
     { id: 'very_early_leave', label: 'Left Very Early', hint: 'Short stay' },
     { id: 'non_service', label: 'N/A', hint: 'Not serving' }
   ];
-  const current = record?.status || '';
   const initials = (person.displayName || '')
     .split(/\s+/)
     .filter(Boolean)
@@ -501,6 +569,12 @@ function personRowTemplate(person, record) {
   const fullName = person.fullName || person.displayName;
   const footnotes = [];
   if (minutesLate) footnotes.push(`<span>${minutesLate} min late</span>`);
+  const activeEarlyStatuses = new Set(recordStatusKeys(record).filter(st => EARLY_STATUSES.has(st)));
+  if (activeEarlyStatuses.has('very_early_leave')) {
+    footnotes.push('<span>Left very early</span>');
+  } else if (activeEarlyStatuses.has('early_leave')) {
+    footnotes.push('<span>Left early</span>');
+  }
   if (person.active === false) footnotes.push('<span class="chip tone-danger">Inactive</span>');
   const footnoteDays = !dayBadge && serviceDays.length
     ? `<span class="chip tone-info">${serviceDays.map(shortDayLabel).join(' · ')}</span>`
@@ -529,9 +603,9 @@ function personRowTemplate(person, record) {
         </div>
         <div class="person-note-status">${noteStatus}</div>
       </div>
-      <div class="status-group" role="radiogroup" aria-label="Status for ${person.displayName}">
+      <div class="status-group" role="group" aria-label="Status for ${person.displayName}">
         ${statuses.map(s => `
-          <button class="pill ${s.id}" role="radio" aria-checked="${current === s.id}" data-status="${s.id}" data-checked="${current === s.id}">
+          <button class="pill ${s.id}" type="button" aria-pressed="${isStatusActive(record, s.id)}" data-status="${s.id}" data-checked="${isStatusActive(record, s.id)}">
             <span>${s.label}</span>
             <span class="pill-hint">${s.hint}</span>
           </button>
@@ -646,11 +720,10 @@ function renderTakeSummary(filteredPeople = []) {
   };
   for (const person of filteredPeople) {
     const rec = state.currentRecords.get(person.id);
-    if (!rec || !rec.status) {
+    if (!rec || !accumulateRecordCounts(counts, rec)) {
       counts.unmarked += 1;
       continue;
     }
-    counts[rec.status] = (counts[rec.status] || 0) + 1;
   }
   const total = filteredPeople.length;
   const recorded = total - counts.unmarked;
@@ -660,6 +733,8 @@ function renderTakeSummary(filteredPeople = []) {
     { key: 'online', label: 'Online', tone: 'tone-info' },
     { key: 'excused', label: 'Excused', tone: 'tone-muted' },
     { key: 'tardy', label: 'Tardy', tone: 'tone-warn' },
+    { key: 'early_leave', label: 'Left Early', tone: 'tone-info' },
+    { key: 'very_early_leave', label: 'Left Very Early', tone: 'tone-info' },
     { key: 'absent', label: 'Absent', tone: 'tone-danger' },
     { key: 'unmarked', label: 'Pending', tone: 'tone-muted' }
   ];
@@ -687,11 +762,59 @@ async function applyStatus(personId, status, minutesLate) {
   if (!state.currentSessionId) return;
   const existing = state.currentRecords.get(personId) || {};
   const notes = existing?.notes;
-  const minutes = status === 'tardy' ? minutesLate : undefined;
-  const recordId = await DB.setRecordStatus(state.currentSessionId, personId, status, minutes, notes);
+  const providedMinutes = Number.isFinite(minutesLate) ? minutesLate : undefined;
+  const preservedMinutes = Number.isFinite(existing.minutesLate) ? existing.minutesLate : undefined;
+  const minutes = status === 'tardy'
+    ? (providedMinutes ?? preservedMinutes)
+    : undefined;
+  let nextLeave;
+  if (EARLY_STATUSES.has(status)) {
+    nextLeave = status;
+  } else if (status === 'tardy') {
+    nextLeave = existing.leaveStatus;
+  } else {
+    nextLeave = undefined;
+  }
+  const recordId = await DB.setRecordStatus(state.currentSessionId, personId, status, minutes, notes, nextLeave);
   const next = { ...existing, id: existing.id || recordId, sessionId: state.currentSessionId, personId, status };
-  if (status === 'tardy' && Number.isFinite(minutesLate)) next.minutesLate = minutesLate;
-  else delete next.minutesLate;
+  if (status === 'tardy') {
+    if (Number.isFinite(minutes)) next.minutesLate = minutes;
+    else delete next.minutesLate;
+  } else {
+    delete next.minutesLate;
+  }
+  if (nextLeave) next.leaveStatus = nextLeave;
+  else delete next.leaveStatus;
+  state.currentRecords.set(personId, next);
+  await renderPeopleList();
+  renderTrackingStats();
+  buildEventStepper();
+}
+
+async function applyLeaveStatus(personId, leaveStatus) {
+  if (!state.currentSessionId) return;
+  const existing = state.currentRecords.get(personId) || {};
+  const baseStatus = existing.status;
+  if (!baseStatus) {
+    if (leaveStatus) await applyStatus(personId, leaveStatus);
+    return;
+  }
+  if (baseStatus !== 'tardy') {
+    if (leaveStatus) await applyStatus(personId, leaveStatus);
+    return;
+  }
+  const normalized = leaveStatus || undefined;
+  const notes = existing.notes;
+  const minutes = Number.isFinite(existing.minutesLate) ? existing.minutesLate : undefined;
+  const recordId = await DB.setRecordStatus(state.currentSessionId, personId, baseStatus, minutes, notes, normalized);
+  const next = {
+    ...existing,
+    id: existing.id || recordId,
+    sessionId: state.currentSessionId,
+    personId,
+    leaveStatus: normalized
+  };
+  if (!normalized) delete next.leaveStatus;
   state.currentRecords.set(personId, next);
   await renderPeopleList();
   renderTrackingStats();
@@ -764,6 +887,14 @@ peopleListEl?.addEventListener('click', async (e) => {
       openTardyModal(personId);
       return;
     }
+    if (EARLY_STATUSES.has(status)) {
+      const rec = state.currentRecords.get(personId);
+      if (rec?.status === 'tardy') {
+        const nextLeave = rec.leaveStatus === status ? undefined : status;
+        await applyLeaveStatus(personId, nextLeave);
+        return;
+      }
+    }
     await applyStatus(personId, status);
     return;
   }
@@ -788,7 +919,7 @@ notesSave?.addEventListener('click', async () => {
   const personId = state.editingNotesFor;
   const rec = state.currentRecords.get(personId) || {};
   const nextStatus = rec?.status || null;
-  await DB.setRecordStatus(state.currentSessionId, personId, nextStatus, rec?.minutesLate, notesText.value);
+  await DB.setRecordStatus(state.currentSessionId, personId, nextStatus, rec?.minutesLate, notesText.value, rec?.leaveStatus);
   const nextRecord = { ...rec, notes: notesText.value };
   if (nextStatus) nextRecord.status = nextStatus;
   else delete nextRecord.status;
@@ -852,8 +983,11 @@ btnAllPresent?.addEventListener('click', async () => {
   if (!state.currentSessionId) return;
   for (const p of state.people) {
     const existing = state.currentRecords.get(p.id) || {};
-    await DB.setRecordStatus(state.currentSessionId, p.id, 'present', undefined, existing.notes);
-    state.currentRecords.set(p.id, { ...existing, status: 'present' });
+    await DB.setRecordStatus(state.currentSessionId, p.id, 'present', undefined, existing.notes, undefined);
+    const next = { ...existing, status: 'present' };
+    delete next.minutesLate;
+    delete next.leaveStatus;
+    state.currentRecords.set(p.id, next);
   }
   await renderPeopleList();
   renderTrackingStats();
@@ -994,10 +1128,9 @@ async function runAnalytics() {
   const tagq = (analyticsTag?.value || '').toLowerCase();
 
   const { sessions, records } = await DB.recordsForRange(from, to, eventTypeId);
-  const STATUS_WEIGHTS = { present:1.0, online:0.95, excused:0.5, tardy:0.75, early_leave:0.95, very_early_leave:0.7, absent:0.0, non_service:0.0 };
   const eventWeightBySession = new Map(sessions.map(s => [s.id, (state.eventTypes.find(t => t.id===s.eventTypeId)?.weight) ?? 1]));
   const peopleById = new Map(state.people.map(p => [p.id, p]));
-  const rawScore = (r) => STATUS_WEIGHTS[r.status] ?? 0;
+  const rawScore = (r) => recordWeight(r);
   const sessionWeight = (sessionId) => applyEvent ? (eventWeightBySession.get(sessionId) ?? 1) : 1;
   const weightedScore = (r) => rawScore(r) * sessionWeight(r.sessionId);
   const includeRecord = (r) => {
@@ -1010,7 +1143,8 @@ async function runAnalytics() {
   const filtered = records.filter(r => r.status && r.status !== 'non_service').filter(includeRecord);
 
   // Totals
-  const counts = filtered.reduce((acc, r) => { acc[r.status] = (acc[r.status]||0)+1; return acc; }, {});
+  const counts = { present:0, online:0, excused:0, tardy:0, absent:0, early_leave:0, very_early_leave:0 };
+  for (const rec of filtered) accumulateRecordCounts(counts, rec);
   const totalWeight = filtered.reduce((sum, r) => sum + sessionWeight(r.sessionId), 0);
   const scoreSum = filtered.reduce((sum, r) => sum + weightedScore(r), 0);
   const avgScore = totalWeight ? (scoreSum / totalWeight) : 0;
@@ -1028,10 +1162,14 @@ async function runAnalytics() {
     if (isoWeekday(ds) >= 1 && isoWeekday(ds) <= 5) dates.push(ds);
   }
   const byDate = new Map(dates.map(d => [d, { present:0, online:0, excused:0, tardy:0, absent:0, early_leave:0, very_early_leave:0, total:0, weightSum:0, rateAcc:0 }]));
+  const sessionById = new Map(sessions.map(s => [s.id, s]));
   for (const r of filtered) {
-    const s = sessions.find(s => s.id === r.sessionId); if (!s) continue; const d = s.date; const ent = byDate.get(d); if (!ent) continue;
+    const session = sessionById.get(r.sessionId);
+    if (!session) continue;
+    const ent = byDate.get(session.date);
+    if (!ent) continue;
     const weight = sessionWeight(r.sessionId);
-    ent[r.status] = (ent[r.status]||0) + 1;
+    accumulateRecordCounts(ent, r);
     ent.total += 1;
     ent.weightSum += weight;
     ent.rateAcc += rawScore(r) * weight;
@@ -1074,7 +1212,7 @@ async function runAnalytics() {
       const weight = applyEvent ? (ewb.get(r.sessionId) ?? 1) : 1;
       const ent = byDatePrev.get(session.date) || { weightSum:0, rateAcc:0 };
       ent.weightSum += weight;
-      ent.rateAcc += (STATUS_WEIGHTS[r.status] || 0) * weight;
+      ent.rateAcc += recordWeight(r) * weight;
       byDatePrev.set(session.date, ent);
     }
     // align to current dates by index
@@ -1161,14 +1299,14 @@ async function runTrends() {
   const eventTypeId = trendsEvent.value || undefined;
   const applyEvent = !!trendsApplyEventWeight?.checked;
   const { sessions, records } = await DB.recordsForRange(from, to, eventTypeId);
-  const STATUS_WEIGHTS = { present:1.0, online:0.95, excused:0.5, tardy:0.75, early_leave:0.95, very_early_leave:0.7, absent:0.0, non_service:0.0 };
   const eventWeightBySession = new Map(sessions.map(s => [s.id, (state.eventTypes.find(t => t.id===s.eventTypeId)?.weight) ?? 1]));
-  const rawScore = (r) => STATUS_WEIGHTS[r.status] ?? 0;
+  const rawScore = (r) => recordWeight(r);
   const sessionWeight = (sessionId) => applyEvent ? (eventWeightBySession.get(sessionId) ?? 1) : 1;
   const byPerson = new Map();
+  const sessionById = new Map(sessions.map(s => [s.id, s]));
   for (const r of records) {
     if (!r.status || r.status === 'non_service') continue;
-    const s = sessions.find(s=>s.id===r.sessionId);
+    const s = sessionById.get(r.sessionId);
     const d = s?.date || '';
     if (!byPerson.has(r.personId)) byPerson.set(r.personId, []);
     byPerson.get(r.personId).push({ ...r, _date:d, _score: rawScore(r), _weight: sessionWeight(r.sessionId) });
@@ -1232,11 +1370,11 @@ async function runTrends() {
 function renderTrendsSummary(records, applyEvent, eventWeightBySession) {
   if (!trendsSummaryEl) return;
   const eligible = records.filter(r => r.status && r.status !== 'non_service');
-  const counts = eligible.reduce((acc, r) => { acc[r.status] = (acc[r.status]||0)+1; return acc; }, {});
-  const STATUS_WEIGHTS = { present:1.0, online:0.95, excused:0.5, tardy:0.75, early_leave:0.95, very_early_leave:0.7, absent:0.0, non_service:0.0 };
+  const counts = { present:0, online:0, excused:0, tardy:0, absent:0, early_leave:0, very_early_leave:0 };
+  for (const rec of eligible) accumulateRecordCounts(counts, rec);
   const weightForRecord = (sessionId) => applyEvent ? (eventWeightBySession?.get(sessionId) ?? 1) : 1;
   const avgWeightSum = eligible.reduce((sum, r) => sum + weightForRecord(r.sessionId), 0);
-  const avgScoreSum = eligible.reduce((sum, r) => sum + ((STATUS_WEIGHTS[r.status] || 0) * weightForRecord(r.sessionId)), 0);
+  const avgScoreSum = eligible.reduce((sum, r) => sum + (recordWeight(r) * weightForRecord(r.sessionId)), 0);
   const avgScore = avgWeightSum ? (avgScoreSum / avgWeightSum) : 0;
   trendsSummaryEl.innerHTML = `<div><strong>Present:</strong> ${counts.present||0}</div><div><strong>Excused:</strong> ${counts.excused||0}</div><div><strong>Tardy:</strong> ${counts.tardy||0}</div><div><strong>Absent:</strong> ${counts.absent||0}</div><div><strong>Avg:</strong> ${Math.round(avgScore*100)}%</div>`;
 }
@@ -1349,17 +1487,17 @@ async function renderPersonView() {
   const applyEvent = !!personApplyEventWeight?.checked;
 
   const { sessions, records } = await DB.recordsForRange(from, to, eventTypeId);
-  const STATUS_WEIGHTS = { present:1.0, online:0.95, excused:0.5, tardy:0.75, early_leave:0.95, very_early_leave:0.7, absent:0.0, non_service:0.0 };
   const eventWeightBySession = new Map(sessions.map(s => [s.id, (state.eventTypes.find(t => t.id===s.eventTypeId)?.weight) ?? 1]));
-  const rawScore = (r) => STATUS_WEIGHTS[r.status] ?? 0;
+  const rawScore = (r) => recordWeight(r);
   const sessionWeight = (sessionId) => applyEvent ? (eventWeightBySession.get(sessionId) ?? 1) : 1;
 
   // Personal records
   const personRecords = records.filter(r => r.personId === pid && r.status && r.status !== 'non_service');
-  const counts = personRecords.reduce((acc, r) => { acc[r.status] = (acc[r.status]||0)+1; return acc; }, {});
+  const counts = { present:0, online:0, excused:0, tardy:0, absent:0, early_leave:0, very_early_leave:0 };
+  for (const rec of personRecords) accumulateRecordCounts(counts, rec);
   const weightSum = personRecords.reduce((sum, r) => sum + sessionWeight(r.sessionId), 0);
   const avg = weightSum ? (personRecords.reduce((sum, r) => sum + rawScore(r) * sessionWeight(r.sessionId), 0) / weightSum) : 0;
-  personSummaryEl.innerHTML = `<div><strong>Avg:</strong> ${Math.round(avg*100)}%</div><div><strong>Present:</strong> ${counts.present||0}</div><div><strong>Online:</strong> ${counts.online||0}</div><div><strong>Tardy:</strong> ${counts.tardy||0}</div><div><strong>Absent:</strong> ${counts.absent||0}</div>`;
+  personSummaryEl.innerHTML = `<div><strong>Avg:</strong> ${Math.round(avg*100)}%</div><div><strong>Present:</strong> ${counts.present||0}</div><div><strong>Online:</strong> ${counts.online||0}</div><div><strong>Tardy:</strong> ${counts.tardy||0}</div><div><strong>Left Early:</strong> ${counts.early_leave||0}</div><div><strong>Left Very Early:</strong> ${counts.very_early_leave||0}</div><div><strong>Absent:</strong> ${counts.absent||0}</div>`;
 
   // Day-of-week (individual)
   if (personDOWIndEl) {
@@ -1425,11 +1563,13 @@ async function renderPersonView() {
       const score = rawScore(r);
       const textColor = score >= 0.6 ? '#000000' : 'var(--text)';
       const subColor = score >= 0.6 ? '#001014' : 'var(--muted)';
-      const statusLabel = ({ present:'Present', online:'Online', excused:'Excused', tardy:'Tardy', absent:'Absent', early_leave:'Early', very_early_leave:'Very Early' }[r.status]) || r.status;
+      const statuses = recordStatusKeys(r);
+      const statusLabel = statuses.length ? statuses.map(statusLabelText).join(' + ') : 'Unmarked';
+      const tardyMinutes = statuses.includes('tardy') && typeof r.minutesLate === 'number' ? ` (${r.minutesLate}m late)` : '';
       const ev = state.eventTypes.find(t => t.id === s.eventTypeId);
       items.push(`<div class=\"card analytics-card\" style=\"${calendarCellStyle(score)};color:${textColor}\" data-date=\"${d}\">`
         + `<div class=\"day-title\">${d} (${ev?.label||s.eventTypeId})</div>`
-        + `<div class=\"kpis\" style=\"color:${subColor}\">Status: ${statusLabel}${r.status==='tardy' && typeof r.minutesLate==='number' ? ` (${r.minutesLate}m)` : ''}</div>`
+        + `<div class=\"kpis\" style=\"color:${subColor}\">Status: ${statusLabel}${tardyMinutes}</div>`
         + `<div class=\"cal-score percent-outline\">${Math.round(score*100)}%</div>`
         + `<div style=\"margin-top:6px; display:flex; gap:8px;\"><button type=\"button\" data-action=\"open-take\" data-date=\"${d}\">Open in Take</button></div>`
         + `</div>`);
@@ -1458,14 +1598,14 @@ async function renderCalendar() {
   const applyEvent = !!calApplyEventWeightEl?.checked;
 
   const { sessions, records } = await DB.recordsForRange(from, to, eventTypeId);
-  const STATUS_WEIGHTS = { present:1.0, online:0.95, excused:0.5, tardy:0.75, early_leave:0.95, very_early_leave:0.7, absent:0.0, non_service:0.0 };
   const eventWeightBySession = new Map(sessions.map(s => [s.id, (state.eventTypes.find(t => t.id===s.eventTypeId)?.weight) ?? 1]));
-  const rawScore = (r) => STATUS_WEIGHTS[r.status] ?? 0;
+  const rawScore = (r) => recordWeight(r);
   const sessionWeight = (sessionId) => applyEvent ? (eventWeightBySession.get(sessionId) ?? 1) : 1;
 
   const recsByDate = new Map();
+  const sessionById = new Map(sessions.map(s => [s.id, s]));
   for (const r of records) {
-    const s = sessions.find(s => s.id === r.sessionId);
+    const s = sessionById.get(r.sessionId);
     if (!s) continue;
     if (!recsByDate.has(s.date)) recsByDate.set(s.date, []);
     recsByDate.get(s.date).push(r);
@@ -1490,7 +1630,7 @@ async function renderCalendar() {
     const weightSum = recs.reduce((sum, r) => sum + sessionWeight(r.sessionId), 0);
     const avg = weightSum ? recs.reduce((sum, r) => sum + rawScore(r) * sessionWeight(r.sessionId), 0) / weightSum : 0;
     const counts = { present:0, online:0, excused:0, tardy:0, absent:0, early_leave:0, very_early_leave:0, non_service:0 };
-    for (const r of (recsByDate.get(ds) || [])) { if (r.status && r.status !== 'non_service') counts[r.status] = (counts[r.status] || 0) + 1; }
+    for (const rec of recs) accumulateRecordCounts(counts, rec);
     cells.push({ date: ds, day: d.date(), avg, counts });
   }
 
