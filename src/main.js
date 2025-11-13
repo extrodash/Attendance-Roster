@@ -627,7 +627,9 @@ function filterPeople(query) { const q = (query || '').toLowerCase(); return sta
 async function renderPeopleList() {
   const base = filterPeople(takeSearchEl?.value);
   const date = takeDateEl.value || state.currentDate;
-  const filtered = state.showAll ? base : base.filter(p => isPersonServingOn(date, p));
+  const filtered = state.showAll
+    ? base
+    : base.filter((p) => isPersonServingOn(date, p) && p.active !== false);
   const items = filtered.map(p => personRowTemplate(p, state.currentRecords.get(p.id)));
   if (peopleListEl) peopleListEl.innerHTML = items.join('');
   renderTakeSummary(filtered);
@@ -1826,8 +1828,8 @@ function updateHiddenInfoBar() {
   if (!takeHiddenInfoEl || !takeHiddenCountEl) return;
   const base = filterPeople(takeSearchEl?.value);
   const date = takeDateEl.value || state.currentDate;
-  const hiddenCount = base.filter(p => !isPersonServingOn(date, p)).length;
-  // Show the info bar whenever there are missionaries that are normally hidden
+  const hiddenCount = base.filter(p => !isPersonServingOn(date, p) || p.active === false).length;
+  // Show the info bar whenever missionaries are hidden by service-day or inactive filters
   if (hiddenCount > 0) {
     takeHiddenCountEl.textContent = String(hiddenCount);
     takeHiddenInfoEl.hidden = false;
