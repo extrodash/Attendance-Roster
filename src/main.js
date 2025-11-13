@@ -1,4 +1,6 @@
 import { initRouter, showView } from './router.js';
+import { graphSyncConfig } from './config.js';
+import { isGraphConfigured, initGraphAuth, signInWithMicrosoft, signOutMicrosoft, downloadJsonFromGraph, uploadJsonToGraph } from './graph.js';
 
 // Will be assigned after globals load
 let DB = null;
@@ -540,6 +542,7 @@ async function loadSettingsAndTypes() {
   buildEventStepper();
   renderEventTypesTable();
   syncSettingsForm();
+  ensureGraphVisible();
 }
 
 async function loadPeople() { state.people = await DB.listPeople(); }
@@ -1061,6 +1064,58 @@ btnSaveDownloadAttendance?.addEventListener('click', () => {
   });
 });
 btnPrintAttendance?.addEventListener('click', () => window.print());
+
+// Cloud sync events
+cloudSignInBtn?.addEventListener('click', async () => {
+  try {
+    setCloudBusy(true);
+    const acc = await signInWithMicrosoft(graphSyncConfig);
+    if (cloudStatus) cloudStatus.textContent = acc?.username ? `Signed in as ${acc.username}` : 'Signed in';
+    showToast('Signed in to Microsoft');
+  } catch (e) {
+    showToast('Sign-in failed');
+    console.warn(e);
+  } finally { setCloudBusy(false); }
+});
+cloudSignOutBtn?.addEventListener('click', async () => {
+  try {
+    setCloudBusy(true);
+    await signOutMicrosoft(graphSyncConfig);
+    if (cloudStatus) cloudStatus.textContent = 'Signed out';
+    showToast('Signed out');
+  } catch (e) {
+    console.warn(e);
+  } finally { setCloudBusy(false); }
+});
+cloudLoadBtn?.addEventListener('click', async () => {
+  try {
+    setCloudBusy(true);
+    const { json } = await downloadJsonFromGraph(graphSyncConfig);
+    await DB.importAllFromJson(JSON.parse(json));
+    await loadSettingsAndTypes();
+    await loadPeople();
+    await ensureSession();
+    await renderPeopleList();
+    renderTrackingStats();
+    renderRoster();
+    showToast('Loaded latest from cloud', 2000);
+  } catch (e) {
+    showToast('Load failed — check permissions/path', 2400);
+    console.warn(e);
+  } finally { setCloudBusy(false); }
+});
+cloudSaveBtn?.addEventListener('click', async () => {
+  try {
+    setCloudBusy(true);
+    const data = await DB.exportAllAsJson();
+    await uploadJsonToGraph(graphSyncConfig, data);
+    showToast('Saved to cloud', 2000);
+  } catch (e) {
+    if (e && e.code === 412) showToast('Cloud changed — load latest then retry', 2600);
+    else showToast('Save failed — check permissions/path', 2600);
+    console.warn(e);
+  } finally { setCloudBusy(false); }
+});
 
 // Roster
 btnAddPerson?.addEventListener('click', () => { openPersonModal('add'); });
@@ -2135,3 +2190,25 @@ init().catch(err => {
     t.textContent = 'Failed to load libraries. Please run via http://localhost and reload.';
   }
 });
+// Cloud sync (Microsoft Graph) controls
+const cloudSection = document.getElementById('cloud-sync');
+const cloudStatus = document.getElementById('cloud-sync-status');
+const cloudSignInBtn = document.getElementById('cloud-signin');
+const cloudSignOutBtn = document.getElementById('cloud-signout');
+const cloudLoadBtn = document.getElementById('cloud-load');
+const cloudSaveBtn = document.getElementById('cloud-save');
+
+function setCloudBusy(busy) {
+  [cloudSignInBtn, cloudSignOutBtn, cloudLoadBtn, cloudSaveBtn].forEach(btn => { if (btn) btn.disabled = !!busy; });
+}
+
+async function ensureGraphVisible() {
+  try {
+    if (!isGraphConfigured(graphSyncConfig)) { if (cloudSection) cloudSection.hidden = true; return; }
+    if (cloudSection) cloudSection.hidden = false;
+    const { account } = await initGraphAuth(graphSyncConfig);
+    if (cloudStatus) cloudStatus.textContent = account?.username ? `Signed in as ${account.username}` : 'Not signed in';
+  } catch (e) {
+    console.warn('Graph init error', e);
+  }
+}

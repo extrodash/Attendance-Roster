@@ -807,6 +807,17 @@
                   <button id="import-v1-btn" type="button" class="secondary-action">Import from v1</button>
                 </div>
               </section>
+              <section id="cloud-sync" class="settings-section" hidden>
+                <h3>Cloud sync (Microsoft)</h3>
+                <p id="cloud-sync-status" class="section-note">Sign in to sync a shared JSON on OneDrive/SharePoint.</p>
+                <div class="view-actions">
+                  <button id="cloud-signin" type="button" class="secondary-action">Sign in</button>
+                  <button id="cloud-load" type="button" class="secondary-action">Load latest from cloud</button>
+                  <button id="cloud-save" type="button" class="secondary-action">Save current to cloud</button>
+                  <button id="cloud-signout" type="button" class="secondary-action">Sign out</button>
+                </div>
+                <p class="section-note">File path is configured in code. Changes use eTags to avoid overwrites.</p>
+              </section>
               <section class="settings-section danger-zone">
                 <h3>Danger zone</h3>
                 <button id="clear-data" class="danger" type="button">Clear all data</button>
