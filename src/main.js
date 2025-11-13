@@ -1802,6 +1802,29 @@ const uploadJsonInput = document.getElementById('upload-json-input');
 const importV1Btn = document.getElementById('import-v1-btn');
 const clearDataBtn = document.getElementById('clear-data');
 
+// Cloud sync (Microsoft Graph) controls
+const cloudSection = document.getElementById('cloud-sync');
+const cloudStatus = document.getElementById('cloud-sync-status');
+const cloudSignInBtn = document.getElementById('cloud-signin');
+const cloudSignOutBtn = document.getElementById('cloud-signout');
+const cloudLoadBtn = document.getElementById('cloud-load');
+const cloudSaveBtn = document.getElementById('cloud-save');
+
+function setCloudBusy(busy) {
+  [cloudSignInBtn, cloudSignOutBtn, cloudLoadBtn, cloudSaveBtn].forEach(btn => { if (btn) btn.disabled = !!busy; });
+}
+
+async function ensureGraphVisible() {
+  try {
+    if (!isGraphConfigured(graphSyncConfig)) { if (cloudSection) cloudSection.hidden = true; return; }
+    if (cloudSection) cloudSection.hidden = false;
+    const { account } = await initGraphAuth(graphSyncConfig);
+    if (cloudStatus) cloudStatus.textContent = account?.username ? `Signed in as ${account.username}` : 'Not signed in';
+  } catch (e) {
+    console.warn('Graph init error', e);
+  }
+}
+
 function renderEventTypesTable() {
   if (!eventTypesTbody) return;
   eventTypesTbody.innerHTML = state.eventTypes.map(et => `<tr data-id="${et.id}"><td contenteditable="true" data-col="label">${et.label}</td><td contenteditable="true" data-col="weight">${et.weight}</td><td><button data-action="delete" type="button">Delete</button></td></tr>`).join('');
@@ -2190,25 +2213,3 @@ init().catch(err => {
     t.textContent = 'Failed to load libraries. Please run via http://localhost and reload.';
   }
 });
-// Cloud sync (Microsoft Graph) controls
-const cloudSection = document.getElementById('cloud-sync');
-const cloudStatus = document.getElementById('cloud-sync-status');
-const cloudSignInBtn = document.getElementById('cloud-signin');
-const cloudSignOutBtn = document.getElementById('cloud-signout');
-const cloudLoadBtn = document.getElementById('cloud-load');
-const cloudSaveBtn = document.getElementById('cloud-save');
-
-function setCloudBusy(busy) {
-  [cloudSignInBtn, cloudSignOutBtn, cloudLoadBtn, cloudSaveBtn].forEach(btn => { if (btn) btn.disabled = !!busy; });
-}
-
-async function ensureGraphVisible() {
-  try {
-    if (!isGraphConfigured(graphSyncConfig)) { if (cloudSection) cloudSection.hidden = true; return; }
-    if (cloudSection) cloudSection.hidden = false;
-    const { account } = await initGraphAuth(graphSyncConfig);
-    if (cloudStatus) cloudStatus.textContent = account?.username ? `Signed in as ${account.username}` : 'Not signed in';
-  } catch (e) {
-    console.warn('Graph init error', e);
-  }
-}
