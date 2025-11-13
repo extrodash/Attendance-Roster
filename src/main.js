@@ -176,6 +176,7 @@ const takeHiddenInfoEl = document.getElementById('take-hidden-info');
 const takeHiddenCountEl = document.getElementById('take-hidden-count');
 const takeHiddenToggleBtn = document.getElementById('take-hidden-toggle');
 const takeHiddenHideBtn = document.getElementById('take-hidden-hide');
+const takeLetterIndexEl = document.getElementById('take-letter-index');
 const btnAllPresent = document.getElementById('mark-all-present');
 const btnClearAll = document.getElementById('clear-all');
 const btnSaveAttendance = document.getElementById('save-attendance');
@@ -624,16 +625,62 @@ function isPersonServingOn(dateStr, person) {
 
 function filterPeople(query) { const q = (query || '').toLowerCase(); return state.people.filter(p => p.displayName.toLowerCase().includes(q)); }
 
+function getPersonGroupLetter(name) {
+  const initial = (name || '').trim().charAt(0) || '#';
+  const normalized = initial.toUpperCase();
+  return /^[A-Z]$/.test(normalized) ? normalized : '#';
+}
+
+function groupIdFromLetter(letter) {
+  return `group-${letter === '#' ? 'other' : letter}`;
+}
+
+function renderTakeLetterIndex(letters = []) {
+  if (!takeLetterIndexEl) return;
+  if (!letters.length) {
+    takeLetterIndexEl.hidden = true;
+    takeLetterIndexEl.innerHTML = '';
+    return;
+  }
+  const items = letters.map(letter => {
+    const label = letter === '#' ? 'Other names' : `Names starting with ${letter}`;
+    const text = letter === '#' ? '#' : letter;
+    return `<button type="button" data-letter="${letter}" aria-label="${label}">${text}</button>`;
+  }).join('');
+  takeLetterIndexEl.innerHTML = items;
+  takeLetterIndexEl.hidden = letters.length <= 1;
+}
+
 async function renderPeopleList() {
   const base = filterPeople(takeSearchEl?.value);
   const date = takeDateEl.value || state.currentDate;
   const filtered = state.showAll
     ? base
     : base.filter((p) => isPersonServingOn(date, p) && p.active !== false);
-  const items = filtered.map(p => personRowTemplate(p, state.currentRecords.get(p.id)));
-  if (peopleListEl) peopleListEl.innerHTML = items.join('');
+  const groups = new Map();
+  for (const person of filtered) {
+    const letter = getPersonGroupLetter(person.displayName || person.fullName);
+    if (!groups.has(letter)) groups.set(letter, []);
+    groups.get(letter).push(person);
+  }
+  const sortedLetters = [...groups.keys()].sort((a, b) => {
+    if (a === '#') return 1;
+    if (b === '#') return -1;
+    return a.localeCompare(b);
+  });
+  const groupMarkup = sortedLetters.map((letter) => {
+    const rows = groups.get(letter).map(p => personRowTemplate(p, state.currentRecords.get(p.id))).join('');
+    const headerText = letter === '#' ? 'Other names' : letter;
+    return `
+      <li class="people-group" id="${groupIdFromLetter(letter)}">
+        <div class="people-group__header">${headerText}</div>
+        <ul class="people-group__items">${rows}</ul>
+      </li>`;
+  }).join('');
+  if (peopleListEl) peopleListEl.innerHTML = groupMarkup;
   renderTakeSummary(filtered);
   updateHiddenInfoBar();
+  renderTakeLetterIndex(sortedLetters);
 }
 
 function renderNavigatorGaps() {
@@ -1800,6 +1847,15 @@ takeSearchEl?.addEventListener('input', debounce(renderPeopleList, 150));
 takeShowAllEl?.addEventListener('change', () => { state.showAll = !!takeShowAllEl.checked; localStorage.setItem('take_show_all', String(state.showAll)); renderPeopleList(); });
 takeHiddenToggleBtn?.addEventListener('click', () => { if (!takeShowAllEl) return; takeShowAllEl.checked = true; state.showAll = true; localStorage.setItem('take_show_all', 'true'); renderPeopleList(); });
 takeHiddenHideBtn?.addEventListener('click', () => { if (!takeShowAllEl) return; takeShowAllEl.checked = false; state.showAll = false; localStorage.setItem('take_show_all', 'false'); renderPeopleList(); });
+takeLetterIndexEl?.addEventListener('click', (event) => {
+  const btn = event.target.closest('button[data-letter]');
+  if (!btn) return;
+  const letter = btn.dataset.letter;
+  if (!letter) return;
+  const targetId = groupIdFromLetter(letter);
+  const target = document.getElementById(targetId);
+  if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
 
 navigatorListEl?.addEventListener('click', async (e) => {
   const btn = e.target.closest('button[data-date]');

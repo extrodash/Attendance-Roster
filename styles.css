@@ -507,21 +507,42 @@ main {
   transition: width 0.2s ease;
 }
 
+.take-roster__list {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+.take-roster__list .people-list {
+  flex: 1;
+  min-width: 0;
+}
 .people-list {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  gap: var(--space-3);
-  grid-template-columns: minmax(0, 1fr);
-  width: 100%;
-  justify-content: center;
-  justify-items: stretch;
-}
-.people-list > li {
   display: flex;
-  align-items: stretch;
-  min-width: 0;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.people-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.people-group__header {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+.people-group__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
 }
 .person-row {
   position: relative;
@@ -617,6 +638,51 @@ main {
   line-height: 1;
   text-transform: uppercase;
   grid-row: 1 / span 2;
+}
+.letter-index {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding-top: var(--space-1);
+  align-self: flex-start;
+  position: sticky;
+  top: calc(var(--space-4) + 4px);
+}
+.letter-index button {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-alt);
+  color: var(--color-muted);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  display: grid;
+  place-items: center;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.letter-index button:hover,
+.letter-index button:focus-visible {
+  border-color: var(--color-primary);
+  color: var(--color-text);
+}
+
+@media (max-width: 900px) {
+  .take-roster__list {
+    flex-direction: column;
+  }
+  .letter-index {
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    position: static;
+    gap: var(--space-2);
+  }
+  .letter-index button {
+    width: 36px;
+    height: 36px;
+  }
 }
 .person-name {
   margin: 0;
@@ -809,10 +875,7 @@ main {
   }
 
   .people-list {
-    grid-template-columns: repeat(2, minmax(320px, 1fr));
     gap: var(--space-5);
-    align-content: start;
-    justify-content: center;
     max-width: min(100%, 1120px);
     margin-left: auto;
     margin-right: auto;
@@ -1429,7 +1492,7 @@ main {
   .app-header, .view-actions, .take-sidebar, .sidebar-footnotes, .view-support, .modal, #toast, .app-nav { display: none !important; }
   main { padding: 0; }
   .view-panel { box-shadow: none; border: none; background: #fff; }
-  .people-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
+  .people-list { gap: var(--space-2); }
   .person-row { border: 1px solid #888; background: #fff; color: #000; }
   .pill { display: none; }
 }
