@@ -184,6 +184,10 @@ const btnClearAll = document.getElementById('clear-all');
 const btnSaveAttendance = document.getElementById('save-attendance');
 const btnSaveDownloadAttendance = document.getElementById('save-download-attendance');
 const btnPrintAttendance = document.getElementById('print-attendance');
+const stickySaveBtn = document.getElementById('take-sticky-save');
+const stickyDownloadBtn = document.getElementById('take-sticky-download');
+const stickyPrintBtn = document.getElementById('take-sticky-print');
+const stickyMore = document.getElementById('take-sticky-more');
 const takeSummaryEl = document.getElementById('take-summary');
 const takeDateHint = document.getElementById('date-helper');
 // Navigator controls
@@ -651,30 +655,55 @@ function isPersonServingOn(dateStr, person) {
 
 function filterPeople(query) { const q = (query || '').toLowerCase(); return state.people.filter(p => p.displayName.toLowerCase().includes(q)); }
 
+function getLastNameSegment(value) {
+  const trimmed = (value || '').trim();
+  if (!trimmed) return '';
+  const parts = trimmed.split(/\s+/);
+  return parts.length ? parts[parts.length - 1] : '';
+}
+
 function getPersonGroupLetter(name) {
-  const initial = (name || '').trim().charAt(0) || '#';
+  const lastName = getLastNameSegment(name);
+  const fallbackChar = (name || '').trim().charAt(0) || '';
+  const initial = (lastName || fallbackChar || '#').charAt(0);
   const normalized = initial.toUpperCase();
   return /^[A-Z]$/.test(normalized) ? normalized : '#';
+}
+
+function getPersonNameSortKey(person) {
+  const rawName = (person.displayName || person.fullName || '').trim();
+  const lastName = getLastNameSegment(rawName);
+  return {
+    normalizedLast: lastName.toLowerCase(),
+    normalizedFull: rawName.toLowerCase()
+  };
+}
+
+function comparePeopleByLastName(a, b) {
+  const keyA = getPersonNameSortKey(a);
+  const keyB = getPersonNameSortKey(b);
+  const lastCmp = keyA.normalizedLast.localeCompare(keyB.normalizedLast);
+  if (lastCmp !== 0) return lastCmp;
+  return keyA.normalizedFull.localeCompare(keyB.normalizedFull);
 }
 
 function groupIdFromLetter(letter) {
   return `group-${letter === '#' ? 'other' : letter}`;
 }
 
-function renderTakeLetterIndex(letters = []) {
+function renderTakeLetterIndex(entries = []) {
   if (!takeLetterIndexEl) return;
-  if (!letters.length) {
+  if (!entries.length) {
     takeLetterIndexEl.hidden = true;
     takeLetterIndexEl.innerHTML = '';
     return;
   }
-  const items = letters.map(letter => {
-    const label = letter === '#' ? 'Other names' : `Names starting with ${letter}`;
-    const text = letter === '#' ? '#' : letter;
+  const items = entries.map(({ letter, text, aria }) => {
+    const label = aria || (letter === '#' ? 'Other names' : `Jump to ${text}`);
     return `<button type="button" data-letter="${letter}" aria-label="${label}">${text}</button>`;
   }).join('');
   takeLetterIndexEl.innerHTML = items;
-  takeLetterIndexEl.hidden = letters.length <= 1;
+  takeLetterIndexEl.hidden = entries.length <= 1;
 }
 
 async function renderPeopleList() {
@@ -683,8 +712,9 @@ async function renderPeopleList() {
   const filtered = state.showAll
     ? base
     : base.filter((p) => isPersonServingOn(date, p) && p.active !== false);
+  const sorted = [...filtered].sort(comparePeopleByLastName);
   const groups = new Map();
-  for (const person of filtered) {
+  for (const person of sorted) {
     const letter = getPersonGroupLetter(person.displayName || person.fullName);
     if (!groups.has(letter)) groups.set(letter, []);
     groups.get(letter).push(person);
@@ -694,19 +724,30 @@ async function renderPeopleList() {
     if (b === '#') return -1;
     return a.localeCompare(b);
   });
+  const navEntries = sortedLetters.map((letter) => {
+    const remaining = groups.get(letter) || [];
+    const first = remaining[0];
+    const rawName = first ? (first.displayName || first.fullName || '') : '';
+    const lastName = getLastNameSegment(rawName);
+    const fallback = letter === '#' ? 'Other names' : letter;
+    const text = lastName || fallback;
+    return {
+      letter,
+      text,
+      aria: letter === '#' ? 'Other names' : `Jump to ${text}`
+    };
+  });
   const groupMarkup = sortedLetters.map((letter) => {
     const rows = groups.get(letter).map(p => personRowTemplate(p, state.currentRecords.get(p.id))).join('');
-    const headerText = letter === '#' ? 'Other names' : letter;
     return `
       <li class="people-group" id="${groupIdFromLetter(letter)}">
-        <div class="people-group__header">${headerText}</div>
         <ul class="people-group__items">${rows}</ul>
       </li>`;
   }).join('');
   if (peopleListEl) peopleListEl.innerHTML = groupMarkup;
   renderTakeSummary(filtered);
   updateHiddenInfoBar();
-  renderTakeLetterIndex(sortedLetters);
+  renderTakeLetterIndex(navEntries);
 }
 
 function renderNavigatorGaps() {
@@ -1087,6 +1128,20 @@ btnSaveDownloadAttendance?.addEventListener('click', () => {
   });
 });
 btnPrintAttendance?.addEventListener('click', () => window.print());
+const closeStickyMore = () => {
+  if (stickyMore?.open) stickyMore.open = false;
+};
+stickySaveBtn?.addEventListener('click', () => {
+  btnSaveAttendance?.click();
+});
+stickyDownloadBtn?.addEventListener('click', () => {
+  btnSaveDownloadAttendance?.click();
+  closeStickyMore();
+});
+stickyPrintBtn?.addEventListener('click', () => {
+  btnPrintAttendance?.click();
+  closeStickyMore();
+});
 
 // Cloud sync events
 cloudSignInBtn?.addEventListener('click', async () => {
