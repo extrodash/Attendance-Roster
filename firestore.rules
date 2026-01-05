@@ -1,0 +1,81 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function memberDoc(teamId) {
+      return get(/databases/$(database)/documents/teams/$(teamId)/members/$(request.auth.uid));
+    }
+
+    function isMember(teamId) {
+      return signedIn() && memberDoc(teamId).exists();
+    }
+
+    function role(teamId) {
+      return memberDoc(teamId).data.role;
+    }
+
+    function isLead(teamId) {
+      return isMember(teamId) && role(teamId) == 'lead';
+    }
+
+    function isAtl(teamId) {
+      return isMember(teamId) && role(teamId) == 'atl';
+    }
+
+    function canEditRoster(teamId) {
+      return isLead(teamId) || isAtl(teamId);
+    }
+
+    function canEditAttendance(teamId) {
+      return isMember(teamId);
+    }
+
+    match /teams/{teamId} {
+      allow create: if signedIn();
+      allow read: if isMember(teamId);
+      allow update, delete: if isLead(teamId);
+
+      match /members/{uid} {
+        allow read: if isMember(teamId);
+        allow create: if signedIn()
+          && request.auth.uid == uid
+          && (
+            request.resource.data.role == 'member'
+            || (request.resource.data.role == 'lead'
+              && get(/databases/$(database)/documents/teams/$(teamId)).data.createdBy == request.auth.uid)
+          );
+        allow update: if isLead(teamId)
+          || (request.auth.uid == uid && request.resource.data.role == resource.data.role);
+        allow delete: if isLead(teamId) || request.auth.uid == uid;
+      }
+
+      match /settings/{docId} {
+        allow read: if isMember(teamId);
+        allow write: if isLead(teamId);
+      }
+
+      match /roster/{personId} {
+        allow read: if isMember(teamId);
+        allow write: if canEditRoster(teamId);
+      }
+
+      match /attendance/{dateId} {
+        allow read: if isMember(teamId);
+        allow write: if canEditAttendance(teamId);
+
+        match /sessions/{sessionId} {
+          allow read: if isMember(teamId);
+          allow write: if canEditAttendance(teamId);
+
+          match /records/{recordId} {
+            allow read: if isMember(teamId);
+            allow write: if canEditAttendance(teamId);
+          }
+        }
+      }
+    }
+  }
+}

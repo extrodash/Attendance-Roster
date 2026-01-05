@@ -1,9 +1,17 @@
 import { initRouter, showView } from './router.js';
-import { graphSyncConfig } from './config.js';
-import { isGraphConfigured, initGraphAuth, signInWithMicrosoft, signOutMicrosoft, downloadJsonFromGraph, uploadJsonToGraph } from './graph.js';
+import { createLocalProvider } from './providers/localProvider.js';
+import { createFirebaseProvider } from './providers/firebaseProvider.js';
+import { getStoredSyncMode, setStoredSyncMode } from './providers/providerState.js';
 
 // Will be assigned after globals load
 let DB = null;
+let localProvider = null;
+let firebaseProvider = null;
+let activeProvider = null;
+let activeMode = 'local';
+let providerSubscriptions = [];
+let sessionSubscription = null;
+let authUser = null;
 
 // Global state
 const state = {
@@ -15,6 +23,13 @@ const state = {
   currentSessionId: null,
   currentRecords: new Map(), // personId -> record
   showAll: false,
+  showPendingOnly: false,
+  hiddenCount: 0,
+  saveDirty: false,
+  lastSavedAt: null,
+  lastSaveSource: null,
+  autosaveEnabled: true,
+  autosaveTimer: null,
   editingNotesFor: null,
   selectedPersonId: null,
   officeGaps: [],
@@ -41,10 +56,44 @@ const STATUS_WEIGHTS = {
   non_service: 0.0
 };
 
+function clampNumber(value, min, max) {
+  if (!Number.isFinite(value)) return NaN;
+  return Math.min(max, Math.max(min, value));
+}
+
 function recordStatusKeys(record) {
   if (!record) return [];
   const keys = [];
   const base = record.status;
+  if (base) keys.push(base);
+  const leave = record.leaveStatus;
+  if (leave && leave !== base) keys.push(leave);
+  return keys;
+}
+
+function isRecordPending(record) {
+  return !record || !record.status;
+}
+
+function reportingTardyThreshold() {
+  const raw = Number(state.settings?.tardyThresholdMins);
+  return Number.isFinite(raw) ? raw : 5;
+}
+
+function reportingBaseStatus(record, { tardyThresholdMins } = {}) {
+  if (!record) return '';
+  const base = record.status;
+  if (base !== 'tardy') return base;
+  const threshold = Number.isFinite(tardyThresholdMins) ? tardyThresholdMins : reportingTardyThreshold();
+  const minutes = Number(record.minutesLate);
+  if (Number.isFinite(minutes) && minutes < threshold) return 'present';
+  return base;
+}
+
+function reportingStatusKeys(record, opts = {}) {
+  if (!record) return [];
+  const keys = [];
+  const base = reportingBaseStatus(record, opts);
   if (base) keys.push(base);
   const leave = record.leaveStatus;
   if (leave && leave !== base) keys.push(leave);
@@ -65,8 +114,34 @@ function recordWeight(record) {
   return weight;
 }
 
+function recordWeightForReporting(record, opts = {}) {
+  const keys = reportingStatusKeys(record, opts);
+  if (!keys.length) return 0;
+  let weight = STATUS_WEIGHTS[keys[0]] ?? 0;
+  for (let i = 1; i < keys.length; i += 1) {
+    const key = keys[i];
+    const w = STATUS_WEIGHTS[key];
+    if (typeof w === 'number') {
+      weight = Math.min(weight, w);
+    }
+  }
+  return weight;
+}
+
 function accumulateRecordCounts(counts, record) {
   const keys = recordStatusKeys(record);
+  if (!keys.length) return false;
+  let counted = false;
+  for (const key of keys) {
+    if (!key) continue;
+    counts[key] = (counts[key] || 0) + 1;
+    counted = true;
+  }
+  return counted;
+}
+
+function accumulateRecordCountsForReporting(counts, record, opts = {}) {
+  const keys = reportingStatusKeys(record, opts);
   if (!keys.length) return false;
   let counted = false;
   for (const key of keys) {
@@ -170,8 +245,11 @@ const takeDateNextBtn = document.getElementById('take-date-next');
 const takeDateTodayBtn = document.getElementById('take-date-today');
 const takeEventEl = document.getElementById('take-event');
 const eventStepper = document.getElementById('event-stepper');
+const takeTodayOfficeBtn = document.getElementById('take-today-office');
 const takeSearchEl = document.getElementById('take-search');
 const takeShowAllEl = document.getElementById('take-show-all');
+const takeShowPendingEl = document.getElementById('take-show-pending');
+const takeNextPendingBtn = document.getElementById('take-next-pending');
 const peopleListEl = document.getElementById('people-list');
 const takeTrackingStatsEl = document.getElementById('take-tracking-stats');
 const takeHiddenInfoEl = document.getElementById('take-hidden-info');
@@ -180,6 +258,7 @@ const takeHiddenToggleBtn = document.getElementById('take-hidden-toggle');
 const takeHiddenHideBtn = document.getElementById('take-hidden-hide');
 const takeLetterIndexEl = document.getElementById('take-letter-index');
 const btnAllPresent = document.getElementById('mark-all-present');
+const btnMarkPendingAbsent = document.getElementById('mark-pending-absent');
 const btnClearAll = document.getElementById('clear-all');
 const btnSaveAttendance = document.getElementById('save-attendance');
 const btnSaveDownloadAttendance = document.getElementById('save-download-attendance');
@@ -190,30 +269,256 @@ const stickyPrintBtn = document.getElementById('take-sticky-print');
 const stickyMore = document.getElementById('take-sticky-more');
 const takeSummaryEl = document.getElementById('take-summary');
 const takeDateHint = document.getElementById('date-helper');
+const takeSaveStatusEl = document.getElementById('take-save-status');
+const takeSaveLabelEl = document.getElementById('take-save-label');
+const takeSaveTimeEl = document.getElementById('take-save-time');
+const takeAutosaveToggle = document.getElementById('take-autosave');
 // Navigator controls
 const navigatorListEl = document.getElementById('navigator-gaps');
+const navigatorSectionEl = document.querySelector('[data-section="navigator"]');
 
-// Cloud sync (Microsoft Graph) controls
+// Cloud sync (Firebase) controls
 const cloudSection = document.getElementById('cloud-sync');
 const cloudStatus = document.getElementById('cloud-sync-status');
 const cloudSignInBtn = document.getElementById('cloud-signin');
 const cloudSignOutBtn = document.getElementById('cloud-signout');
-const cloudLoadBtn = document.getElementById('cloud-load');
-const cloudSaveBtn = document.getElementById('cloud-save');
+const cloudSyncMode = document.getElementById('cloud-sync-mode');
+const cloudCreateName = document.getElementById('cloud-team-create-name');
+const cloudCreateBtn = document.getElementById('cloud-team-create');
+const cloudJoinId = document.getElementById('cloud-team-join-id');
+const cloudJoinBtn = document.getElementById('cloud-team-join');
+const cloudCurrentTeam = document.getElementById('cloud-current-team');
+const cloudCurrentTeamId = document.getElementById('cloud-current-team-id');
+const cloudCopyTeamBtn = document.getElementById('cloud-copy-team');
+const syncOnlineEl = document.getElementById('sync-online');
+const syncPendingEl = document.getElementById('sync-pending');
+const syncLastEl = document.getElementById('sync-last');
+
+const migrationModal = document.getElementById('migration-modal');
+const migrationSummary = document.getElementById('migration-summary');
+const migrationUploadBtn = document.getElementById('migration-upload');
+const migrationDownloadBtn = document.getElementById('migration-download');
+const migrationCancelBtn = document.getElementById('migration-cancel');
 
 function setCloudBusy(busy) {
-  [cloudSignInBtn, cloudSignOutBtn, cloudLoadBtn, cloudSaveBtn].forEach(btn => { if (btn) btn.disabled = !!busy; });
+  [cloudSignInBtn, cloudSignOutBtn, cloudCreateBtn, cloudJoinBtn, cloudCopyTeamBtn, cloudSyncMode].forEach(btn => {
+    if (btn) btn.disabled = !!busy;
+  });
+  if (cloudCreateName) cloudCreateName.disabled = !!busy;
+  if (cloudJoinId) cloudJoinId.disabled = !!busy;
 }
 
-async function ensureGraphVisible() {
-  try {
-    if (!isGraphConfigured(graphSyncConfig)) { if (cloudSection) cloudSection.hidden = true; return; }
-    if (cloudSection) cloudSection.hidden = false;
-    const { account } = await initGraphAuth(graphSyncConfig);
-    if (cloudStatus) cloudStatus.textContent = account?.username ? `Signed in as ${account.username}` : 'Not signed in';
-  } catch (e) {
-    console.warn('Graph init error', e);
+function setCloudStatus(text) {
+  if (cloudStatus) cloudStatus.textContent = text;
+}
+
+function renderSyncStatus(status) {
+  if (!syncOnlineEl) return;
+  if (activeMode !== 'firebase') {
+    syncOnlineEl.textContent = 'Local only';
+    syncOnlineEl.className = 'chip tone-info';
+    if (syncPendingEl) syncPendingEl.hidden = true;
+    if (syncLastEl) syncLastEl.textContent = '';
+    return;
   }
+  const online = !!status?.online;
+  syncOnlineEl.textContent = online ? 'Online' : 'Offline';
+  syncOnlineEl.className = `chip ${online ? 'tone-success' : 'tone-danger'}`;
+  if (syncPendingEl) syncPendingEl.hidden = !status?.pendingWrites;
+  if (syncLastEl) syncLastEl.textContent = status?.lastSyncedAt ? `Last synced ${new Date(status.lastSyncedAt).toLocaleString()}` : '';
+}
+
+let migrationResolver = null;
+function openMigrationModal(message, options = {}) {
+  if (!migrationModal) return Promise.resolve('cancel');
+  if (migrationSummary) migrationSummary.textContent = message;
+  if (migrationUploadBtn) migrationUploadBtn.hidden = !options.allowUpload;
+  if (migrationDownloadBtn) migrationDownloadBtn.hidden = !options.allowDownload;
+  if (migrationDownloadBtn) {
+    migrationDownloadBtn.classList.toggle('primary-action', !!options.recommendDownload);
+    migrationDownloadBtn.classList.toggle('secondary-action', !options.recommendDownload);
+  }
+  if (migrationUploadBtn) {
+    migrationUploadBtn.classList.toggle('primary-action', !!options.recommendUpload);
+    migrationUploadBtn.classList.toggle('secondary-action', !options.recommendUpload);
+  }
+  migrationModal.hidden = false;
+  return new Promise((resolve) => { migrationResolver = resolve; });
+}
+
+function closeMigrationModal(choice = 'cancel') {
+  if (migrationModal) migrationModal.hidden = true;
+  if (migrationResolver) migrationResolver(choice);
+  migrationResolver = null;
+}
+
+migrationUploadBtn?.addEventListener('click', () => closeMigrationModal('upload'));
+migrationDownloadBtn?.addEventListener('click', () => closeMigrationModal('download'));
+migrationCancelBtn?.addEventListener('click', () => closeMigrationModal('cancel'));
+
+function migrationKey(teamId) {
+  return `attendance_firebase_migrated_${teamId}`;
+}
+
+function hasMigrationFlag(teamId) {
+  if (!teamId) return false;
+  try {
+    return localStorage.getItem(migrationKey(teamId)) === 'true';
+  } catch (err) {
+    return false;
+  }
+}
+
+function setMigrationFlag(teamId) {
+  if (!teamId) return;
+  try {
+    localStorage.setItem(migrationKey(teamId), 'true');
+  } catch (err) {
+    // ignore storage errors
+  }
+}
+
+async function addProviderSubscription(subscriber) {
+  if (!subscriber) return;
+  const unsub = await subscriber;
+  if (typeof unsub === 'function') providerSubscriptions.push(unsub);
+}
+
+async function attachProviderSubscriptions() {
+  providerSubscriptions.forEach(unsub => {
+    try { unsub(); } catch (err) { /* noop */ }
+  });
+  providerSubscriptions = [];
+  if (!activeProvider) return;
+  await addProviderSubscription(activeProvider.subscribeSettings(async (settings) => {
+    await applySettings(settings);
+  }));
+  await addProviderSubscription(activeProvider.subscribeEventTypes(async (eventTypes) => {
+    await applyEventTypes(eventTypes);
+  }));
+  await addProviderSubscription(activeProvider.subscribeRoster((people) => {
+    state.people = people || [];
+    renderRoster();
+    renderPeopleList();
+    renderTrackingStats();
+  }));
+  if (activeMode === 'firebase' && firebaseProvider?.subscribeSyncStatus) {
+    await addProviderSubscription(firebaseProvider.subscribeSyncStatus(renderSyncStatus));
+  } else {
+    renderSyncStatus({ online: navigator.onLine, pendingWrites: false, lastSyncedAt: null });
+  }
+}
+
+async function switchProvider(mode) {
+  if (activeMode === mode) return;
+  if (sessionSubscription) {
+    sessionSubscription();
+    sessionSubscription = null;
+  }
+  activeMode = mode;
+  setStoredSyncMode(mode);
+  activeProvider = mode === 'firebase' ? firebaseProvider : localProvider;
+  await loadSettingsAndTypes();
+  await loadPeople();
+  await ensureSession();
+  await renderPeopleList();
+  renderTrackingStats();
+  renderRoster();
+  markSaved(`switch-${mode}`);
+  await attachProviderSubscriptions();
+  if (cloudSyncMode) cloudSyncMode.value = mode;
+  renderSyncStatus({ online: navigator.onLine, pendingWrites: false, lastSyncedAt: null });
+  await updateCloudUI();
+}
+
+async function updateCloudUI() {
+  if (!cloudSection) return;
+  if (!firebaseProvider?.isConfigured?.()) {
+    cloudSection.hidden = true;
+    return;
+  }
+  cloudSection.hidden = false;
+  const user = authUser;
+  const signedInLabel = user?.email || user?.displayName || 'Signed in';
+  setCloudStatus(user ? `Signed in as ${signedInLabel}` : 'Not signed in');
+  if (cloudSignInBtn) cloudSignInBtn.disabled = !!user;
+  if (cloudSignOutBtn) cloudSignOutBtn.disabled = !user;
+  const teamId = firebaseProvider.getActiveTeamId();
+  let teamName = firebaseProvider.getActiveTeamName();
+  if (teamId && !teamName && authUser) {
+    await firebaseProvider.refreshTeamInfo();
+    teamName = firebaseProvider.getActiveTeamName();
+  }
+  if (cloudCurrentTeam) cloudCurrentTeam.textContent = teamName || '—';
+  if (cloudCurrentTeamId) cloudCurrentTeamId.textContent = teamId || '—';
+  if (cloudCopyTeamBtn) cloudCopyTeamBtn.disabled = !teamId;
+  const allowTeamActions = !!user;
+  if (cloudCreateBtn) cloudCreateBtn.disabled = !allowTeamActions;
+  if (cloudJoinBtn) cloudJoinBtn.disabled = !allowTeamActions;
+  if (cloudCreateName) cloudCreateName.disabled = !allowTeamActions;
+  if (cloudJoinId) cloudJoinId.disabled = !allowTeamActions;
+  if (cloudSyncMode) cloudSyncMode.value = activeMode;
+}
+
+async function maybeRunMigration(teamId) {
+  if (!teamId) return false;
+  if (hasMigrationFlag(teamId)) return true;
+  const [hasLocal, hasRemote] = await Promise.all([
+    localProvider.hasData(),
+    firebaseProvider.hasTeamData()
+  ]);
+  if (!hasLocal && !hasRemote) {
+    setMigrationFlag(teamId);
+    return true;
+  }
+  const message = hasLocal && hasRemote
+    ? 'We found data on this device and in the cloud. Choose which one should be the source of truth.'
+    : hasLocal
+      ? 'Local data exists on this device. Upload it to seed the cloud team, or cancel.'
+      : 'Cloud data exists for this team. Replace local data with the cloud copy, or cancel.';
+  const choice = await openMigrationModal(message, {
+    allowUpload: hasLocal,
+    allowDownload: hasRemote,
+    recommendDownload: hasLocal && hasRemote,
+    recommendUpload: hasLocal && !hasRemote
+  });
+  if (choice === 'cancel') return false;
+  if (choice === 'upload') {
+    const json = await localProvider.exportAllAsJson();
+    const seeded = await safeWrite(() => firebaseProvider.importAllFromJson(json), 'Unable to seed cloud data');
+    if (seeded === null) return false;
+    showToast('Cloud seeded from this device', 2200);
+  }
+  if (choice === 'download') {
+    const json = await firebaseProvider.exportAllAsJson();
+    const pulled = await safeWrite(() => localProvider.importAllFromJson(json), 'Unable to replace local data');
+    if (pulled === null) return false;
+    showToast('Local data replaced with cloud copy', 2200);
+  }
+  setMigrationFlag(teamId);
+  return true;
+}
+
+async function activateFirebaseMode() {
+  if (activeMode === 'firebase') return true;
+  if (!firebaseProvider?.isConfigured?.()) {
+    showToast('Firebase is not configured');
+    return false;
+  }
+  const user = await firebaseProvider.getCurrentUser();
+  if (!user) {
+    showToast('Sign in to enable cloud sync', 2000);
+    return false;
+  }
+  const teamId = firebaseProvider.getActiveTeamId();
+  if (!teamId) {
+    showToast('Create or join a team first', 2000);
+    return false;
+  }
+  const migrated = await maybeRunMigration(teamId);
+  if (!migrated) return false;
+  await switchProvider('firebase');
+  return true;
 }
 
 // Insights controls
@@ -230,6 +535,7 @@ const analyticsShowTardy = document.getElementById('analytics-show-tardy');
 const analyticsShowAbsent = document.getElementById('analytics-show-absent');
 const analyticsShowRate = document.getElementById('analytics-show-rate');
 const analyticsActiveOnly = document.getElementById('analytics-active-only');
+const analyticsIncludeMissing = document.getElementById('analytics-include-missing');
 const analyticsTag = document.getElementById('analytics-tag');
 const analyticsRange14 = document.getElementById('analytics-range-14');
 const analyticsRange30 = document.getElementById('analytics-range-30');
@@ -256,6 +562,7 @@ const trendsPeopleEl = document.getElementById('trends-people');
 const trendsStatusDowEl = document.getElementById('trends-status-dow');
 const trendsSearchEl = document.getElementById('trends-search');
 const trendsActiveOnly = document.getElementById('trends-active-only');
+const trendsIncludeMissing = document.getElementById('trends-include-missing');
 const trendsTag = document.getElementById('trends-tag');
 const trendsSort = document.getElementById('trends-sort');
 const trendsRange14 = document.getElementById('trends-range-14');
@@ -276,6 +583,7 @@ const calMonthPrevBtn = document.getElementById('cal-month-prev');
 const calMonthNextBtn = document.getElementById('cal-month-next');
 const calEventEl = document.getElementById('cal-event');
 const calApplyEventWeightEl = document.getElementById('cal-apply-event-weight');
+const calIncludeMissingEl = document.getElementById('cal-include-missing');
 const calTodayBtn = document.getElementById('cal-today');
 const calGridEl = document.getElementById('calendar-grid');
 const calDetailEl = document.getElementById('calendar-detail');
@@ -321,6 +629,16 @@ function showToast(msg, ms = 1200) {
   if (!toastEl) return; toastEl.innerHTML = msg; toastEl.hidden = false; if (ms > 0) window.setTimeout(() => (toastEl.hidden = true), ms);
 }
 
+async function safeWrite(action, message) {
+  try {
+    return await action();
+  } catch (err) {
+    showToast(message, 2200);
+    console.warn(err);
+    return null;
+  }
+}
+
 // Tracking coverage for Check-In (ratio of tracked vs blank weekdays from first session to today)
 async function renderTrackingStats() {
   if (!takeTrackingStatsEl) return;
@@ -331,19 +649,16 @@ async function renderTrackingStats() {
     return;
   }
   try {
-    const firstRequired = await DB.dexie.sessions
-      .orderBy('date')
-      .filter(s => s.eventTypeId === REQUIRED_EVENT_ID)
-      .first();
-    if (!firstRequired) {
+    const firstRequiredDate = await activeProvider.getFirstSessionDate(REQUIRED_EVENT_ID);
+    if (!firstRequiredDate) {
       takeTrackingStatsEl.hidden = true;
       state.officeGaps = [];
       renderNavigatorGaps();
       return;
     }
-    const from = firstRequired.date;
+    const from = firstRequiredDate;
     const to = dayjs().format('YYYY-MM-DD');
-    const { sessions, records } = await DB.recordsForRange(from, to);
+    const { sessions, records } = await activeProvider.recordsForRange(from, to);
     const requiredSessions = sessions.filter(s => s.eventTypeId === REQUIRED_EVENT_ID);
     const sessionsByDate = new Map();
     for (const s of requiredSessions) {
@@ -461,6 +776,49 @@ function isoWeekday(dateStr) { const d = dayjs(dateStr); return ((d.day() + 6) %
 function isoDowName(n) { return ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][n-1]; }
 function debounce(fn, ms) { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); }; }
 
+function formatSaveTime(ts) {
+  if (!ts) return '';
+  return dayjs(ts).format('h:mm A');
+}
+
+function updateSaveStatusUI() {
+  if (!takeSaveStatusEl || !takeSaveLabelEl || !takeSaveTimeEl) return;
+  const dirty = state.saveDirty;
+  const autosave = state.autosaveEnabled;
+  let label = 'All changes saved locally';
+  if (dirty) label = autosave ? 'Saving changes...' : 'Changes pending confirmation';
+  else if (!autosave) label = 'Changes confirmed';
+  takeSaveLabelEl.textContent = label;
+  const suffix = state.lastSaveSource === 'autosave' ? ' (auto)' : '';
+  takeSaveTimeEl.textContent = state.lastSavedAt ? `Last saved ${formatSaveTime(state.lastSavedAt)}${suffix}` : 'No saves yet';
+  takeSaveStatusEl.dataset.state = dirty ? 'dirty' : 'saved';
+}
+
+function scheduleAutosave() {
+  if (!state.autosaveEnabled) return;
+  if (state.autosaveTimer) clearTimeout(state.autosaveTimer);
+  state.autosaveTimer = window.setTimeout(() => {
+    markSaved('autosave');
+  }, 500);
+}
+
+function markDirty() {
+  state.saveDirty = true;
+  updateSaveStatusUI();
+  scheduleAutosave();
+}
+
+function markSaved(source = 'manual') {
+  if (state.autosaveTimer) {
+    clearTimeout(state.autosaveTimer);
+    state.autosaveTimer = null;
+  }
+  state.saveDirty = false;
+  state.lastSavedAt = new Date();
+  state.lastSaveSource = source;
+  updateSaveStatusUI();
+}
+
 function updateTakeDateHint() {
   if (!takeDateHint) return;
   const raw = takeDateEl?.value || state.currentDate;
@@ -539,16 +897,35 @@ function buildEventStepper() {
   // mark dots for sessions with data
   const date = takeDateEl.value || state.currentDate;
   for (const t of state.eventTypes) {
-    const sid = `${date}_${t.id}`; DB.recordsForSession(sid).then(recs => {
-      const idx = state.eventTypes.findIndex(x=>x.id===t.id);
-      const btn = eventStepper.children[idx]; if (btn) btn.setAttribute('data-has-records', String(recs.length>0));
+    const sid = `${date}_${t.id}`;
+    activeProvider.getRecordsForSession(sid).then(recs => {
+      const idx = state.eventTypes.findIndex(x => x.id === t.id);
+      const btn = eventStepper.children[idx];
+      if (btn) btn.setAttribute('data-has-records', String(recs.length > 0));
     });
   }
 }
 
-async function loadSettingsAndTypes() {
-  state.settings = await DB.dexie.settings.get('app');
-  state.eventTypes = sortEventTypesByFlow(await DB.listEventTypes());
+async function applySettings(settings) {
+  state.settings = settings || {};
+  titleEl.textContent = state.settings?.teamName || 'Attendance';
+  syncSettingsForm();
+  await updateCloudUI();
+}
+
+async function applyEventTypes(eventTypes) {
+  state.eventTypes = sortEventTypesByFlow(eventTypes || []);
+  if (!state.eventTypes.length) {
+    const defaults = [
+      { id: 'work', label: 'Office', weight: 1 },
+      { id: 'meeting', label: 'Morning Meeting', weight: 0.25 },
+      { id: 'gospel', label: 'Afternoon Meeting', weight: 0.2 }
+    ];
+    for (const et of defaults) {
+      await safeWrite(() => activeProvider.saveEventType(et), 'Unable to set default event types (lead only)');
+    }
+    state.eventTypes = sortEventTypesByFlow(await activeProvider.getEventTypes());
+  }
   const desired = new Map([
     ['work', { label: 'Office', weight: 1 }],
     ['meeting', { label: 'Morning Meeting', weight: 0.25 }],
@@ -561,18 +938,29 @@ async function loadSettingsAndTypes() {
     let dirty = false;
     if (meta.label && existing.label !== meta.label) { existing.label = meta.label; dirty = true; }
     if (typeof meta.weight === 'number' && existing.weight !== meta.weight) { existing.weight = meta.weight; dirty = true; }
-    if (dirty) { await DB.saveEventType(existing); updated = true; }
+    if (dirty) {
+      const saved = await safeWrite(() => activeProvider.saveEventType(existing), 'Unable to update event types (lead only)');
+      if (saved) updated = true;
+    }
   }
-  if (updated) state.eventTypes = sortEventTypesByFlow(await DB.listEventTypes());
-  titleEl.textContent = state.settings?.teamName || 'Attendance';
+  if (updated) {
+    state.eventTypes = sortEventTypesByFlow(await activeProvider.getEventTypes());
+  }
   hydrateEventTypeSelects();
   buildEventStepper();
   renderEventTypesTable();
-  syncSettingsForm();
-  ensureGraphVisible();
 }
 
-async function loadPeople() { state.people = await DB.listPeople(); }
+async function loadSettingsAndTypes() {
+  const [settings, eventTypes] = await Promise.all([
+    activeProvider.getSettings(),
+    activeProvider.getEventTypes()
+  ]);
+  await applySettings(settings);
+  await applyEventTypes(eventTypes);
+}
+
+async function loadPeople() { state.people = await activeProvider.getRoster(); }
 
 function personRowTemplate(person, record) {
   const statuses = [
@@ -585,6 +973,7 @@ function personRowTemplate(person, record) {
     { id: 'very_early_leave', label: 'Left Very Early', hint: 'Short stay' },
     { id: 'non_service', label: 'N/A', hint: 'Not serving' }
   ];
+  const isPending = isRecordPending(record);
   const initials = (person.displayName || '')
     .split(/\s+/)
     .filter(Boolean)
@@ -618,7 +1007,7 @@ function personRowTemplate(person, record) {
     : '';
   const noteStatus = notes ? 'Notes saved' : 'No notes yet';
   return `
-    <li class="person-row" data-person-id="${person.id}">
+    <li class="person-row" data-person-id="${person.id}" data-pending="${isPending}">
       ${badgeMarkup}
       <div class="person-header">
         <div class="person-meta">
@@ -706,12 +1095,20 @@ function renderTakeLetterIndex(entries = []) {
   takeLetterIndexEl.hidden = entries.length <= 1;
 }
 
-async function renderPeopleList() {
+function getFilteredPeopleForTake() {
   const base = filterPeople(takeSearchEl?.value);
   const date = takeDateEl.value || state.currentDate;
-  const filtered = state.showAll
+  let filtered = state.showAll
     ? base
     : base.filter((p) => isPersonServingOn(date, p) && p.active !== false);
+  if (state.showPendingOnly) {
+    filtered = filtered.filter((p) => isRecordPending(state.currentRecords.get(p.id)));
+  }
+  return filtered;
+}
+
+async function renderPeopleList() {
+  const filtered = getFilteredPeopleForTake();
   const sorted = [...filtered].sort(comparePeopleByLastName);
   const groups = new Map();
   for (const person of sorted) {
@@ -745,6 +1142,8 @@ async function renderPeopleList() {
       </li>`;
   }).join('');
   if (peopleListEl) peopleListEl.innerHTML = groupMarkup;
+  const hasPending = filtered.some((p) => isRecordPending(state.currentRecords.get(p.id)));
+  if (takeNextPendingBtn) takeNextPendingBtn.disabled = !hasPending;
   renderTakeSummary(filtered);
   updateHiddenInfoBar();
   renderTakeLetterIndex(navEntries);
@@ -753,6 +1152,14 @@ async function renderPeopleList() {
 function renderNavigatorGaps() {
   if (!navigatorListEl) return;
   const gaps = state.officeGaps || [];
+  const hiddenCount = state.hiddenCount || 0;
+  if (!gaps.length && hiddenCount === 0) {
+    if (navigatorSectionEl) navigatorSectionEl.hidden = true;
+    navigatorListEl.hidden = true;
+    navigatorListEl.innerHTML = '';
+    return;
+  }
+  if (navigatorSectionEl) navigatorSectionEl.hidden = false;
   const hasStats = !takeTrackingStatsEl?.hidden;
   if (!gaps.length) {
     if (!hasStats) {
@@ -891,8 +1298,8 @@ async function applyStatus(personId, status, minutesLate) {
   } else {
     nextLeave = undefined;
   }
-  const recordId = await DB.setRecordStatus(state.currentSessionId, personId, status, minutes, notes, nextLeave);
-  const next = { ...existing, id: existing.id || recordId, sessionId: state.currentSessionId, personId, status };
+  await activeProvider.setRecordStatus(state.currentSessionId, personId, status, minutes, notes, nextLeave);
+  const next = { ...existing, sessionId: state.currentSessionId, personId, status };
   if (status === 'tardy') {
     if (Number.isFinite(minutes)) next.minutesLate = minutes;
     else delete next.minutesLate;
@@ -905,6 +1312,7 @@ async function applyStatus(personId, status, minutesLate) {
   await renderPeopleList();
   renderTrackingStats();
   buildEventStepper();
+  markDirty();
 }
 
 async function applyLeaveStatus(personId, leaveStatus) {
@@ -922,10 +1330,9 @@ async function applyLeaveStatus(personId, leaveStatus) {
   const normalized = leaveStatus || undefined;
   const notes = existing.notes;
   const minutes = Number.isFinite(existing.minutesLate) ? existing.minutesLate : undefined;
-  const recordId = await DB.setRecordStatus(state.currentSessionId, personId, baseStatus, minutes, notes, normalized);
+  await activeProvider.setRecordStatus(state.currentSessionId, personId, baseStatus, minutes, notes, normalized);
   const next = {
     ...existing,
-    id: existing.id || recordId,
     sessionId: state.currentSessionId,
     personId,
     leaveStatus: normalized
@@ -935,6 +1342,7 @@ async function applyLeaveStatus(personId, leaveStatus) {
   await renderPeopleList();
   renderTrackingStats();
   buildEventStepper();
+  markDirty();
 }
 
 function openTardyModal(personId) {
@@ -984,10 +1392,23 @@ async function ensureSession() {
     updateTakeDateHint();
     return;
   }
-  const sid = await DB.upsertSession(date, eventTypeId);
-  state.currentSessionId = sid; state.currentDate = date; state.currentEventTypeId = eventTypeId;
-  const recs = await DB.recordsForSession(sid); state.currentRecords = new Map(recs.map(r => [r.personId, r]));
-  buildEventStepper();
+  const sid = await activeProvider.upsertSession(date, eventTypeId);
+  state.currentSessionId = sid;
+  state.currentDate = date;
+  state.currentEventTypeId = eventTypeId;
+  const recs = await activeProvider.getRecordsForSession(sid);
+  state.currentRecords = new Map(recs.map(r => [r.personId, r]));
+  if (sessionSubscription) {
+    sessionSubscription();
+    sessionSubscription = null;
+  }
+  const unsub = await activeProvider.subscribeSessionRecords(date, eventTypeId, (records) => {
+    state.currentRecords = new Map(records.map(r => [r.personId, r]));
+    renderPeopleList();
+    renderTrackingStats();
+    buildEventStepper();
+  });
+  if (typeof unsub === 'function') sessionSubscription = unsub;
   updateTakeDateHint();
 }
 
@@ -1035,7 +1456,7 @@ notesSave?.addEventListener('click', async () => {
   const personId = state.editingNotesFor;
   const rec = state.currentRecords.get(personId) || {};
   const nextStatus = rec?.status || null;
-  await DB.setRecordStatus(state.currentSessionId, personId, nextStatus, rec?.minutesLate, notesText.value, rec?.leaveStatus);
+  await activeProvider.setRecordStatus(state.currentSessionId, personId, nextStatus, rec?.minutesLate, notesText.value, rec?.leaveStatus);
   const nextRecord = { ...rec, notes: notesText.value };
   if (nextStatus) nextRecord.status = nextStatus;
   else delete nextRecord.status;
@@ -1043,6 +1464,7 @@ notesSave?.addEventListener('click', async () => {
   notesModal.hidden = true;
   state.editingNotesFor = null;
   await renderPeopleList();
+  markDirty();
   showToast('Notes saved');
 });
 notesCancel?.addEventListener('click', () => { if (notesModal) notesModal.hidden = true; state.editingNotesFor = null; });
@@ -1071,14 +1493,15 @@ personForm?.addEventListener('submit', async (e) => {
     const idx = state.people.findIndex(p => p.id === state.editingPersonId);
     if (idx >= 0) {
       const next = { ...state.people[idx], displayName: name, active, tags, serviceDays };
-      await DB.savePerson(next);
+      await safeWrite(() => activeProvider.savePerson(next), 'Unable to update missionary (lead/atl only)');
       state.people[idx] = next;
     }
     showToast('Missionary updated');
   } else {
-    await DB.addPerson(name, { active, tags, serviceDays });
+    await safeWrite(() => activeProvider.addPerson(name, { active, tags, serviceDays }), 'Unable to add missionary (lead/atl only)');
     showToast('Missionary added');
   }
+  markDirty();
   await loadPeople();
   renderRoster();
   await renderPeopleList();
@@ -1097,9 +1520,14 @@ window.addEventListener('keydown', (e) => {
 
 btnAllPresent?.addEventListener('click', async () => {
   if (!state.currentSessionId) return;
-  for (const p of state.people) {
+  const filtered = getFilteredPeopleForTake();
+  if (!filtered.length) {
+    showToast('No missionaries match the current filters.', 1600);
+    return;
+  }
+  for (const p of filtered) {
     const existing = state.currentRecords.get(p.id) || {};
-    await DB.setRecordStatus(state.currentSessionId, p.id, 'present', undefined, existing.notes, undefined);
+    await activeProvider.setRecordStatus(state.currentSessionId, p.id, 'present', undefined, existing.notes, undefined);
     const next = { ...existing, status: 'present' };
     delete next.minutesLate;
     delete next.leaveStatus;
@@ -1108,38 +1536,80 @@ btnAllPresent?.addEventListener('click', async () => {
   await renderPeopleList();
   renderTrackingStats();
   buildEventStepper();
-  showToast('All marked present');
+  markDirty();
+  showToast('Visible marked present');
 });
-btnClearAll?.addEventListener('click', async () => {
+btnMarkPendingAbsent?.addEventListener('click', async () => {
   if (!state.currentSessionId) return;
-  if (!confirm('Clear all statuses for this session?')) return;
-  await DB.clearRecordsForSession(state.currentSessionId);
-  state.currentRecords.clear();
+  if (state.currentEventTypeId !== REQUIRED_EVENT_ID) {
+    showToast('This tool is only for Office sessions.', 1800);
+    return;
+  }
+  const filtered = getFilteredPeopleForTake();
+  const pending = filtered.filter(p => isRecordPending(state.currentRecords.get(p.id)));
+  if (!pending.length) {
+    showToast('No pending entries in the current list.', 1600);
+    return;
+  }
+  if (!confirm(`Mark ${pending.length} pending entries as Absent?`)) return;
+  for (const p of pending) {
+    const existing = state.currentRecords.get(p.id) || {};
+    await activeProvider.setRecordStatus(state.currentSessionId, p.id, 'absent', undefined, existing.notes, undefined);
+    const next = { ...existing, status: 'absent' };
+    delete next.minutesLate;
+    delete next.leaveStatus;
+    state.currentRecords.set(p.id, next);
+  }
   await renderPeopleList();
   renderTrackingStats();
   buildEventStepper();
-  showToast('Cleared');
+  markDirty();
+  showToast('Pending marked absent');
 });
-btnSaveAttendance?.addEventListener('click', () => showToast('Saved to this browser. Your latest check-in is stored here.', 2200));
-btnSaveDownloadAttendance?.addEventListener('click', () => {
+btnClearAll?.addEventListener('click', async () => {
+  if (!state.currentSessionId) return;
+  const filtered = getFilteredPeopleForTake();
+  if (!filtered.length) {
+    showToast('No missionaries match the current filters.', 1600);
+    return;
+  }
+  if (!confirm('Clear statuses for visible missionaries?')) return;
+  for (const p of filtered) {
+    const existing = state.currentRecords.get(p.id);
+    if (!existing) continue;
+    await activeProvider.deleteRecord(state.currentSessionId, p.id);
+    state.currentRecords.delete(p.id);
+  }
+  await renderPeopleList();
+  renderTrackingStats();
+  buildEventStepper();
+  markDirty();
+  showToast('Cleared visible');
+});
+const handleSaveAttendance = () => { markSaved('manual'); showToast('Saved to this browser. Your latest check-in is stored here.', 2200); };
+const handleDownloadAttendance = () => {
   downloadBackup({
     toastMessage: 'Backup downloaded with your latest check-in. Keep the JSON handy if you need to import elsewhere.',
     toastDuration: 2600
   });
-});
-btnPrintAttendance?.addEventListener('click', () => window.print());
+};
+const handlePrintAttendance = () => window.print();
+btnSaveAttendance?.addEventListener('click', handleSaveAttendance);
+btnSaveDownloadAttendance?.addEventListener('click', handleDownloadAttendance);
+btnPrintAttendance?.addEventListener('click', handlePrintAttendance);
 const closeStickyMore = () => {
   if (stickyMore?.open) stickyMore.open = false;
 };
 stickySaveBtn?.addEventListener('click', () => {
-  btnSaveAttendance?.click();
+  handleSaveAttendance();
+  closeStickyMore();
 });
 stickyDownloadBtn?.addEventListener('click', () => {
-  btnSaveDownloadAttendance?.click();
+  handleDownloadAttendance();
   closeStickyMore();
 });
 stickyPrintBtn?.addEventListener('click', () => {
-  btnPrintAttendance?.click();
+  handlePrintAttendance();
   closeStickyMore();
 });
 
@@ -1147,9 +1617,8 @@ stickyPrintBtn?.addEventListener('click', () => {
 cloudSignInBtn?.addEventListener('click', async () => {
   try {
     setCloudBusy(true);
-    const acc = await signInWithMicrosoft(graphSyncConfig);
-    if (cloudStatus) cloudStatus.textContent = acc?.username ? `Signed in as ${acc.username}` : 'Signed in';
-    showToast('Signed in to Microsoft');
+    await firebaseProvider.signIn();
+    showToast('Signed in', 1600);
   } catch (e) {
     showToast('Sign-in failed');
     console.warn(e);
@@ -1158,41 +1627,61 @@ cloudSignInBtn?.addEventListener('click', async () => {
 cloudSignOutBtn?.addEventListener('click', async () => {
   try {
     setCloudBusy(true);
-    await signOutMicrosoft(graphSyncConfig);
-    if (cloudStatus) cloudStatus.textContent = 'Signed out';
+    await firebaseProvider.signOut();
+    await switchProvider('local');
     showToast('Signed out');
   } catch (e) {
     console.warn(e);
   } finally { setCloudBusy(false); }
 });
-cloudLoadBtn?.addEventListener('click', async () => {
+cloudSyncMode?.addEventListener('change', async () => {
+  if (!cloudSyncMode) return;
+  if (cloudSyncMode.value === 'local') {
+    await switchProvider('local');
+    return;
+  }
+  const activated = await activateFirebaseMode();
+  if (!activated && cloudSyncMode) cloudSyncMode.value = activeMode;
+});
+cloudCreateBtn?.addEventListener('click', async () => {
+  const name = cloudCreateName?.value.trim();
+  if (!name) { cloudCreateName?.focus(); return; }
   try {
     setCloudBusy(true);
-    const { json } = await downloadJsonFromGraph(graphSyncConfig);
-    await DB.importAllFromJson(JSON.parse(json));
-    await loadSettingsAndTypes();
-    await loadPeople();
-    await ensureSession();
-    await renderPeopleList();
-    renderTrackingStats();
-    renderRoster();
-    showToast('Loaded latest from cloud', 2000);
+    const team = await firebaseProvider.createTeam(name);
+    if (cloudCreateName) cloudCreateName.value = '';
+    await updateCloudUI();
+    const activated = await activateFirebaseMode();
+    if (activated) showToast(`Team created: ${team.name}`, 2000);
   } catch (e) {
-    showToast('Load failed — check permissions/path', 2400);
+    showToast(e?.message || 'Unable to create team', 2200);
     console.warn(e);
   } finally { setCloudBusy(false); }
 });
-cloudSaveBtn?.addEventListener('click', async () => {
+cloudJoinBtn?.addEventListener('click', async () => {
+  const teamId = cloudJoinId?.value.trim();
+  if (!teamId) { cloudJoinId?.focus(); return; }
   try {
     setCloudBusy(true);
-    const data = await DB.exportAllAsJson();
-    await uploadJsonToGraph(graphSyncConfig, data);
-    showToast('Saved to cloud', 2000);
+    const team = await firebaseProvider.joinTeam(teamId);
+    if (cloudJoinId) cloudJoinId.value = '';
+    await updateCloudUI();
+    const activated = await activateFirebaseMode();
+    if (activated) showToast(`Joined team: ${team.name || team.id}`, 2000);
   } catch (e) {
-    if (e && e.code === 412) showToast('Cloud changed — load latest then retry', 2600);
-    else showToast('Save failed — check permissions/path', 2600);
+    showToast(e?.message || 'Unable to join team', 2200);
     console.warn(e);
   } finally { setCloudBusy(false); }
+});
+cloudCopyTeamBtn?.addEventListener('click', async () => {
+  const teamId = firebaseProvider.getActiveTeamId();
+  if (!teamId) return;
+  try {
+    await navigator.clipboard.writeText(teamId);
+    showToast('Team ID copied', 1400);
+  } catch (e) {
+    showToast('Copy failed', 1400);
+  }
 });
 
 // Roster
@@ -1204,7 +1693,7 @@ rosterTbody?.addEventListener('click', async (e) => {
   if (action === 'profile') { state.selectedPersonId = id; window.location.hash = '#/person'; return; }
   if (action === 'del') {
     if (!confirm('Delete?')) return;
-    await DB.deletePerson(id);
+    await safeWrite(() => activeProvider.deletePerson(id), 'Unable to delete missionary (lead/atl only)');
     state.currentRecords.delete(id);
     if (state.selectedPersonId === id) state.selectedPersonId = null;
     const pinKey = 'trends_pins';
@@ -1225,13 +1714,13 @@ rosterTbody?.addEventListener('click', async (e) => {
     const personViewEl = document.getElementById('view-person');
     if (personViewEl && !personViewEl.hidden) await renderPersonView();
   }
-  if (action === 'toggle-active') { person.active = !person.active; await DB.savePerson(person); await loadPeople(); renderRoster(); await renderPeopleList(); }
+  if (action === 'toggle-active') { person.active = !person.active; await safeWrite(() => activeProvider.savePerson(person), 'Unable to update missionary (lead/atl only)'); await loadPeople(); renderRoster(); await renderPeopleList(); }
   if (action === 'edit') { openPersonModal('edit', person); }
 });
 
 rosterTbody?.addEventListener('change', async (e) => {
   const cb = e.target.closest('input[type="checkbox"][data-day]'); if (!cb) return; const tr = cb.closest('tr'); const personId = tr.dataset.personId; const day = cb.getAttribute('data-day'); const person = state.people.find(p=>p.id===personId);
-  const current = new Set(person?.serviceDays || []); if (cb.checked) current.add(day); else current.delete(day); const next = { ...person, serviceDays: Array.from(current) }; await DB.savePerson(next);
+  const current = new Set(person?.serviceDays || []); if (cb.checked) current.add(day); else current.delete(day); const next = { ...person, serviceDays: Array.from(current) }; await safeWrite(() => activeProvider.savePerson(next), 'Unable to update service days (lead/atl only)');
   const idx = state.people.findIndex(p=>p.id===personId); state.people[idx] = next; if (!document.querySelector('[data-view="take"]').hidden) renderPeopleList();
 });
 
@@ -1306,15 +1795,30 @@ async function runAnalytics() {
   const to = analyticsTo.value || dayjs().format('YYYY-MM-DD');
   const eventTypeId = analyticsEvent.value || undefined;
   const applyEvent = !!analyticsApplyEventWeight?.checked;
+  const includeMissing = !!analyticsIncludeMissing?.checked;
   const activeOnly = !!analyticsActiveOnly?.checked;
   const tagq = (analyticsTag?.value || '').toLowerCase();
 
-  const { sessions, records } = await DB.recordsForRange(from, to, eventTypeId);
+  const { sessions, records } = await activeProvider.recordsForRange(from, to, eventTypeId);
   const eventWeightBySession = new Map(sessions.map(s => [s.id, (state.eventTypes.find(t => t.id===s.eventTypeId)?.weight) ?? 1]));
   const peopleById = new Map(state.people.map(p => [p.id, p]));
-  const rawScore = (r) => recordWeight(r);
+  const tardyThresholdMins = reportingTardyThreshold();
+  const rawScore = (r) => recordWeightForReporting(r, { tardyThresholdMins });
   const sessionWeight = (sessionId) => applyEvent ? (eventWeightBySession.get(sessionId) ?? 1) : 1;
   const weightedScore = (r) => rawScore(r) * sessionWeight(r.sessionId);
+  const matchesFilters = (person) => {
+    if (!person) return false;
+    if (activeOnly && person.active === false) return false;
+    if (tagq && !(person.tags || []).join(' ').toLowerCase().includes(tagq)) return false;
+    return true;
+  };
+  const expectedByDate = new Map();
+  const expectedCountForDate = (dateStr) => {
+    if (expectedByDate.has(dateStr)) return expectedByDate.get(dateStr);
+    const count = state.people.filter(p => matchesFilters(p) && isPersonServingOn(dateStr, p)).length;
+    expectedByDate.set(dateStr, count);
+    return count;
+  };
   const includeRecord = (r) => {
     const person = peopleById.get(r.personId);
     if (activeOnly && person && person.active === false) return false;
@@ -1323,12 +1827,34 @@ async function runAnalytics() {
   };
   // Exclude blanks entirely and non_service from analytics
   const filtered = records.filter(r => r.status && r.status !== 'non_service').filter(includeRecord);
+  const recordsBySession = new Map();
+  for (const rec of filtered) {
+    if (!recordsBySession.has(rec.sessionId)) recordsBySession.set(rec.sessionId, []);
+    recordsBySession.get(rec.sessionId).push(rec);
+  }
+  const missingBySession = new Map();
+  if (includeMissing) {
+    for (const s of sessions) {
+      const expected = expectedCountForDate(s.date);
+      const recordedCount = (recordsBySession.get(s.id) || []).length;
+      const missing = Math.max(0, expected - recordedCount);
+      if (missing) missingBySession.set(s.id, missing);
+    }
+  }
 
   // Totals
   const counts = { present:0, online:0, excused:0, tardy:0, absent:0, early_leave:0, very_early_leave:0 };
-  for (const rec of filtered) accumulateRecordCounts(counts, rec);
-  const totalWeight = filtered.reduce((sum, r) => sum + sessionWeight(r.sessionId), 0);
+  for (const rec of filtered) accumulateRecordCountsForReporting(counts, rec, { tardyThresholdMins });
+  let totalWeight = filtered.reduce((sum, r) => sum + sessionWeight(r.sessionId), 0);
   const scoreSum = filtered.reduce((sum, r) => sum + weightedScore(r), 0);
+  if (includeMissing) {
+    for (const s of sessions) {
+      const missing = missingBySession.get(s.id) || 0;
+      if (!missing) continue;
+      counts.absent += missing;
+      totalWeight += missing * sessionWeight(s.id);
+    }
+  }
   const avgScore = totalWeight ? (scoreSum / totalWeight) : 0;
   totalsPresentEl.textContent = counts.present || 0;
   if (totalsOnlineEl) totalsOnlineEl.textContent = counts.online || 0;
@@ -1351,10 +1877,22 @@ async function runAnalytics() {
     const ent = byDate.get(session.date);
     if (!ent) continue;
     const weight = sessionWeight(r.sessionId);
-    accumulateRecordCounts(ent, r);
+    accumulateRecordCountsForReporting(ent, r, { tardyThresholdMins });
     ent.total += 1;
     ent.weightSum += weight;
     ent.rateAcc += rawScore(r) * weight;
+  }
+  if (includeMissing) {
+    for (const s of sessions) {
+      const missing = missingBySession.get(s.id) || 0;
+      if (!missing) continue;
+      const ent = byDate.get(s.date);
+      if (!ent) continue;
+      const weight = sessionWeight(s.id);
+      ent.absent += missing;
+      ent.total += missing;
+      ent.weightSum += missing * weight;
+    }
   }
   let rate = dates.map(d => { const ent = byDate.get(d); return ent && ent.weightSum ? (ent.rateAcc/ent.weightSum) : 0; });
   // Optional smoothing (7-day)
@@ -1382,9 +1920,23 @@ async function runAnalytics() {
     const spanDays = dayjs(to).diff(dayjs(from), 'day') + 1;
     const prevFrom = dayjs(from).subtract(spanDays, 'day').format('YYYY-MM-DD');
     const prevTo = dayjs(from).subtract(1, 'day').format('YYYY-MM-DD');
-    const { sessions: psessions, records: precords } = await DB.recordsForRange(prevFrom, prevTo, eventTypeId);
+    const { sessions: psessions, records: precords } = await activeProvider.recordsForRange(prevFrom, prevTo, eventTypeId);
     const ewb = new Map(psessions.map(s => [s.id, (state.eventTypes.find(t => t.id===s.eventTypeId)?.weight) ?? 1]));
     const prevFiltered = precords.filter(r => r.status && r.status !== 'non_service').filter(includeRecord);
+    const prevRecordsBySession = new Map();
+    for (const rec of prevFiltered) {
+      if (!prevRecordsBySession.has(rec.sessionId)) prevRecordsBySession.set(rec.sessionId, []);
+      prevRecordsBySession.get(rec.sessionId).push(rec);
+    }
+    const prevMissingBySession = new Map();
+    if (includeMissing) {
+      for (const s of psessions) {
+        const expected = expectedCountForDate(s.date);
+        const recordedCount = (prevRecordsBySession.get(s.id) || []).length;
+        const missing = Math.max(0, expected - recordedCount);
+        if (missing) prevMissingBySession.set(s.id, missing);
+      }
+    }
     const byDatePrev = new Map();
     const prevSessionById = new Map(psessions.map(s => [s.id, s]));
     for (const s of psessions) byDatePrev.set(s.date, { weightSum:0, rateAcc:0 });
@@ -1394,8 +1946,18 @@ async function runAnalytics() {
       const weight = applyEvent ? (ewb.get(r.sessionId) ?? 1) : 1;
       const ent = byDatePrev.get(session.date) || { weightSum:0, rateAcc:0 };
       ent.weightSum += weight;
-      ent.rateAcc += recordWeight(r) * weight;
+      ent.rateAcc += recordWeightForReporting(r, { tardyThresholdMins }) * weight;
       byDatePrev.set(session.date, ent);
+    }
+    if (includeMissing) {
+      for (const s of psessions) {
+        const missing = prevMissingBySession.get(s.id) || 0;
+        if (!missing) continue;
+        const weight = applyEvent ? (ewb.get(s.id) ?? 1) : 1;
+        const ent = byDatePrev.get(s.date) || { weightSum:0, rateAcc:0 };
+        ent.weightSum += missing * weight;
+        byDatePrev.set(s.date, ent);
+      }
     }
     // align to current dates by index
     const prevDatesAll = [...byDatePrev.keys()].sort();
@@ -1442,6 +2004,15 @@ async function runAnalytics() {
     rateSumByDow[s.dow] += rawScore(r) * w;
     weightByDow[s.dow] += w;
   }
+  if (includeMissing) {
+    for (const s of sessions) {
+      if (s.dow < 1 || s.dow > 5) continue;
+      const missing = missingBySession.get(s.id) || 0;
+      if (!missing) continue;
+      const w = sessionWeight(s.id);
+      weightByDow[s.dow] += missing * w;
+    }
+  }
   const dayNames = ['Mon','Tue','Wed','Thu','Fri'];
   for (let d=1; d<=5; d++) {
     const avg = weightByDow[d] ? (rateSumByDow[d] / weightByDow[d]) : 0;
@@ -1467,7 +2038,7 @@ async function runAnalytics() {
       const i = series.dates.indexOf(d);
       const p = series.present[i]||0, t = series.tardy[i]||0, e = series.excused[i]||0, a = series.absent[i]||0; const r = series.rate[i]||0; const textColor = r >= 0.6 ? '#000000' : 'var(--text)'; const subColor = r >= 0.6 ? '#001014' : 'var(--muted)';
       const o = series.online[i]||0;
-      return `<div class=\"card analytics-card\" style=\"${calendarCellStyle(r)};color:${textColor}\" data-date=\"${d}\"><div class=\"day-title\">${d}</div><div class=\"kpis\"><span>${p}P</span><span>${o}O</span><span>${t}T</span><span>${e}E</span><span>${a}A</span></div><div class=\"cal-score percent-outline\">${Math.round(r*100)}%</div><div style=\"margin-top:6px; display:flex; gap:8px;\"><button type=\"button\" data-action=\"open-take\" data-date=\"${d}\">Open in Take</button></div></div>`;
+      return `<div class=\"card analytics-card\" style=\"${calendarCellStyle(r)};color:${textColor}\" data-date=\"${d}\"><div class=\"card-header\"><div class=\"day-title\">${d}</div><button type=\"button\" class=\"card-action\" data-action=\"open-take\" data-date=\"${d}\">Open in Take</button></div><div class=\"kpis\"><span>${p}P</span><span>${o}O</span><span>${t}T</span><span>${e}E</span><span>${a}A</span></div><div class=\"cal-score percent-outline\">${Math.round(r*100)}%</div></div>`;
     }).join('');
     analyticsDaysEl.querySelectorAll('[data-action="open-take"]').forEach(btn => btn.addEventListener('click', async (e) => { const date = e.currentTarget.getAttribute('data-date'); takeDateEl.value = date; await ensureSession(); await renderPeopleList(); window.location.hash = '#/take'; }));
   }
@@ -1480,11 +2051,26 @@ async function runTrends() {
   const to = trendsTo.value || dayjs().format('YYYY-MM-DD');
   const eventTypeId = trendsEvent.value || undefined;
   const applyEvent = !!trendsApplyEventWeight?.checked;
-  const { sessions, records } = await DB.recordsForRange(from, to, eventTypeId);
+  const includeMissing = !!trendsIncludeMissing?.checked;
+  const { sessions, records } = await activeProvider.recordsForRange(from, to, eventTypeId);
   const eventWeightBySession = new Map(sessions.map(s => [s.id, (state.eventTypes.find(t => t.id===s.eventTypeId)?.weight) ?? 1]));
-  const rawScore = (r) => recordWeight(r);
+  const tardyThresholdMins = reportingTardyThreshold();
+  const rawScore = (r) => recordWeightForReporting(r, { tardyThresholdMins });
   const sessionWeight = (sessionId) => applyEvent ? (eventWeightBySession.get(sessionId) ?? 1) : 1;
+  const q = (trendsSearchEl?.value || '').toLowerCase();
+  const tagq = (trendsTag?.value || '').toLowerCase();
+  const activeOnly = !!trendsActiveOnly?.checked;
+  const personMatchesFilters = (person) => {
+    if (!person) return false;
+    const name = person.displayName || '';
+    if (activeOnly && person.active === false) return false;
+    if (q && !name.toLowerCase().includes(q)) return false;
+    if (tagq && !(person.tags || []).join(' ').toLowerCase().includes(tagq)) return false;
+    return true;
+  };
+  const peopleById = new Map(state.people.map(p => [p.id, p]));
   const byPerson = new Map();
+  const recordsBySession = new Map();
   const sessionById = new Map(sessions.map(s => [s.id, s]));
   for (const r of records) {
     if (!r.status || r.status === 'non_service') continue;
@@ -1492,8 +2078,30 @@ async function runTrends() {
     const d = s?.date || '';
     if (!byPerson.has(r.personId)) byPerson.set(r.personId, []);
     byPerson.get(r.personId).push({ ...r, _date:d, _score: rawScore(r), _weight: sessionWeight(r.sessionId) });
+    if (!recordsBySession.has(r.sessionId)) recordsBySession.set(r.sessionId, new Map());
+    recordsBySession.get(r.sessionId).set(r.personId, r);
   }
-  const q = (trendsSearchEl?.value || '').toLowerCase(); const tagq = (trendsTag?.value || '').toLowerCase(); const activeOnly = !!trendsActiveOnly?.checked; const pins = new Set(JSON.parse(localStorage.getItem('trends_pins') || '[]'));
+  const summaryRecords = [];
+  for (const r of records) {
+    if (!r.status || r.status === 'non_service') continue;
+    const person = peopleById.get(r.personId);
+    if (!personMatchesFilters(person)) continue;
+    summaryRecords.push(r);
+  }
+  if (includeMissing) {
+    for (const s of sessions) {
+      const expected = state.people.filter(p => personMatchesFilters(p) && isPersonServingOn(s.date, p));
+      const recorded = recordsBySession.get(s.id) || new Map();
+      for (const person of expected) {
+        if (recorded.has(person.id)) continue;
+        const missingRecord = { personId: person.id, sessionId: s.id, status: 'absent' };
+        summaryRecords.push(missingRecord);
+        if (!byPerson.has(person.id)) byPerson.set(person.id, []);
+        byPerson.get(person.id).push({ ...missingRecord, _date: s.date, _score: 0, _weight: sessionWeight(s.id) });
+      }
+    }
+  }
+  const pins = new Set(JSON.parse(localStorage.getItem('trends_pins') || '[]'));
   const rows = [];
   for (const [pid, recs] of byPerson) {
     const person = state.people.find(p => p.id === pid);
@@ -1505,11 +2113,19 @@ async function runTrends() {
     const eligible = recs;
     const weightSum = eligible.reduce((s, r) => s + (r._weight ?? 1), 0);
     const avg = weightSum ? eligible.reduce((s,r)=> s + (r._score * (r._weight ?? 1)), 0) / weightSum : 0;
-    const online = recs.filter(r => r.status==='online').length;
-    const tardies = recs.filter(r => r.status==='tardy').length;
-    const presents = recs.filter(r => r.status==='present').length;
-    const excused = recs.filter(r => r.status==='excused').length;
-    const absent = recs.filter(r => r.status==='absent').length;
+    let online = 0;
+    let tardies = 0;
+    let presents = 0;
+    let excused = 0;
+    let absent = 0;
+    for (const r of recs) {
+      const baseStatus = reportingBaseStatus(r, { tardyThresholdMins });
+      if (baseStatus === 'online') online += 1;
+      if (baseStatus === 'tardy') tardies += 1;
+      if (baseStatus === 'present') presents += 1;
+      if (baseStatus === 'excused') excused += 1;
+      if (baseStatus === 'absent') absent += 1;
+    }
     const sessionsCount = recs.length;
     const last = [...recs].sort((a,b)=> a._date.localeCompare(b._date)).slice(-10);
     const spark = last.map(r => {
@@ -1533,16 +2149,17 @@ async function runTrends() {
   }[sortKey] || ((a,b)=> b.avg - a.avg);
   rows.sort(cmp);
   trendsRows = rows; trendsOffset = 0;
-  renderTrendsSummary(records, applyEvent, eventWeightBySession);
+  renderTrendsSummary(summaryRecords, applyEvent, eventWeightBySession);
   renderTrendsChunk(true);
   // Simple status by DOW heat rows (present vs absent)
   const statuses = [ { key:'present', label:'Present', color:'34,197,94', invert:false }, { key:'absent', label:'Absent', color:'239,68,68', invert:true } ]; const dayNames = ['Mon','Tue','Wed','Thu','Fri']; const denomByDow = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}; const numByStatusDow = { present:{}, absent:{} }; for (let d=1; d<=7; d++) { denomByDow[d]=0; numByStatusDow.present[d]=0; numByStatusDow.absent[d]=0; }
-  for (const r of records) {
+  for (const r of summaryRecords) {
     if (!r.status || r.status === 'non_service') continue;
     const s = sessions.find(s => s.id === r.sessionId); if (!s) continue;
     const w = applyEvent ? (eventWeightBySession.get(r.sessionId) ?? 1) : 1;
     denomByDow[s.dow] += w;
-    if (numByStatusDow[r.status] && typeof numByStatusDow[r.status][s.dow] === 'number') numByStatusDow[r.status][s.dow] += w;
+    const baseStatus = reportingBaseStatus(r, { tardyThresholdMins });
+    if (numByStatusDow[baseStatus] && typeof numByStatusDow[baseStatus][s.dow] === 'number') numByStatusDow[baseStatus][s.dow] += w;
   }
   const section = [];
   for (const s of statuses) { const row = []; for (let d=1; d<=5; d++) { const eligible = denomByDow[d] || 0; const pct = eligible ? ((numByStatusDow[s.key][d] || 0) / eligible) : 0; const displayRate = s.invert ? (1 - pct) : pct; const style = heatStyle(displayRate, s.color); const textColor = displayRate >= 0.6 ? '#000000' : 'var(--text)'; row.push(`<div class="heat" title="${dayNames[d-1]} ${(pct*100).toFixed(0)}%" style="${style};color:${textColor}">${dayNames[d-1]}</div>`); } section.push(`<div class="trend-heat-row"><div class="trend-heat-title"><strong>${s.label}</strong></div><div class="heatmap">${row.join('')}</div></div>`); }
@@ -1552,11 +2169,12 @@ async function runTrends() {
 function renderTrendsSummary(records, applyEvent, eventWeightBySession) {
   if (!trendsSummaryEl) return;
   const eligible = records.filter(r => r.status && r.status !== 'non_service');
+  const tardyThresholdMins = reportingTardyThreshold();
   const counts = { present:0, online:0, excused:0, tardy:0, absent:0, early_leave:0, very_early_leave:0 };
-  for (const rec of eligible) accumulateRecordCounts(counts, rec);
+  for (const rec of eligible) accumulateRecordCountsForReporting(counts, rec, { tardyThresholdMins });
   const weightForRecord = (sessionId) => applyEvent ? (eventWeightBySession?.get(sessionId) ?? 1) : 1;
   const avgWeightSum = eligible.reduce((sum, r) => sum + weightForRecord(r.sessionId), 0);
-  const avgScoreSum = eligible.reduce((sum, r) => sum + (recordWeight(r) * weightForRecord(r.sessionId)), 0);
+  const avgScoreSum = eligible.reduce((sum, r) => sum + (recordWeightForReporting(r, { tardyThresholdMins }) * weightForRecord(r.sessionId)), 0);
   const avgScore = avgWeightSum ? (avgScoreSum / avgWeightSum) : 0;
   trendsSummaryEl.innerHTML = `<div><strong>Present:</strong> ${counts.present||0}</div><div><strong>Excused:</strong> ${counts.excused||0}</div><div><strong>Tardy:</strong> ${counts.tardy||0}</div><div><strong>Absent:</strong> ${counts.absent||0}</div><div><strong>Avg:</strong> ${Math.round(avgScore*100)}%</div>`;
 }
@@ -1668,15 +2286,16 @@ async function renderPersonView() {
   const eventTypeId = personEvent?.value || undefined;
   const applyEvent = !!personApplyEventWeight?.checked;
 
-  const { sessions, records } = await DB.recordsForRange(from, to, eventTypeId);
+  const { sessions, records } = await activeProvider.recordsForRange(from, to, eventTypeId);
   const eventWeightBySession = new Map(sessions.map(s => [s.id, (state.eventTypes.find(t => t.id===s.eventTypeId)?.weight) ?? 1]));
-  const rawScore = (r) => recordWeight(r);
+  const tardyThresholdMins = reportingTardyThreshold();
+  const rawScore = (r) => recordWeightForReporting(r, { tardyThresholdMins });
   const sessionWeight = (sessionId) => applyEvent ? (eventWeightBySession.get(sessionId) ?? 1) : 1;
 
   // Personal records
   const personRecords = records.filter(r => r.personId === pid && r.status && r.status !== 'non_service');
   const counts = { present:0, online:0, excused:0, tardy:0, absent:0, early_leave:0, very_early_leave:0 };
-  for (const rec of personRecords) accumulateRecordCounts(counts, rec);
+  for (const rec of personRecords) accumulateRecordCountsForReporting(counts, rec, { tardyThresholdMins });
   const weightSum = personRecords.reduce((sum, r) => sum + sessionWeight(r.sessionId), 0);
   const avg = weightSum ? (personRecords.reduce((sum, r) => sum + rawScore(r) * sessionWeight(r.sessionId), 0) / weightSum) : 0;
   personSummaryEl.innerHTML = `<div><strong>Avg:</strong> ${Math.round(avg*100)}%</div><div><strong>Present:</strong> ${counts.present||0}</div><div><strong>Online:</strong> ${counts.online||0}</div><div><strong>Tardy:</strong> ${counts.tardy||0}</div><div><strong>Left Early:</strong> ${counts.early_leave||0}</div><div><strong>Left Very Early:</strong> ${counts.very_early_leave||0}</div><div><strong>Absent:</strong> ${counts.absent||0}</div>`;
@@ -1750,10 +2369,9 @@ async function renderPersonView() {
       const tardyMinutes = statuses.includes('tardy') && typeof r.minutesLate === 'number' ? ` (${r.minutesLate}m late)` : '';
       const ev = state.eventTypes.find(t => t.id === s.eventTypeId);
       items.push(`<div class=\"card analytics-card\" style=\"${calendarCellStyle(score)};color:${textColor}\" data-date=\"${d}\">`
-        + `<div class=\"day-title\">${d} (${ev?.label||s.eventTypeId})</div>`
+        + `<div class=\"card-header\"><div class=\"day-title\">${d} (${ev?.label||s.eventTypeId})</div><button type=\"button\" class=\"card-action\" data-action=\"open-take\" data-date=\"${d}\">Open in Take</button></div>`
         + `<div class=\"kpis\" style=\"color:${subColor}\">Status: ${statusLabel}${tardyMinutes}</div>`
         + `<div class=\"cal-score percent-outline\">${Math.round(score*100)}%</div>`
-        + `<div style=\"margin-top:6px; display:flex; gap:8px;\"><button type=\"button\" data-action=\"open-take\" data-date=\"${d}\">Open in Take</button></div>`
         + `</div>`);
     }
     personDaysEl.innerHTML = items.join('');
@@ -1778,19 +2396,45 @@ async function renderCalendar() {
   const to = last.format('YYYY-MM-DD');
   const eventTypeId = calEventEl?.value || undefined;
   const applyEvent = !!calApplyEventWeightEl?.checked;
+  const includeMissing = !!calIncludeMissingEl?.checked;
 
-  const { sessions, records } = await DB.recordsForRange(from, to, eventTypeId);
+  const { sessions, records } = await activeProvider.recordsForRange(from, to, eventTypeId);
   const eventWeightBySession = new Map(sessions.map(s => [s.id, (state.eventTypes.find(t => t.id===s.eventTypeId)?.weight) ?? 1]));
-  const rawScore = (r) => recordWeight(r);
+  const tardyThresholdMins = reportingTardyThreshold();
+  const rawScore = (r) => recordWeightForReporting(r, { tardyThresholdMins });
   const sessionWeight = (sessionId) => applyEvent ? (eventWeightBySession.get(sessionId) ?? 1) : 1;
+  const expectedByDate = new Map();
+  const expectedCountForDate = (dateStr) => {
+    if (expectedByDate.has(dateStr)) return expectedByDate.get(dateStr);
+    const count = state.people.filter(p => p.active !== false && isPersonServingOn(dateStr, p)).length;
+    expectedByDate.set(dateStr, count);
+    return count;
+  };
 
   const recsByDate = new Map();
+  const sessionsByDate = new Map();
+  const recordsBySession = new Map();
   const sessionById = new Map(sessions.map(s => [s.id, s]));
   for (const r of records) {
     const s = sessionById.get(r.sessionId);
     if (!s) continue;
     if (!recsByDate.has(s.date)) recsByDate.set(s.date, []);
     recsByDate.get(s.date).push(r);
+    if (!recordsBySession.has(r.sessionId)) recordsBySession.set(r.sessionId, []);
+    recordsBySession.get(r.sessionId).push(r);
+  }
+  for (const s of sessions) {
+    if (!sessionsByDate.has(s.date)) sessionsByDate.set(s.date, []);
+    sessionsByDate.get(s.date).push(s);
+  }
+  const missingBySession = new Map();
+  if (includeMissing) {
+    for (const s of sessions) {
+      const expected = expectedCountForDate(s.date);
+      const recordedCount = (recordsBySession.get(s.id) || []).filter(r => r.status && r.status !== 'non_service').length;
+      const missing = Math.max(0, expected - recordedCount);
+      if (missing) missingBySession.set(s.id, missing);
+    }
   }
 
   // Build list of weekday dates (Mon..Fri) for this month
@@ -1809,10 +2453,21 @@ async function renderCalendar() {
   for (const d of weekdayDates) {
     const ds = d.format('YYYY-MM-DD');
     const recs = (recsByDate.get(ds) || []).filter(r => r.status && r.status !== 'non_service');
-    const weightSum = recs.reduce((sum, r) => sum + sessionWeight(r.sessionId), 0);
-    const avg = weightSum ? recs.reduce((sum, r) => sum + rawScore(r) * sessionWeight(r.sessionId), 0) / weightSum : 0;
+    let weightSum = recs.reduce((sum, r) => sum + sessionWeight(r.sessionId), 0);
+    const scoreSum = recs.reduce((sum, r) => sum + rawScore(r) * sessionWeight(r.sessionId), 0);
     const counts = { present:0, online:0, excused:0, tardy:0, absent:0, early_leave:0, very_early_leave:0, non_service:0 };
-    for (const rec of recs) accumulateRecordCounts(counts, rec);
+    for (const rec of recs) accumulateRecordCountsForReporting(counts, rec, { tardyThresholdMins });
+    if (includeMissing) {
+      const daySessions = sessionsByDate.get(ds) || [];
+      for (const s of daySessions) {
+        const missing = missingBySession.get(s.id) || 0;
+        if (!missing) continue;
+        const weight = sessionWeight(s.id);
+        counts.absent += missing;
+        weightSum += missing * weight;
+      }
+    }
+    const avg = weightSum ? (scoreSum / weightSum) : 0;
     cells.push({ date: ds, day: d.date(), avg, counts });
   }
 
@@ -1848,12 +2503,22 @@ async function renderCalendar() {
       const agg = { present:0, online:0, excused:0, tardy:0, absent:0 };
       for (const ds of datesList) {
         const recs = (recsByDate.get(ds) || []).filter(r => r.status && r.status !== 'non_service');
-        if (recs.length === 0) continue;
         for (const r of recs) {
           const weight = sessionWeight(r.sessionId);
           weightTotal += weight;
           rateAcc += rawScore(r) * weight;
-          agg[r.status] = (agg[r.status]||0)+1;
+          const baseStatus = reportingBaseStatus(r, { tardyThresholdMins });
+          if (baseStatus) agg[baseStatus] = (agg[baseStatus]||0)+1;
+        }
+        if (includeMissing) {
+          const daySessions = sessionsByDate.get(ds) || [];
+          for (const s of daySessions) {
+            const missing = missingBySession.get(s.id) || 0;
+            if (!missing) continue;
+            const weight = sessionWeight(s.id);
+            weightTotal += missing * weight;
+            agg.absent += missing;
+          }
         }
       }
       const avg = weightTotal ? (rateAcc/weightTotal) : 0;
@@ -1898,20 +2563,24 @@ function syncSettingsForm() {
 eventTypesTbody?.addEventListener('blur', async (e) => {
   const cell = e.target.closest('[data-col]'); if (!cell) return; const tr = cell.closest('tr'); const id = tr.dataset.id; const et = state.eventTypes.find(x=>x.id===id); if (!et) return; const col = cell.getAttribute('data-col'); let val = cell.textContent?.trim() || '';
   if (col==='label') { et.label = val; }
-  if (col==='weight') { et.weight = Number(val) || 1; }
-  await DB.saveEventType(et); await loadSettingsAndTypes();
+  if (col==='weight') {
+    const parsed = clampNumber(Number(val), 0, 1);
+    et.weight = Number.isFinite(parsed) ? parsed : 1;
+  }
+  await safeWrite(() => activeProvider.saveEventType(et), 'Unable to update event type (lead only)');
+  await loadSettingsAndTypes();
 }, true);
 
 eventTypesTbody?.addEventListener('click', async (e) => {
-  const btn = e.target.closest('button[data-action="delete"]'); if (!btn) return; const tr = btn.closest('tr'); const id = tr.dataset.id; if (!confirm('Delete event type?')) return; await DB.deleteEventType(id); await loadSettingsAndTypes(); renderEventTypesTable(); hydrateEventTypeSelects(); buildEventStepper();
+  const btn = e.target.closest('button[data-action="delete"]'); if (!btn) return; const tr = btn.closest('tr'); const id = tr.dataset.id; if (!confirm('Delete event type?')) return; await safeWrite(() => activeProvider.deleteEventType(id), 'Unable to delete event type (lead only)'); await loadSettingsAndTypes(); renderEventTypesTable(); hydrateEventTypeSelects(); buildEventStepper();
 });
 
 addEventTypeBtn?.addEventListener('click', async () => {
-  const label = prompt('Event label'); if (!label) return; const weight = Number(prompt('Weight (0..1)', '1') || '1'); const id = label.toLowerCase().replace(/\s+/g,'_'); await DB.saveEventType({ id, label, weight: Number.isFinite(weight) ? weight : 1 }); await loadSettingsAndTypes(); renderEventTypesTable(); hydrateEventTypeSelects(); buildEventStepper();
+  const label = prompt('Event label'); if (!label) return; const weight = Number(prompt('Weight (0..1)', '1') || '1'); const id = label.toLowerCase().replace(/\s+/g,'_'); const clamped = clampNumber(weight, 0, 1); await safeWrite(() => activeProvider.saveEventType({ id, label, weight: Number.isFinite(clamped) ? clamped : 1 }), 'Unable to add event type (lead only)'); await loadSettingsAndTypes(); renderEventTypesTable(); hydrateEventTypeSelects(); buildEventStepper();
 });
 
 async function downloadBackup({ filename = 'attendance_backup.json', toastMessage = 'Backup downloaded. Store the JSON in a safe spot before clearing data.', toastDuration = 2200, toast = true } = {}) {
-  const data = await DB.exportAllAsJson();
+  const data = await activeProvider.exportAllAsJson();
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -1920,6 +2589,7 @@ async function downloadBackup({ filename = 'attendance_backup.json', toastMessag
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 0);
   if (toast) showToast(toastMessage, toastDuration);
+  markSaved('backup');
 }
 
 downloadJsonBtn?.addEventListener('click', () => {
@@ -1936,35 +2606,65 @@ uploadJsonInput?.addEventListener('change', async () => {
     return;
   }
   const text = await file.text();
-  await DB.importAllFromJson(JSON.parse(text));
+  const restored = await safeWrite(() => activeProvider.importAllFromJson(JSON.parse(text)), 'Unable to restore backup');
+  if (restored === null) return;
   await loadSettingsAndTypes();
   await loadPeople();
   await ensureSession();
   await renderPeopleList();
   renderTrackingStats();
   renderRoster();
+  markSaved('restore');
   showToast('Backup restored. Double-check today’s session before continuing.', 2400);
 });
-importV1Btn?.addEventListener('click', async () => { const res = await DB.importFromV1IfPresent(); if (res.imported) { await loadSettingsAndTypes(); await loadPeople(); await ensureSession(); await renderPeopleList(); renderTrackingStats(); renderRoster(); showToast(`Imported v1 (${res.people} people, ${res.records} records)`, 2200); } else { showToast('No v1 data found'); } });
-clearDataBtn?.addEventListener('click', async () => { if (!confirm('Really clear ALL data?')) return; await DB.dexie.delete(); window.location.reload(); });
+importV1Btn?.addEventListener('click', async () => {
+  const res = await localProvider.importFromV1IfPresent();
+  if (res.imported) {
+    const json = await localProvider.exportAllAsJson();
+    const imported = await safeWrite(() => activeProvider.importAllFromJson(json), 'Unable to import v1 data');
+    if (imported === null) return;
+    await loadSettingsAndTypes();
+    await loadPeople();
+    await ensureSession();
+    await renderPeopleList();
+    renderTrackingStats();
+    renderRoster();
+    markSaved('restore');
+    showToast(`Imported v1 (${res.people} people, ${res.records} records)`, 2200);
+  } else {
+    showToast('No v1 data found');
+  }
+});
+clearDataBtn?.addEventListener('click', async () => {
+  const warning = activeMode === 'firebase'
+    ? 'Clear local cache and sign out? Cloud data will remain.'
+    : 'Really clear ALL data?';
+  if (!confirm(warning)) return;
+  await localProvider.clearAll();
+  if (activeMode === 'firebase') await firebaseProvider.signOut();
+  setStoredSyncMode('local');
+  window.location.reload();
+});
 
 settingsForm?.addEventListener('change', async () => {
   if (!state.settings) return;
   const s = state.settings;
   const nextTeamName = settingsTeamName?.value?.trim();
   if (nextTeamName !== undefined) s.teamName = nextTeamName || s.teamName || '';
-  const parsedTardy = Number(settingsTardy?.value);
+  const parsedTardy = clampNumber(Number(settingsTardy?.value), 0, 240);
   if (Number.isFinite(parsedTardy)) s.tardyThresholdMins = parsedTardy;
   const currentThresholds = { ...DEFAULT_LEGEND_THRESHOLDS, ...(s.legendThresholds || {}) };
-  const parsedLow = Number(settingsLow?.value);
-  const parsedMid = Number(settingsMid?.value);
-  const parsedHigh = Number(settingsHigh?.value);
-  s.legendThresholds = {
+  const parsedLow = clampNumber(Number(settingsLow?.value), 0, 1);
+  const parsedMid = clampNumber(Number(settingsMid?.value), 0, 1);
+  const parsedHigh = clampNumber(Number(settingsHigh?.value), 0, 1);
+  const nextThresholds = {
     low: Number.isFinite(parsedLow) ? parsedLow : currentThresholds.low,
     mid: Number.isFinite(parsedMid) ? parsedMid : currentThresholds.mid,
     high: Number.isFinite(parsedHigh) ? parsedHigh : currentThresholds.high,
   };
-  await DB.dexie.settings.put(s);
+  const ordered = [nextThresholds.low, nextThresholds.mid, nextThresholds.high].sort((a, b) => a - b);
+  s.legendThresholds = { low: ordered[0], mid: ordered[1], high: ordered[2] };
+  await safeWrite(() => activeProvider.saveSettings(s), 'Unable to update settings (lead only)');
   titleEl.textContent = s.teamName || 'Attendance';
   showToast('Settings saved');
   syncSettingsForm();
@@ -1974,12 +2674,53 @@ settingsForm?.addEventListener('change', async () => {
 takeDatePrevBtn?.addEventListener('click', async () => { const d = dayjs((takeDateEl.value||state.currentDate)).subtract(1,'day'); takeDateEl.value = d.format('YYYY-MM-DD'); await ensureSession(); await renderPeopleList(); renderTrackingStats(); });
 takeDateNextBtn?.addEventListener('click', async () => { const d = dayjs((takeDateEl.value||state.currentDate)).add(1,'day'); takeDateEl.value = d.format('YYYY-MM-DD'); await ensureSession(); await renderPeopleList(); renderTrackingStats(); });
 takeDateTodayBtn?.addEventListener('click', async () => { takeDateEl.value = dayjs().format('YYYY-MM-DD'); await ensureSession(); await renderPeopleList(); renderTrackingStats(); });
+takeTodayOfficeBtn?.addEventListener('click', async () => {
+  const today = dayjs().format('YYYY-MM-DD');
+  if (takeDateEl) takeDateEl.value = today;
+  if (takeEventEl && state.eventTypes.some(t => t.id === REQUIRED_EVENT_ID)) {
+    takeEventEl.value = REQUIRED_EVENT_ID;
+    state.currentEventTypeId = REQUIRED_EVENT_ID;
+    localStorage.setItem('lastEventTypeId', REQUIRED_EVENT_ID);
+  }
+  if (takeSearchEl) takeSearchEl.value = '';
+  if (takeShowAllEl) {
+    takeShowAllEl.checked = false;
+    state.showAll = false;
+    localStorage.setItem('take_show_all', 'false');
+  }
+  if (takeShowPendingEl) {
+    takeShowPendingEl.checked = false;
+    state.showPendingOnly = false;
+    localStorage.setItem('take_show_pending', 'false');
+  }
+  await ensureSession();
+  await renderPeopleList();
+  renderTrackingStats();
+  showToast('Set to today and Office.', 1600);
+});
 takeDateEl?.addEventListener('change', async () => { await ensureSession(); await renderPeopleList(); renderTrackingStats(); });
 takeEventEl?.addEventListener('change', async () => { localStorage.setItem('lastEventTypeId', takeEventEl.value); await ensureSession(); await renderPeopleList(); });
 takeSearchEl?.addEventListener('input', debounce(renderPeopleList, 150));
 takeShowAllEl?.addEventListener('change', () => { state.showAll = !!takeShowAllEl.checked; localStorage.setItem('take_show_all', String(state.showAll)); renderPeopleList(); });
+takeShowPendingEl?.addEventListener('change', () => { state.showPendingOnly = !!takeShowPendingEl.checked; localStorage.setItem('take_show_pending', String(state.showPendingOnly)); renderPeopleList(); });
+takeAutosaveToggle?.addEventListener('change', () => {
+  state.autosaveEnabled = !!takeAutosaveToggle.checked;
+  localStorage.setItem('take_autosave', String(state.autosaveEnabled));
+  updateSaveStatusUI();
+  if (state.autosaveEnabled && state.saveDirty) scheduleAutosave();
+});
 takeHiddenToggleBtn?.addEventListener('click', () => { if (!takeShowAllEl) return; takeShowAllEl.checked = true; state.showAll = true; localStorage.setItem('take_show_all', 'true'); renderPeopleList(); });
 takeHiddenHideBtn?.addEventListener('click', () => { if (!takeShowAllEl) return; takeShowAllEl.checked = false; state.showAll = false; localStorage.setItem('take_show_all', 'false'); renderPeopleList(); });
+takeNextPendingBtn?.addEventListener('click', () => {
+  const row = peopleListEl?.querySelector('.person-row[data-pending="true"]');
+  if (!row) {
+    showToast('No pending entries in this list.', 1600);
+    return;
+  }
+  row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  row.classList.add('person-row--pulse');
+  window.setTimeout(() => row.classList.remove('person-row--pulse'), 900);
+});
 takeLetterIndexEl?.addEventListener('click', (event) => {
   const btn = event.target.closest('button[data-letter]');
   if (!btn) return;
@@ -2018,6 +2759,7 @@ function updateHiddenInfoBar() {
   const base = filterPeople(takeSearchEl?.value);
   const date = takeDateEl.value || state.currentDate;
   const hiddenCount = base.filter(p => !isPersonServingOn(date, p) || p.active === false).length;
+  state.hiddenCount = hiddenCount;
   // Show the info bar whenever missionaries are hidden by service-day or inactive filters
   if (hiddenCount > 0) {
     takeHiddenCountEl.textContent = String(hiddenCount);
@@ -2027,6 +2769,7 @@ function updateHiddenInfoBar() {
   } else {
     takeHiddenInfoEl.hidden = true;
   }
+  renderNavigatorGaps();
 }
 
 // Insights/trends/cal events
@@ -2039,6 +2782,7 @@ analyticsShowTardy?.addEventListener('change', runAnalytics);
 analyticsShowAbsent?.addEventListener('change', runAnalytics);
 analyticsShowRate?.addEventListener('change', runAnalytics);
 analyticsActiveOnly?.addEventListener('change', runAnalytics);
+analyticsIncludeMissing?.addEventListener('change', runAnalytics);
 analyticsTag?.addEventListener('input', debounce(runAnalytics, 200));
 analyticsRange14?.addEventListener('click', () => { analyticsFrom.value = dayjs().subtract(14,'day').format('YYYY-MM-DD'); analyticsTo.value = dayjs().format('YYYY-MM-DD'); runAnalytics(); });
 analyticsRange30?.addEventListener('click', () => { analyticsFrom.value = dayjs().subtract(30,'day').format('YYYY-MM-DD'); analyticsTo.value = dayjs().format('YYYY-MM-DD'); runAnalytics(); });
@@ -2077,6 +2821,7 @@ analyticsCompare?.addEventListener('change', runAnalytics);
 trendsRunBtn?.addEventListener('click', runTrends);
 trendsSearchEl?.addEventListener('input', debounce(runTrends, 200));
 trendsActiveOnly?.addEventListener('change', runTrends);
+trendsIncludeMissing?.addEventListener('change', runTrends);
 trendsTag?.addEventListener('input', debounce(runTrends, 200));
 trendsSort?.addEventListener('change', runTrends);
 trendsRange14?.addEventListener('click', () => { trendsFrom.value = dayjs().subtract(14, 'day').format('YYYY-MM-DD'); trendsTo.value = dayjs().format('YYYY-MM-DD'); runTrends(); });
@@ -2119,7 +2864,8 @@ trendsThreshPreset?.addEventListener('change', () => {
 });
 trendsApplyThresholdsBtn?.addEventListener('click', async () => {
   const s = state.settings; if (!s) return; s.legendThresholds = { ...s.legendThresholds, low: Number(trendsThreshLow.value)||s.legendThresholds.low, high: Number(trendsThreshHigh.value)||s.legendThresholds.high };
-  await DB.dexie.settings.put(s); showToast('Thresholds applied to settings');
+  await safeWrite(() => activeProvider.saveSettings(s), 'Unable to update thresholds (lead only)');
+  showToast('Thresholds applied to settings');
 });
 
 // Trends card actions (pin, details, profile, open-take)
@@ -2145,7 +2891,7 @@ trendsPeopleEl?.addEventListener('click', async (e) => {
   if (action === 'delete-person') {
     const confirmMsg = 'Delete this missionary and all attendance records? This cannot be undone.';
     if (!confirm(confirmMsg)) return;
-    await DB.deletePerson(pid);
+    await safeWrite(() => activeProvider.deletePerson(pid), 'Unable to delete missionary (lead/atl only)');
     state.currentRecords.delete(pid);
     if (state.selectedPersonId === pid) state.selectedPersonId = null;
     try {
@@ -2184,6 +2930,7 @@ helpToc?.addEventListener('click', (e) => {
 calMonthEl?.addEventListener('change', renderCalendar);
 calEventEl?.addEventListener('change', renderCalendar);
 calApplyEventWeightEl?.addEventListener('change', renderCalendar);
+calIncludeMissingEl?.addEventListener('change', renderCalendar);
 calTodayBtn?.addEventListener('click', () => { if (calMonthEl) calMonthEl.value = dayjs().format('YYYY-MM'); renderCalendar(); });
 calMonthPrevBtn?.addEventListener('click', () => shiftCalendarMonth(-1));
 calMonthNextBtn?.addEventListener('click', () => shiftCalendarMonth(1));
@@ -2222,9 +2969,27 @@ async function ensureLibraries() {
 // Init
 async function init() {
   await ensureLibraries();
-  await DB.seedDefaults();
+  localProvider = createLocalProvider(DB);
+  await localProvider.init();
+  firebaseProvider = createFirebaseProvider();
+  if (firebaseProvider.isConfigured()) {
+    await firebaseProvider.init();
+    await firebaseProvider.onAuthStateChanged(async (user) => {
+      authUser = user;
+      await updateCloudUI();
+      if (!user && activeMode === 'firebase') {
+        await switchProvider('local');
+      }
+      if (user && getStoredSyncMode() === 'firebase' && firebaseProvider.getActiveTeamId()) {
+        await activateFirebaseMode();
+      }
+    });
+  }
+  activeProvider = localProvider;
+  activeMode = 'local';
   await loadSettingsAndTypes();
   await loadPeople();
+  await attachProviderSubscriptions();
 
   // Default date/event
   state.currentDate = dayjs().format('YYYY-MM-DD');
@@ -2235,6 +3000,12 @@ async function init() {
   const showAllPref = localStorage.getItem('take_show_all');
   state.showAll = showAllPref ? (showAllPref === 'true') : false;
   if (takeShowAllEl) takeShowAllEl.checked = state.showAll;
+  const showPendingPref = localStorage.getItem('take_show_pending');
+  state.showPendingOnly = showPendingPref ? (showPendingPref === 'true') : false;
+  if (takeShowPendingEl) takeShowPendingEl.checked = state.showPendingOnly;
+  const autosavePref = localStorage.getItem('take_autosave');
+  state.autosaveEnabled = autosavePref ? (autosavePref === 'true') : true;
+  if (takeAutosaveToggle) takeAutosaveToggle.checked = state.autosaveEnabled;
   analyticsFrom.value = dayjs().subtract(30, 'day').format('YYYY-MM-DD');
   analyticsTo.value = dayjs().format('YYYY-MM-DD');
   analyticsEvent.value = '';
@@ -2256,8 +3027,16 @@ async function init() {
   await renderPeopleList();
   renderTrackingStats();
   renderRoster();
+  markSaved('init');
 
   initRouter('take');
+  await updateCloudUI();
+  if (getStoredSyncMode() === 'firebase' && firebaseProvider?.isConfigured?.()) {
+    const user = await firebaseProvider.getCurrentUser();
+    if (user && firebaseProvider.getActiveTeamId()) {
+      await activateFirebaseMode();
+    }
+  }
 }
 
 init().catch(err => {

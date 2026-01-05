@@ -8,6 +8,7 @@
     <!-- Manifest will be attached dynamically in secure contexts -->
     <link rel="icon" href="assets/icon-192.png" sizes="192x192" />
     <link rel="apple-touch-icon" href="assets/icon-192.png" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" />
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="sidebar.css" />
 
@@ -18,7 +19,7 @@
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/timezone.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
-    <script src="https://alcdn.msauth.net/browser/2.43.1/js/msal-browser.min.js" defer></script>
+    <script src="assets/env.js" defer></script>
 
     <!-- App entrypoint (ES modules) -->
     <script type="module" src="src/main.js"></script>
@@ -51,12 +52,7 @@
             <h2 class="view-title">Check In</h2>
             <p class="view-description">Log attendance and capture notes without leaving the roster.</p>
           </div>
-          <div class="view-actions">
-            <button id="save-attendance" type="button" class="primary-action" title="Keep changes on this browser">Save to browser</button>
-            <button id="save-download-attendance" type="button" class="secondary-action secondary-action--accent" title="Download a JSON backup with your latest changes">Save &amp; download backup</button>
-            <button id="print-attendance" type="button" class="secondary-action">Print</button>
-          </div>
-          <p class="view-actions-hint" id="take-save-hint">Changes stay on this device. Use the backup download to carry your updates to another browser or keep a copy.</p>
+          <p class="view-actions-hint" id="take-save-hint">Changes stay on this device. Use the action bar below to save, download a backup, or print.</p>
         </header>
         <div class="view-shell take-layout">
           <aside id="sidebar" class="take-sidebar" aria-label="Session basics and navigation">
@@ -89,7 +85,9 @@
                       <select id="take-event"></select>
                     </label>
                     <div class="event-stepper" role="tablist" aria-label="Session flow" id="event-stepper"></div>
-                    <p class="event-stepper-note">Office check-ins are required. Morning and Afternoon meetings are supplemental and carry no penalty if left blank.</p>
+                    <div class="button-row">
+                      <button id="take-today-office" type="button" class="secondary-action">Today + Office</button>
+                    </div>
                   </div>
                 </div>
               </section>
@@ -100,14 +98,23 @@
                     <h3 class="section-card__title">Find people</h3>
                   </header>
                   <div class="section-card__body">
-                    <label class="sidebar-field">
-                      <span class="sidebar-field__label">Search</span>
-                      <input id="take-search" placeholder="Search people" />
-                    </label>
-                    <label class="sidebar-field sidebar-field--toggle">
-                      <input type="checkbox" id="take-show-all" />
-                      <span>Show all missionaries</span>
-                    </label>
+                    <div class="sidebar-filter-row">
+                      <label class="sidebar-field">
+                        <span class="sidebar-field__label">Search</span>
+                        <input id="take-search" placeholder="Search people" />
+                      </label>
+                      <div class="sidebar-filter-actions">
+                        <label class="sidebar-field sidebar-field--toggle">
+                          <input type="checkbox" id="take-show-all" />
+                          <span>Show all missionaries</span>
+                        </label>
+                        <label class="sidebar-field sidebar-field--toggle">
+                          <input type="checkbox" id="take-show-pending" />
+                          <span>Show pending only</span>
+                        </label>
+                        <button id="take-next-pending" type="button" class="secondary-action">Jump to next pending</button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </section>
@@ -118,13 +125,11 @@
                     <h3 class="section-card__title">Bulk actions</h3>
                   </header>
                   <div class="section-card__body">
-                    <details class="sidebar-accordion">
-                      <summary class="sidebar-accordion__summary">Open tools</summary>
-                      <div class="sidebar-accordion__body">
-                        <button id="mark-all-present" type="button">Mark all present</button>
-                        <button id="clear-all" type="button" class="secondary-action">Clear all</button>
-                      </div>
-                    </details>
+                    <div class="button-row">
+                      <button id="mark-all-present" type="button">Mark visible present</button>
+                      <button id="mark-pending-absent" type="button" class="secondary-action">Mark pending absent</button>
+                      <button id="clear-all" type="button" class="secondary-action">Clear visible</button>
+                    </div>
                   </div>
                 </div>
               </section>
@@ -162,6 +167,16 @@
             </div>
           </aside>
           <div class="view-panel take-roster primary-panel" aria-live="polite">
+            <div id="take-save-status" class="save-status" role="status" aria-live="polite">
+              <div class="save-status__text">
+                <strong id="take-save-label">All changes saved locally</strong>
+                <span id="take-save-time">Last saved -</span>
+              </div>
+              <label class="field-toggle save-status__toggle">
+                <input type="checkbox" id="take-autosave" checked />
+                <span>Autosave badge</span>
+              </label>
+            </div>
             <div id="take-summary" class="take-summary" aria-live="polite" aria-atomic="true">
               <p class="summary-empty">Select a date and session to start.</p>
             </div>
@@ -250,6 +265,7 @@
                   <label class="field field-toggle"><input type="checkbox" id="analytics-apply-event-weight" /> <span>Apply event weighting</span></label>
                   <label class="field field-toggle"><input type="checkbox" id="analytics-smooth-rate" /> <span>Smooth rate (7-day)</span></label>
                   <label class="field field-toggle"><input type="checkbox" id="analytics-active-only" /> <span>Active only</span></label>
+                  <label class="field field-toggle"><input type="checkbox" id="analytics-include-missing" /> <span>Include missing as 0%</span></label>
                   <label class="field"> <span class="field-label">Tag</span> <input id="analytics-tag" placeholder="Filter by tag" /> </label>
                   <div class="button-group">
                     <span class="field-label">Quick ranges</span>
@@ -259,9 +275,9 @@
                       <button id="analytics-range-90" type="button" class="secondary-action">Last 90</button>
                     </div>
                   </div>
-                  <label class="field field-toggle"><input type="checkbox" id="analytics-compare" /> <span>Compare previous period</span></label>
                 </div>
               </details>
+              <label class="field field-toggle"><input type="checkbox" id="analytics-compare" /> <span>Compare previous period</span></label>
             </form>
             <div id="analytics-summary" class="trends-summary"></div>
             <div class="cards one-line">
@@ -275,7 +291,10 @@
               </div>
             </div>
             <section class="chart-section">
-              <h3 class="section-title">Trend</h3>
+              <div class="section-title-row">
+                <h3 class="section-title">Trend</h3>
+                <span class="rate-help" title="Rate = weighted average of status scores (Present 100%, Online 95%, Tardy 75%, Excused 50%, Absent 0%). Event weighting and tardy threshold apply. Missing stays out unless 'Include missing as 0%' is on.">Rate formula</span>
+              </div>
               <div class="mini-controls">
                 <label class="field-toggle"><input type="checkbox" id="analytics-show-present" checked /> <span>Present</span></label>
                 <label class="field-toggle"><input type="checkbox" id="analytics-show-online" checked /> <span>Online</span></label>
@@ -338,6 +357,7 @@
                 <div class="control-advanced-body">
                   <label class="field field-toggle"><input type="checkbox" id="trends-apply-event-weight" /> <span>Apply event weighting</span></label>
                   <label class="field field-toggle"><input type="checkbox" id="trends-active-only" /> <span>Active only</span></label>
+                  <label class="field field-toggle"><input type="checkbox" id="trends-include-missing" /> <span>Include missing as 0%</span></label>
                   <label class="field"> <span class="field-label">Tag</span> <input id="trends-tag" placeholder="Filter by tag" /> </label>
                   <div class="button-group">
                     <span class="field-label">Quick ranges</span>
@@ -350,7 +370,7 @@
                 </div>
               </details>
               <details class="control-advanced">
-                <summary>Group thresholds</summary>
+                <summary>Legend</summary>
                 <div class="control-advanced-body thresholds-panel">
                   <label class="field"> <span class="field-label">Preset</span>
                     <select id="trends-thresh-preset">
@@ -366,6 +386,7 @@
                 </div>
               </details>
             </form>
+            <p class="section-note rate-help" title="Rate = weighted average of status scores (Present 100%, Online 95%, Tardy 75%, Excused 50%, Absent 0%). Event weighting and tardy threshold apply. Missing stays out unless 'Include missing as 0%' is on.">Rate formula</p>
             <div id="trends-summary" class="trends-summary"></div>
             <div id="trends-people" class="cards"></div>
             <div class="view-support">
@@ -448,6 +469,7 @@
                 </div>
               </div>
               <label class="field field-toggle"><input type="checkbox" id="cal-apply-event-weight" /> <span>Apply event weighting</span></label>
+              <label class="field field-toggle"><input type="checkbox" id="cal-include-missing" /> <span>Include missing as 0%</span></label>
             </form>
             <div class="calendar">
               <div class="calendar-header" aria-hidden="true">
@@ -458,6 +480,7 @@
                 <div class="cal-dow">Fri</div>
               </div>
               <div class="calendar-grid" id="calendar-grid" role="grid" aria-label="Monthly attendance calendar"></div>
+              <div class="calendar-legend" role="note">Legend: P=Present, O=Online, T=Tardy, E=Excused, A=Absent</div>
             </div>
             <section class="calendar-weeks">
               <h3 class="section-title">Weekly summaries</h3>
@@ -536,7 +559,7 @@
               <div class="help-section-body">
                 <ol class="help-steps">
                   <li>Select the <strong>date</strong> and confirm the <strong>Office</strong> session is selected first. The app remembers the last Office day you touched.</li>
-                  <li>Work down the roster. <strong>Pending</strong> rows show who still needs a status. Use <span class="help-inline">Mark all present</span> if everyone made it.</li>
+                  <li>Work down the roster. <strong>Pending</strong> rows show who still needs a status. Use <span class="help-inline">Mark visible present</span> if everyone in view made it.</li>
                   <li>Capture <strong>tardy minutes</strong> when needed &mdash; the modal will pop up when you choose Tardy.</li>
                   <li>Optionally log Morning or Afternoon meetings. Leaving them blank never hurts coverage.</li>
                   <li>Hit <strong>Save attendance</strong> before you leave the page or print.</li>
@@ -820,15 +843,42 @@
                 </div>
               </section>
               <section id="cloud-sync" class="settings-section" hidden>
-                <h3>Cloud sync (Microsoft)</h3>
-                <p id="cloud-sync-status" class="section-note">Sign in to sync a shared JSON on OneDrive/SharePoint.</p>
+                <h3>Cloud sync (Firebase)</h3>
+                <p id="cloud-sync-status" class="section-note">Sign in to sync a shared roster across devices.</p>
                 <div class="view-actions">
                   <button id="cloud-signin" type="button" class="secondary-action">Sign in</button>
-                  <button id="cloud-load" type="button" class="secondary-action">Load latest from cloud</button>
-                  <button id="cloud-save" type="button" class="secondary-action">Save current to cloud</button>
                   <button id="cloud-signout" type="button" class="secondary-action">Sign out</button>
                 </div>
-                <p class="section-note">File path is configured in code. Changes use eTags to avoid overwrites.</p>
+                <label class="field">
+                  <span class="field-label">Sync mode</span>
+                  <select id="cloud-sync-mode">
+                    <option value="local">Local only</option>
+                    <option value="firebase">Firebase</option>
+                  </select>
+                </label>
+                <div class="cloud-workspace">
+                  <label class="field">
+                    <span class="field-label">Create team</span>
+                    <input id="cloud-team-create-name" placeholder="Team name" />
+                  </label>
+                  <button id="cloud-team-create" type="button" class="secondary-action">Create team</button>
+                </div>
+                <div class="cloud-workspace">
+                  <label class="field">
+                    <span class="field-label">Join team ID</span>
+                    <input id="cloud-team-join-id" placeholder="Team ID" />
+                  </label>
+                  <button id="cloud-team-join" type="button" class="secondary-action">Join team</button>
+                </div>
+                <div class="cloud-current">
+                  <p class="section-note">Current team: <strong id="cloud-current-team">—</strong></p>
+                  <p class="section-note">Team ID: <span id="cloud-current-team-id">—</span> <button id="cloud-copy-team" type="button" class="secondary-action">Copy</button></p>
+                </div>
+                <div class="sync-status">
+                  <span id="sync-online" class="chip tone-info">Offline</span>
+                  <span id="sync-pending" class="chip tone-info" hidden>Pending writes</span>
+                  <span id="sync-last" class="section-note"></span>
+                </div>
               </section>
               <section class="settings-section danger-zone">
                 <h3>Danger zone</h3>
@@ -894,6 +944,18 @@
     </div>
 
     <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+    <div id="migration-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="migration-title" hidden>
+      <div class="modal-content">
+        <h2 id="migration-title">Sync setup</h2>
+        <p id="migration-summary" class="modal-subtitle"></p>
+        <div class="modal-actions">
+          <button id="migration-upload" type="button" class="secondary-action">Upload this device&rsquo;s data</button>
+          <button id="migration-download" type="button" class="primary-action">Replace local with cloud</button>
+          <button id="migration-cancel" type="button" class="secondary-action">Cancel</button>
+        </div>
+      </div>
+    </div>
 
     <script>
       // Attach manifest only when served from a secure context (https or localhost)

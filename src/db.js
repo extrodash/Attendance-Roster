@@ -165,9 +165,23 @@ async function exportAllAsJson() {
   return { people, eventTypes, sessions, records, settings };
 }
 async function importAllFromJson(json) {
+  json = json || {};
   const allowedStatuses = new Set(['present','online','tardy','excused','absent','early_leave','very_early_leave','non_service']);
   const dayMap = { M:'Mon', T:'Tue', W:'Wed', R:'Thu', Th:'Thu', F:'Fri', S:'Sat', Su:'Sun', U:'Sun' };
   const allowedDays = new Set(['Mon','Tue','Wed','Thu','Fri','Sat','Sun']);
+  const hasProp = (obj, key) => Object.prototype.hasOwnProperty.call(obj || {}, key);
+
+  function normalizeCollection(raw, key, isSingle) {
+    if (Array.isArray(raw)) return raw;
+    if (raw && typeof raw === 'object') {
+      if (isSingle && isSingle(raw)) return [raw];
+      return Object.entries(raw).map(([id, value]) => {
+        if (value && typeof value === 'object') return { [key]: id, ...value };
+        return { [key]: id };
+      });
+    }
+    return [];
+  }
 
   function normalizeServiceDays(val) {
     if (!val) return [];
@@ -201,28 +215,35 @@ async function importAllFromJson(json) {
     return undefined;
   }
 
-  const people = (json.people || []).map(p => ({
+  const rawPeople = normalizeCollection(json.people, 'id', (val) => 'displayName' in val || 'serviceDays' in val);
+  const rawEventTypes = normalizeCollection(json.eventTypes, 'id', (val) => 'label' in val || 'weight' in val);
+  const rawSessions = normalizeCollection(json.sessions, 'id', (val) => 'date' in val || 'eventTypeId' in val);
+  const rawRecords = normalizeCollection(json.records, 'id', (val) => 'personId' in val || 'sessionId' in val || 'status' in val);
+  const rawSettings = normalizeCollection(json.settings, 'id', (val) => 'teamName' in val || 'legendThresholds' in val || 'tardyThresholdMins' in val || 'eventTypes' in val);
+  if (rawSettings.length === 1 && !rawSettings[0].id) rawSettings[0].id = 'app';
+
+  const people = rawPeople.map(p => ({
     ...p,
     serviceDays: normalizeServiceDays(p.serviceDays)
   }));
 
-  const sessions = (json.sessions || []).map(s => ({
+  const sessions = rawSessions.map(s => ({
     ...s,
     // Ensure dow is correct for the given date
     dow: (() => { try { const d = dayjs(s.date); return d.isValid() ? ((d.day()+6)%7)+1 : s.dow; } catch { return s.dow; } })()
   }));
 
-  const records = (json.records || []).map(r => ({
+  const records = rawRecords.map(r => ({
     ...r,
     status: normalizeStatus(r.status)
   }));
 
   await dexie.transaction('rw', dexie.people, dexie.eventTypes, dexie.sessions, dexie.records, dexie.settings, async () => {
-    if (json.people) { await dexie.people.clear(); await dexie.people.bulkAdd(people); }
-    if (json.eventTypes) { await dexie.eventTypes.clear(); await dexie.eventTypes.bulkAdd(json.eventTypes); }
-    if (json.sessions) { await dexie.sessions.clear(); await dexie.sessions.bulkAdd(sessions); }
-    if (json.records) { await dexie.records.clear(); await dexie.records.bulkAdd(records); }
-    if (json.settings) { await dexie.settings.clear(); await dexie.settings.bulkAdd(json.settings); }
+    if (hasProp(json, 'people')) { await dexie.people.clear(); await dexie.people.bulkAdd(people); }
+    if (hasProp(json, 'eventTypes')) { await dexie.eventTypes.clear(); await dexie.eventTypes.bulkAdd(rawEventTypes); }
+    if (hasProp(json, 'sessions')) { await dexie.sessions.clear(); await dexie.sessions.bulkAdd(sessions); }
+    if (hasProp(json, 'records')) { await dexie.records.clear(); await dexie.records.bulkAdd(records); }
+    if (hasProp(json, 'settings')) { await dexie.settings.clear(); await dexie.settings.bulkAdd(rawSettings); }
   });
 }
 
