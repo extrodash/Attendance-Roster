@@ -20,13 +20,15 @@ function readFirebaseEnv(suffix) {
 }
 
 export function getFirebaseConfig() {
-  return {
-    apiKey: "AIzaSyBSI4KjPiUe3heCcJJc_wndY19sUALdnIY",
-    authDomain: "attendance-b330b.firebaseapp.com",
-    projectId: "attendance-b330b",
-    storageBucket: "attendance-b330b.appspot.com",
-    messagingSenderId: "549938844146",
-    appId: "1:549938844146:web:15d514f842b86a6c9e5b6b",
+  const config = {
+    apiKey: readFirebaseEnv('API_KEY'),
+    authDomain: readFirebaseEnv('AUTH_DOMAIN'),
+    projectId: readFirebaseEnv('PROJECT_ID'),
+    storageBucket: readFirebaseEnv('STORAGE_BUCKET'),
+    messagingSenderId: readFirebaseEnv('MESSAGING_SENDER_ID'),
+    appId: readFirebaseEnv('APP_ID'),
+    measurementId: readFirebaseEnv('MEASUREMENT_ID')
   };
+  if (!config.apiKey || !config.projectId || !config.appId) return null;
+  return Object.fromEntries(Object.entries(config).filter(([, value]) => value != null && value !== ''));
 }
-
