@@ -19,6 +19,16 @@ function readFirebaseEnv(suffix) {
   );
 }
 
+const FALLBACK_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBSI4KjPiUe3heCcJJc_wndY19sUALdnIY",
+  authDomain: "attendance-b330b.firebaseapp.com",
+  projectId: "attendance-b330b",
+  storageBucket: "attendance-b330b.firebasestorage.app",
+  messagingSenderId: "549938844146",
+  appId: "1:549938844146:web:15d514f842b86a6c9e5b6b",
+  measurementId: "G-212XJB5XZZ"
+};
+
 export function getFirebaseConfig() {
   const config = {
     apiKey: readFirebaseEnv('API_KEY'),
@@ -29,6 +39,10 @@ export function getFirebaseConfig() {
     appId: readFirebaseEnv('APP_ID'),
     measurementId: readFirebaseEnv('MEASUREMENT_ID')
   };
-  if (!config.apiKey || !config.projectId || !config.appId) return null;
+  if (!config.authDomain && config.projectId) {
+    config.authDomain = `${config.projectId}.firebaseapp.com`;
+  }
+  const hasEnv = config.apiKey && config.projectId && config.appId;
+  if (!hasEnv) return FALLBACK_FIREBASE_CONFIG;
   return Object.fromEntries(Object.entries(config).filter(([, value]) => value != null && value !== ''));
 }
