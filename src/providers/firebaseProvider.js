@@ -1,6 +1,7 @@
 import {
   firebaseCurrentUser,
   firebaseDbInstance,
+  firebaseHandleRedirectResult,
   firebaseOnAuthStateChanged,
   firebaseSignIn,
   firebaseSignOut,
@@ -129,6 +130,23 @@ async function batchDeleteDocs(db, refs) {
   if (count > 0) await batch.commit();
 }
 
+async function commitBatchWrites(db, items) {
+  let batch = writeBatch(db);
+  let count = 0;
+  for (const item of items) {
+    if (!item?.ref) continue;
+    if (item.options) batch.set(item.ref, item.data, item.options);
+    else batch.set(item.ref, item.data);
+    count += 1;
+    if (count >= 450) {
+      await batch.commit();
+      batch = writeBatch(db);
+      count = 0;
+    }
+  }
+  if (count > 0) await batch.commit();
+}
+
 export function createFirebaseProvider() {
   let activeTeamId = getStoredTeamId();
   let activeTeamName = '';
@@ -137,13 +155,35 @@ export function createFirebaseProvider() {
   const syncStatus = {
     online: typeof navigator !== 'undefined' ? navigator.onLine : true,
     pendingWrites: false,
-    lastSyncedAt: null
+    lastSyncedAt: null,
+    lastError: null,
+    lastErrorAt: null,
+    lastErrorSource: null
   };
   let onlineListenerAttached = false;
 
   function updateSyncStatus() {
     syncStatus.pendingWrites = Array.from(pendingMap.values()).some(Boolean);
     for (const cb of syncListeners) cb({ ...syncStatus });
+  }
+
+  function clearSyncError() {
+    syncStatus.lastError = null;
+    syncStatus.lastErrorAt = null;
+    syncStatus.lastErrorSource = null;
+  }
+
+  function formatSyncError(err) {
+    if (err?.code) return err.code;
+    if (err?.message) return String(err.message).split('\n')[0];
+    return 'sync-error';
+  }
+
+  function reportSyncError(source, err) {
+    syncStatus.lastError = formatSyncError(err);
+    syncStatus.lastErrorAt = new Date();
+    syncStatus.lastErrorSource = source;
+    updateSyncStatus();
   }
 
   function attachOnlineListeners() {
@@ -164,6 +204,7 @@ export function createFirebaseProvider() {
     if (!snapshot.metadata.fromCache) {
       syncStatus.lastSyncedAt = new Date();
     }
+    clearSyncError();
     updateSyncStatus();
   }
 
@@ -172,23 +213,36 @@ export function createFirebaseProvider() {
     return activeTeamId;
   }
 
+  async function requireLead(teamId) {
+    const user = await firebaseCurrentUser();
+    if (!user) throw new Error('Sign in to continue.');
+    const db = await firebaseDbInstance();
+    if (!db) throw new Error('Firebase is not configured.');
+    const memberRef = doc(db, 'teams', teamId, 'members', user.uid);
+    const memberSnap = await getDoc(memberRef);
+    const role = memberSnap.exists() ? memberSnap.data()?.role : null;
+    if (role !== 'lead') throw new Error('Only team leads can overwrite cloud data.');
+    return user;
+  }
+
   async function ensureFirebaseReady() {
     const init = await initFirebase();
     if (!init.enabled) throw new Error('Firebase is not configured.');
     return init;
   }
 
-  async function ensureSessionDoc(teamId, dateId, sessionKey, extra = {}) {
+  async function ensureSessionDoc(teamId, dateId, sessionKey, extra = {}, meta = {}) {
     const db = await firebaseDbInstance();
     if (!db) return;
     const attendanceRef = doc(db, 'teams', teamId, 'attendance', dateId);
-    await setDoc(attendanceRef, { date: dateId, updatedAt: serverTimestamp() }, { merge: true });
+    const baseMeta = { updatedAt: serverTimestamp(), ...meta };
+    await setDoc(attendanceRef, { date: dateId, ...baseMeta }, { merge: true });
     const sessionRef = doc(db, 'teams', teamId, 'attendance', dateId, 'sessions', sessionKey);
     const data = {
       date: dateId,
       dow: isoDow(dateId),
       eventTypeId: sessionKey,
-      updatedAt: serverTimestamp(),
+      ...baseMeta,
       ...extra
     };
     await setDoc(sessionRef, data, { merge: true });
@@ -244,6 +298,11 @@ export function createFirebaseProvider() {
     async init() {
       await ensureFirebaseReady();
       attachOnlineListeners();
+      try {
+        await firebaseHandleRedirectResult();
+      } catch (err) {
+        console.warn('Firebase redirect sign-in failed', err);
+      }
     },
     async signIn() {
       return firebaseSignIn();
@@ -323,6 +382,12 @@ export function createFirebaseProvider() {
         syncListeners.delete(cb);
       };
     },
+    resetSyncTracking() {
+      pendingMap.clear();
+      syncStatus.lastSyncedAt = null;
+      clearSyncError();
+      updateSyncStatus();
+    },
     async getSettings() {
       const db = await firebaseDbInstance();
       const teamId = ensureTeamId();
@@ -381,7 +446,10 @@ export function createFirebaseProvider() {
           if (normalized.teamName) activeTeamName = normalized.teamName;
           cb(normalized);
         },
-        (err) => console.warn('Settings listener error', err)
+        (err) => {
+          reportSyncError('settings', err);
+          console.warn('Settings listener error', err);
+        }
       ));
     },
     subscribeEventTypes(cb) {
@@ -418,7 +486,10 @@ export function createFirebaseProvider() {
             };
           }));
         },
-        (err) => console.warn('Roster listener error', err)
+        (err) => {
+          reportSyncError('roster', err);
+          console.warn('Roster listener error', err);
+        }
       ));
     },
     async addPerson(displayName, { active = true, tags = [], serviceDays = [] } = {}) {
@@ -497,15 +568,19 @@ export function createFirebaseProvider() {
             ...docSnap.data()
           })));
         },
-        (err) => console.warn('Session listener error', err)
+        (err) => {
+          reportSyncError('records', err);
+          console.warn('Session listener error', err);
+        }
       ));
     },
     async setRecordStatus(sessionId, personId, status, minutesLate = undefined, notes = undefined, leaveStatus = undefined) {
       const db = await firebaseDbInstance();
       const teamId = ensureTeamId();
       const { dateId, sessionKey } = splitSessionId(sessionId);
-      await ensureSessionDoc(teamId, dateId, sessionKey);
       const user = await firebaseCurrentUser();
+      const meta = user?.uid ? { updatedBy: user.uid } : {};
+      await ensureSessionDoc(teamId, dateId, sessionKey, {}, meta);
       const payload = {
         status: status ?? null,
         updatedAt: serverTimestamp(),
@@ -643,8 +718,11 @@ export function createFirebaseProvider() {
     },
     async importAllFromJson(json) {
       json = json || {};
-      const db = await firebaseDbInstance();
       const teamId = ensureTeamId();
+      const user = await requireLead(teamId);
+      const db = await firebaseDbInstance();
+      if (!db) throw new Error('Firebase is not configured.');
+      const updatedBy = user?.uid || null;
       const settingsList = normalizeCollection(json.settings, 'id', (val) => 'teamName' in val || 'legendThresholds' in val || 'tardyThresholdMins' in val || 'eventTypes' in val);
       const settingsRaw = settingsList[0] || {};
       const jsonEventTypes = normalizeCollection(json.eventTypes, 'id', (val) => 'label' in val || 'weight' in val);
@@ -658,12 +736,19 @@ export function createFirebaseProvider() {
       await setDoc(doc(db, 'teams', teamId, 'settings', 'main'), {
         ...normalizedSettings,
         updatedAt: serverTimestamp(),
-        updatedBy: (await firebaseCurrentUser())?.uid || null
+        updatedBy
       });
+      const teamUpdate = {
+        updatedAt: serverTimestamp(),
+        updatedBy,
+        dataImportedAt: serverTimestamp(),
+        dataImportedBy: updatedBy
+      };
       if (normalizedSettings.teamName) {
-        await updateDoc(doc(db, 'teams', teamId), { name: normalizedSettings.teamName, updatedAt: serverTimestamp() });
+        teamUpdate.name = normalizedSettings.teamName;
         activeTeamName = normalizedSettings.teamName;
       }
+      await updateDoc(doc(db, 'teams', teamId), teamUpdate);
       const people = normalizeCollection(json.people, 'id', (val) => 'displayName' in val || 'serviceDays' in val)
         .map(person => ({
           ...person,
@@ -672,15 +757,18 @@ export function createFirebaseProvider() {
           serviceDays: normalizeServiceDays(person.serviceDays)
         }))
         .filter(person => person.id && person.displayName);
-      for (const person of people) {
-        await setDoc(doc(db, 'teams', teamId, 'roster', person.id), {
+      const rosterWrites = people.map(person => ({
+        ref: doc(db, 'teams', teamId, 'roster', person.id),
+        data: {
           displayName: person.displayName,
           active: person.active !== false,
           tags: person.tags || [],
           serviceDays: person.serviceDays || [],
-          updatedAt: serverTimestamp()
-        });
-      }
+          updatedAt: serverTimestamp(),
+          updatedBy
+        }
+      }));
+      await commitBatchWrites(db, rosterWrites);
       const sessions = normalizeCollection(json.sessions, 'id', (val) => 'date' in val || 'eventTypeId' in val)
         .map(session => {
           const split = splitSessionId(session.id);
@@ -689,30 +777,58 @@ export function createFirebaseProvider() {
           const dow = dateId ? isoDow(dateId) : session.dow;
           return { ...session, date: dateId, eventTypeId, dow };
         });
+      const attendanceDates = new Set();
+      const sessionWrites = [];
       for (const session of sessions) {
         const dateId = session.date || splitSessionId(session.id).dateId;
         const eventTypeId = session.eventTypeId || splitSessionId(session.id).sessionKey;
         if (!dateId || !eventTypeId) continue;
-        await ensureSessionDoc(teamId, dateId, eventTypeId, { notes: session.notes || '' });
+        attendanceDates.add(dateId);
+        sessionWrites.push({
+          ref: doc(db, 'teams', teamId, 'attendance', dateId, 'sessions', eventTypeId),
+          data: {
+            date: dateId,
+            dow: session.dow || isoDow(dateId),
+            eventTypeId,
+            notes: session.notes || '',
+            updatedAt: serverTimestamp(),
+            updatedBy
+          },
+          options: { merge: true }
+        });
       }
+      const attendanceWrites = Array.from(attendanceDates).map(dateId => ({
+        ref: doc(db, 'teams', teamId, 'attendance', dateId),
+        data: {
+          date: dateId,
+          updatedAt: serverTimestamp(),
+          updatedBy
+        },
+        options: { merge: true }
+      }));
+      await commitBatchWrites(db, attendanceWrites);
+      await commitBatchWrites(db, sessionWrites);
       const records = normalizeCollection(json.records, 'id', (val) => 'personId' in val || 'sessionId' in val || 'status' in val)
         .map(record => ({ ...record, status: normalizeStatus(record.status) }));
+      const recordWrites = [];
       for (const record of records) {
         const { dateId, sessionKey } = splitSessionId(record.sessionId || '');
         if (!dateId || !sessionKey || !record.personId) continue;
-        await setDoc(
-          doc(db, 'teams', teamId, 'attendance', dateId, 'sessions', sessionKey, 'records', record.personId),
-          {
+        recordWrites.push({
+          ref: doc(db, 'teams', teamId, 'attendance', dateId, 'sessions', sessionKey, 'records', record.personId),
+          data: {
             status: record.status ?? null,
             minutesLate: record.minutesLate ?? null,
             notes: record.notes ?? '',
             leaveStatus: record.leaveStatus ?? null,
             personId: record.personId,
-            updatedAt: serverTimestamp()
+            updatedAt: serverTimestamp(),
+            updatedBy
           },
-          { merge: true }
-        );
+          options: { merge: true }
+        });
       }
+      await commitBatchWrites(db, recordWrites);
     },
     async hasTeamData() {
       const db = await firebaseDbInstance();

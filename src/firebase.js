@@ -1,6 +1,6 @@
 import { getFirebaseConfig } from './env.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js';
-import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js';
+import { getAuth, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js';
 import { enableIndexedDbPersistence, enableMultiTabIndexedDbPersistence, getFirestore } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js';
 
 let firebaseApp = null;
@@ -55,8 +55,17 @@ export async function firebaseSignIn() {
   const { enabled, auth } = await initFirebase();
   if (!enabled || !auth) throw new Error('Firebase is not configured.');
   const provider = new GoogleAuthProvider();
-  const res = await signInWithPopup(auth, provider);
-  return res.user;
+  try {
+    const res = await signInWithPopup(auth, provider);
+    return res.user;
+  } catch (err) {
+    const code = err?.code || '';
+    if (['auth/popup-blocked', 'auth/popup-closed-by-user', 'auth/cancelled-popup-request', 'auth/operation-not-supported-in-this-environment'].includes(code)) {
+      await signInWithRedirect(auth, provider);
+      return null;
+    }
+    throw err;
+  }
 }
 
 export async function firebaseSignOut() {
@@ -69,6 +78,13 @@ export async function firebaseOnAuthStateChanged(callback) {
   const { enabled, auth } = await initFirebase();
   if (!enabled || !auth) return () => {};
   return onAuthStateChanged(auth, callback);
+}
+
+export async function firebaseHandleRedirectResult() {
+  const { enabled, auth } = await initFirebase();
+  if (!enabled || !auth) return null;
+  const res = await getRedirectResult(auth);
+  return res?.user || null;
 }
 
 export async function firebaseCurrentUser() {

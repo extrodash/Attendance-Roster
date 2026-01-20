@@ -12,6 +12,7 @@ let activeMode = 'local';
 let providerSubscriptions = [];
 let sessionSubscription = null;
 let authUser = null;
+let activeFirebaseTeamId = null;
 
 // Global state
 const state = {
@@ -325,7 +326,14 @@ function renderSyncStatus(status) {
   syncOnlineEl.textContent = online ? 'Online' : 'Offline';
   syncOnlineEl.className = `chip ${online ? 'tone-success' : 'tone-danger'}`;
   if (syncPendingEl) syncPendingEl.hidden = !status?.pendingWrites;
-  if (syncLastEl) syncLastEl.textContent = status?.lastSyncedAt ? `Last synced ${new Date(status.lastSyncedAt).toLocaleString()}` : '';
+  if (syncLastEl) {
+    if (status?.lastError) {
+      const source = status.lastErrorSource ? ` (${status.lastErrorSource})` : '';
+      syncLastEl.textContent = `Sync issue${source}: ${status.lastError}`;
+    } else {
+      syncLastEl.textContent = status?.lastSyncedAt ? `Last synced ${new Date(status.lastSyncedAt).toLocaleString()}` : '';
+    }
+  }
 }
 
 let migrationResolver = null;
@@ -409,8 +417,8 @@ async function attachProviderSubscriptions() {
   }
 }
 
-async function switchProvider(mode) {
-  if (activeMode === mode) return;
+async function switchProvider(mode, { force = false } = {}) {
+  if (activeMode === mode && !force) return;
   if (sessionSubscription) {
     sessionSubscription();
     sessionSubscription = null;
@@ -418,6 +426,12 @@ async function switchProvider(mode) {
   activeMode = mode;
   setStoredSyncMode(mode);
   activeProvider = mode === 'firebase' ? firebaseProvider : localProvider;
+  if (mode === 'firebase') {
+    activeFirebaseTeamId = firebaseProvider?.getActiveTeamId?.() || null;
+    firebaseProvider?.resetSyncTracking?.();
+  } else {
+    activeFirebaseTeamId = null;
+  }
   await loadSettingsAndTypes();
   await loadPeople();
   await ensureSession();
@@ -500,7 +514,6 @@ async function maybeRunMigration(teamId) {
 }
 
 async function activateFirebaseMode() {
-  if (activeMode === 'firebase') return true;
   if (!firebaseProvider?.isConfigured?.()) {
     showToast('Firebase is not configured');
     return false;
@@ -515,9 +528,11 @@ async function activateFirebaseMode() {
     showToast('Create or join a team first', 2000);
     return false;
   }
+  const needsReload = activeMode !== 'firebase' || activeFirebaseTeamId !== teamId;
+  if (!needsReload) return true;
   const migrated = await maybeRunMigration(teamId);
   if (!migrated) return false;
-  await switchProvider('firebase');
+  await switchProvider('firebase', { force: true });
   return true;
 }
 
@@ -633,7 +648,9 @@ async function safeWrite(action, message) {
   try {
     return await action();
   } catch (err) {
-    showToast(message, 2200);
+    const detail = err?.message ? String(err.message).split('\n')[0] : '';
+    const combined = message ? (detail ? `${message} (${detail})` : message) : (detail || 'Unable to save');
+    showToast(combined, 2200);
     console.warn(err);
     return null;
   }
@@ -1617,10 +1634,15 @@ stickyPrintBtn?.addEventListener('click', () => {
 cloudSignInBtn?.addEventListener('click', async () => {
   try {
     setCloudBusy(true);
-    await firebaseProvider.signIn();
-    showToast('Signed in', 1600);
+    const user = await firebaseProvider.signIn();
+    if (user) {
+      showToast('Signed in', 1600);
+    } else {
+      showToast('Continuing sign-in...', 1600);
+    }
   } catch (e) {
-    showToast('Sign-in failed');
+    const detail = e?.code || e?.message || '';
+    showToast(detail ? `Sign-in failed: ${detail}` : 'Sign-in failed');
     console.warn(e);
   } finally { setCloudBusy(false); }
 });

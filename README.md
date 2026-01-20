@@ -3,7 +3,7 @@ Track attendance with ease using this HTML site, load your JSON backup and pick 
 
 ## Firebase Cloud Sync (Optional)
 
-Cloud sync is off until Firebase env vars are provided. The app runs local-only by default and keeps the JSON backup workflow.
+Cloud sync is off until Firebase env vars are provided. No default Firebase project is bundled, so the app runs local-only by default and keeps the JSON backup workflow.
 
 ### Setup
 
@@ -43,6 +43,7 @@ window.__ENV = {
   - Upload this device’s data to seed the cloud.
   - Replace local data with the cloud copy.
   - Cancel.
+- Only team leads can overwrite cloud data during migration.
 - Use **Sync mode** to toggle Local-only vs Firebase.
 
 ### Backup

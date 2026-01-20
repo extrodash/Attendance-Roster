@@ -539,7 +539,15 @@ main {
   align-content: start;
   gap: var(--space-2);
 }
-.summary-card strong { font-size: var(--fs-xl); }
+.summary-card strong {
+  font-size: clamp(1.8rem, 2.2vw, 3rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.summary-card.span-2 strong {
+  font-size: clamp(2rem, 3vw, 3.6rem);
+}
 .summary-card small { color: var(--color-muted); }
 .summary-card.tone-success { --summary-accent: rgba(52, 211, 153, 0.7); background: linear-gradient(150deg, rgba(16, 185, 129, 0.08), rgba(14, 116, 144, 0.12)); }
 .summary-card.tone-info { --summary-accent: rgba(56, 189, 248, 0.7); background: linear-gradient(150deg, rgba(56, 189, 248, 0.08), rgba(59, 130, 246, 0.1)); }
