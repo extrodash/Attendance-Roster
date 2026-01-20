@@ -35,7 +35,7 @@ service cloud.firestore {
 
     match /teams/{teamId} {
       allow create: if signedIn();
-      allow read: if isMember(teamId);
+      allow read: if signedIn();
       allow update, delete: if isLead(teamId);
 
       match /members/{uid} {
